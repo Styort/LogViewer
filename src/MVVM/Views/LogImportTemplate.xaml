@@ -1,0 +1,75 @@
+﻿<Window x:Class="LogViewer.MVVM.Views.LogImportTemplate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LogViewer.MVVM"
+        xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        mc:Ignorable="d"
+        Title="Log Import Template" Height="320" Width="700">
+
+    <Window.DataContext>
+        <viewModels:LogImportTemplateViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <RadioButton Margin="10,0" Content="Select from existing templates" IsChecked="{Binding Path=IsPopularTemplateSelected}"/>
+
+        <ComboBox Grid.Row="1" Margin="10" ItemsSource="{Binding Path=PopularTemplates}" SelectedValue="{Binding Path=SelectedPopularTemplate}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+
+        <RadioButton Grid.Row="3" Margin="10,0" Content="Or create your own template" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10" Height="80">
+            <ItemsControl x:Name="TemplateLogItemsIC" ItemsSource="{Binding Path=TemplateLogItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox Margin="5,5" ItemsSource="{Binding Path=TemplateParameters}" SelectedItem="{Binding Path=SelectedTemplateParameter}" Height="30" VerticalContentAlignment="Center"/>
+                                <Label Padding="0" FontStyle="Normal" FontSize="18" VerticalContentAlignment="Center">;</Label>
+                            </StackPanel>
+                            
+                            <Button Padding="0" Width="60" Content="remove" Margin="1" Height="30" ToolTip="Remove Template Item" Foreground="White"
+                                    Command="{Binding ElementName=TemplateLogItemsIC, Path=DataContext.RemoveTemplateItemCommand}" CommandParameter="{Binding}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+
+        <Button Grid.Row="4" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="Add Template Item" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
+                Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
+
+        <WrapPanel Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
+            <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
+            <Button IsCancel="True" MinWidth="100" Content="Cancel"/>
+        </WrapPanel>
+    </Grid>
+</Window>

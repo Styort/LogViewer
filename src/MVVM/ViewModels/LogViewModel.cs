@@ -2232,7 +2232,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 var lm = new LogMessage
                 {
-                    Address = $"Import ({Path.GetFileName(importFilePath)})",
+                    Address = $"Import ({importFilePath})",
                     Time = DateTime.Parse(log[template[eImportTemplateParameters.DateTime]].Replace("\0", "")),
                     Level = LogLevelMapping[log[template[eImportTemplateParameters.LogLevel]]],
                     Thread = template.ContainsKey(eImportTemplateParameters.ThreadNumber) ? int.Parse(log[template[eImportTemplateParameters.ThreadNumber]]) : -1,

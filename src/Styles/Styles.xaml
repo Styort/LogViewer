@@ -662,7 +662,7 @@
 
         <MenuItem Header="Go to Timestamp" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
-                <Image Source="{StaticResource FindNextWarning}"/>
+                <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 

@@ -101,7 +101,6 @@
     <Compile Include="Enums\eLogLevel.cs" />
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
-    <Compile Include="Helpers\PerformanceInfo.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
     <Compile Include="MVVM\Views\LogImportTemplate.xaml.cs">
@@ -110,7 +109,6 @@
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
-    <Compile Include="Helpers\DependencyObjectExtensions.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />
     <Compile Include="MVVM\Models\Theme.cs" />
     <Compile Include="MVVM\Models\Settings.cs" />

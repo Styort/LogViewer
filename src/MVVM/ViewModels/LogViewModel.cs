@@ -9,9 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.MVVM.Commands;
@@ -24,7 +22,6 @@ using Clipboard = System.Windows.Clipboard;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
-using Timer = System.Threading.Timer;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -34,8 +31,8 @@ namespace LogViewer.MVVM.ViewModels
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        private readonly object logsLockObj = new object();
         private const int RECEIVER_COLUMN_WIDTH = 15;
-        private const int PERFORMANCE_TIMER_INTERVAL = 30000;
 
         private readonly List<UDPPacketsParser> parsers;
 
@@ -108,12 +105,6 @@ namespace LogViewer.MVVM.ViewModels
                 }
             }
         }
-
-
-        /// <summary>
-        /// Таймер отслеживания свободной памяти
-        /// </summary>
-        private Timer perfomarmanceTimer;
 
         private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private readonly Dictionary<string, eLogLevel> LogLevelMapping = new Dictionary<string, eLogLevel>
@@ -259,32 +250,35 @@ namespace LogViewer.MVVM.ViewModels
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        switch (SelectedMinLogLevel)
+                        lock (logsLockObj)
                         {
-                            case eLogLevel.Trace:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !exceptLoggers.Contains(x.FullPath)));
-                                break;
-                            case eLogLevel.Debug:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !x.Level.HasFlag(eLogLevel.Trace) && !exceptLoggers.Contains(x.FullPath)));
-                                break;
-                            case eLogLevel.Info:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !x.Level.HasFlag(eLogLevel.Debug) && !exceptLoggers.Contains(x.FullPath)));
-                                break;
-                            case eLogLevel.Warn:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !x.Level.HasFlag(eLogLevel.Info) && !exceptLoggers.Contains(x.FullPath)));
-                                break;
-                            case eLogLevel.Error:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !x.Level.HasFlag(eLogLevel.Warn) && !exceptLoggers.Contains(x.FullPath)));
-                                break;
-                            case eLogLevel.Fatal:
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                                    .Where(x => !x.Level.HasFlag(eLogLevel.Error) && !exceptLoggers.Contains(x.FullPath)));
-                                break;
+                            switch (SelectedMinLogLevel)
+                            {
+                                case eLogLevel.Trace:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                                case eLogLevel.Debug:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !x.Level.HasFlag(eLogLevel.Trace) && !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                                case eLogLevel.Info:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !x.Level.HasFlag(eLogLevel.Debug) && !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                                case eLogLevel.Warn:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !x.Level.HasFlag(eLogLevel.Info) && !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                                case eLogLevel.Error:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !x.Level.HasFlag(eLogLevel.Warn) && !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                                case eLogLevel.Fatal:
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                        .Where(x => !x.Level.HasFlag(eLogLevel.Error) && !exceptLoggers.Contains(x.FullPath)));
+                                    break;
+                            }
                         }
                     });
 
@@ -488,9 +482,6 @@ namespace LogViewer.MVVM.ViewModels
             cancellationToken = new CancellationTokenSource();
             parsers = new List<UDPPacketsParser>();
 
-            // TODO: Придумать что-нибудь с освобождением памяти, для предотвращения OutOfMemory
-            //perfomarmanceTimer = new Timer(CheckPerformanceProcess, null, 0, PERFORMANCE_TIMER_INTERVAL);
-
             IconColor = Settings.Instance.CurrentTheme.Color;
             FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
             allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
@@ -676,14 +667,31 @@ namespace LogViewer.MVVM.ViewModels
         private void Clean()
         {
             Logs.Clear();
+
             nextMessages.Clear();
+            previousMessages.Clear();
+            currentWarnLoggers.Clear();
+            currentErrorLoggers.Clear();
             tempLogsList.Clear();
+            importData.Clear();
             currentExceptLoggers.Clear();
             exceptLoggersWithBuffer.Clear();
 
             allLogs.Clear();
+
             lastSelectedMessageCounter = 0;
+            lastSelectedPreviousMessageCounter = 0;
+            warnSearchCounter = 0;
+
             prevFindNext = string.Empty;
+            prevFindPrevious = string.Empty;
+
+            findNextPrevSelectedLog = null;
+            findPrevousPrevSelectedLog = null;
+            currentSearchLogger = null;
+            prevSelectedWarnLog = null;
+            prevSelectedErrorLog = null;
+
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
@@ -814,13 +822,17 @@ namespace LogViewer.MVVM.ViewModels
                             {
                                 lastSelectedMessageCounter = 0;
                                 var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                                nextMessages = Logs.ToList().TakeLast(Logs.Count - selectedLogIndex - 1).ToList();
+                                lock (logsLockObj)
+                                    nextMessages = Logs.TakeLast(Logs.Count - selectedLogIndex - 1).ToList();
                             }
 
                             if (!nextMessages.Any())
-                                nextMessages = IsMatchCase
-                                    ? Logs.ToList().Where(x => x.Message.Contains(SearchText)).ToList()
-                                    : Logs.ToList().Where(x => x.Message.ToUpper().Contains(SearchText.ToUpper())).ToList();
+                            {
+                                lock (logsLockObj)
+                                    nextMessages = IsMatchCase
+                                        ? Logs.Where(x => x.Message.Contains(SearchText)).ToList()
+                                        : Logs.Where(x => x.Message.ToUpper().Contains(SearchText.ToUpper())).ToList();
+                            }
                             else
                                 nextMessages = IsMatchCase
                                     ? nextMessages.Where(x => x.Message.Contains(SearchText)).ToList()
@@ -880,7 +892,8 @@ namespace LogViewer.MVVM.ViewModels
                         if (lastSelectedPreviousMessageCounter == -1 || findPrevousPrevSelectedLog != SelectedLog)
                         {
                             var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                            previousMessages = Logs.ToList().Take(selectedLogIndex).ToList();
+                            lock (logsLockObj)
+                                previousMessages = Logs.Take(selectedLogIndex).ToList();
 
                             if (previousMessages.Any())
                                 previousMessages = IsMatchCase
@@ -924,7 +937,7 @@ namespace LogViewer.MVVM.ViewModels
 
             if (currentCheckBox.IsChecked.HasValue && currentCheckBox.IsChecked.Value)
             {
-                if (node.Text == "Root")
+                if (node.Parent == null)
                 {
                     exceptLoggers.Clear();
                     exceptLoggersWithBuffer.Clear();
@@ -941,8 +954,9 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            var remainLogs = allLogs.ToList().Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath));
-
+                            IEnumerable<LogMessage> remainLogs;
+                            lock (logsLockObj)
+                                remainLogs = allLogs.Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath));
                             Logs = new AsyncObservableCollection<LogMessage>(remainLogs);
                         });
                     }
@@ -968,13 +982,22 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            if (node.IsRoot)
+                            if (node.Parent == null)
                             {
-                                Logs = new AsyncObservableCollection<LogMessage>(Logs.ToList().Where(x => x.Address != node.Text));
+                                Logs.Clear();
                                 return;
                             }
 
-                            IEnumerable<LogMessage> messagesForShow = Logs.ToList().Where(x => !currentExceptLoggers.Contains(x.FullPath));
+                            if (node.IsRoot)
+                            {
+                                lock(logsLockObj)
+                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Address != node.Text));
+                                return;
+                            }
+
+                            IEnumerable<LogMessage> messagesForShow;
+                            lock (logsLockObj)
+                                messagesForShow = Logs.Where(x => !currentExceptLoggers.Contains(x.FullPath));
 
                             Logs = new AsyncObservableCollection<LogMessage>(messagesForShow);
                         });
@@ -1049,14 +1072,17 @@ namespace LogViewer.MVVM.ViewModels
                                 {
                                     foundReceiver.Color = receiver.Color;
 
-                                    foreach (var logMessage in allLogs.ToList().Where(x => x.Receiver.Port == foundReceiver.Port))
+                                    lock (logsLockObj)
                                     {
-                                        logMessage.Receiver.Color = foundReceiver.Color;
-                                    }
+                                        foreach (var logMessage in allLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                        {
+                                            logMessage.Receiver.Color = foundReceiver.Color;
+                                        }
 
-                                    foreach (var logMessage in Logs.ToList().Where(x => x.Receiver.Port == foundReceiver.Port))
-                                    {
-                                        logMessage.Receiver.Color = foundReceiver.Color;
+                                        foreach (var logMessage in Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                        {
+                                            logMessage.Receiver.Color = foundReceiver.Color;
+                                        }
                                     }
                                 }
                             });
@@ -1132,6 +1158,8 @@ namespace LogViewer.MVVM.ViewModels
             availableLoggers.Clear();
             exceptLoggers.Clear();
             exceptLoggersWithBuffer.Clear();
+            showOnlyThisLoggers.Clear();
+
             Loggers.Add(new Node
             {
                 Logger = "Root",
@@ -1215,8 +1243,11 @@ namespace LogViewer.MVVM.ViewModels
 
                             Application.Current.Dispatcher.Invoke(() =>
                             {
-                                allLogs = new AsyncObservableCollection<LogMessage>(allLogs.ToList().Where(x => !x.FullPath.Contains(node.Logger)));
-                                Logs = new AsyncObservableCollection<LogMessage>(Logs.ToList().Where(x => !x.FullPath.Contains(node.Logger)));
+                                lock (logsLockObj)
+                                {
+                                    allLogs = new AsyncObservableCollection<LogMessage>(allLogs.Where(x => !x.FullPath.Contains(node.Logger)));
+                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => !x.FullPath.Contains(node.Logger)));
+                                }
                                 var parentNode = node.Parent;
                                 parentNode.Children.Remove(node);
                             });
@@ -1288,7 +1319,8 @@ namespace LogViewer.MVVM.ViewModels
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 exceptLoggers = availableLoggers.Except(showOnlyThisLoggers).ToHashSet();
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList().Where(x => x.FullPath.Contains(node.Logger)));
+                                lock(logsLockObj)
+                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs.Where(x => x.FullPath.Contains(node.Logger)));
                             });
                         }
 
@@ -1412,10 +1444,12 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     warnSearchCounter = 0;
                     var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                    currentWarnLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Warn).ToList();
+                    lock (logsLockObj)
+                        currentWarnLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Warn).ToList();
                 }
                 else
-                    currentWarnLoggers = Logs.ToList().Where(x => x.Level == eLogLevel.Warn).ToList();
+                    lock (logsLockObj)
+                        currentWarnLoggers = Logs.Where(x => x.Level == eLogLevel.Warn).ToList();
             }
 
             if (currentWarnLoggers.Any() && warnSearchCounter < currentWarnLoggers.Count)
@@ -1442,10 +1476,12 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     errorSearchCounter = 0;
                     var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                    currentErrorLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Error).ToList();
+                    lock (logsLockObj)
+                        currentErrorLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Error).ToList();
                 }
                 else
-                    currentErrorLoggers = Logs.ToList().Where(x => x.Level == eLogLevel.Error).ToList();
+                    lock (logsLockObj)
+                        currentErrorLoggers = Logs.Where(x => x.Level == eLogLevel.Error).ToList();
             }
 
             if (currentErrorLoggers.Any() && errorSearchCounter < currentErrorLoggers.Count)
@@ -1664,7 +1700,8 @@ namespace LogViewer.MVVM.ViewModels
         {
             node.IsChecked = false;
             exceptLoggers.Add(node.Logger);
-            Logs = new AsyncObservableCollection<LogMessage>(Logs.ToList().Where(l => !exceptLoggers.Contains(l.FullPath)));
+            lock(logsLockObj)
+                Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(l => !exceptLoggers.Contains(l.FullPath)));
         }
 
         /// <summary>
@@ -1674,6 +1711,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             if (node.Logger == exceptLogger)
                 return;
+            
             node.IsChecked = false;
             if (node.Children.Any())
             {
@@ -1812,7 +1850,8 @@ namespace LogViewer.MVVM.ViewModels
                 UncheckAllLoggers(node);
                 DontReceiveThisLogger(node);
 
-                Logs = node.Logger == "Root" ? new AsyncObservableCollection<LogMessage>() : new AsyncObservableCollection<LogMessage>(allLogs.ToList().Where(x => !exceptLoggers.Contains(x.FullPath)));
+                lock(logsLockObj)
+                    Logs = node.Logger == "Root" ? new AsyncObservableCollection<LogMessage>() : new AsyncObservableCollection<LogMessage>(allLogs.Where(x => !exceptLoggers.Contains(x.FullPath)));
 
                 showOnlyThisLoggers.Clear();
             }
@@ -1875,11 +1914,11 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !ClearSearchResultIsEnabled)
                     {
-                        Logs.Add(log);
+                        lock (logsLockObj) Logs.Add(log);
                     }
 
                     if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-                        allLogs.Add(log);
+                        lock (logsLockObj) allLogs.Add(log);
                 }
 
                 CleanIsEnabled = allLogs.Any();
@@ -1901,10 +1940,10 @@ namespace LogViewer.MVVM.ViewModels
             if (addLog)
             {
                 if (SelectedMinLogLevel.HasFlag(log.Level) && !exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath) && !ClearSearchResultIsEnabled)
-                    Logs.Add(log);
+                    lock (logsLockObj) Logs.Add(log);
 
                 if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-                    allLogs.Add(log);
+                    lock (logsLockObj) allLogs.Add(log);
             }
 
             CleanIsEnabled = Logs.Any();
@@ -2104,28 +2143,28 @@ namespace LogViewer.MVVM.ViewModels
                             // а все кидаем в общий список
                             if (ClearSearchResultIsEnabled)
                             {
-                                allLogs.Add(log);
+                                lock (logsLockObj) allLogs.Add(log);
 
                                 if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
                                     && log.Message.ToUpper().Contains(currentSearch.ToUpper()))
                                 {
-                                    Logs.Add(log);
+                                    lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
                                 if (IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
                                     && log.Message.Contains(currentSearch))
                                 {
-                                    Logs.Add(log);
+                                    lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
                                 if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch))
                                 {
-                                    Logs.Add(log);
+                                    lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
                                 if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()))
                                 {
-                                    Logs.Add(log);
+                                    lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
                             }
@@ -2162,53 +2201,6 @@ namespace LogViewer.MVVM.ViewModels
                 var parser = new UDPPacketsParser(receiver.Port);
                 parsers.Add(parser);
             }
-        }
-
-        private void CheckPerformanceProcess(object state)
-        {
-            Int64 tot = PerformanceInfo.GetTotalMemoryInMiB();
-            var gcAppUsageMemory = GC.GetTotalMemory(false) / 1048576;
-
-            logger.Debug($"CheckPerformanceProcess: GC App RAM memory usage - {gcAppUsageMemory}");
-
-            // TODO: Проверить объём, занимаемый самим приложением, и в условие пихать его тоже.
-            if (gcAppUsageMemory > 2048 || gcAppUsageMemory > tot / 2)
-            {
-                PerformanceLogCleanup();
-            }
-        }
-
-        private bool isCleanupProcess = false;
-        private void PerformanceLogCleanup()
-        {
-            if (isCleanupProcess) return;
-            logger.Debug("PerformanceLogCleanup");
-            isCleanupProcess = true;
-
-            Pause();
-
-            IsVisibleLoader = true;
-
-            var allLogsDeletedCount = (int)(allLogs.Count * 0.3);
-            var logsDeletedCount = (int)(Logs.Count * 0.3);
-
-            var tempAllLogs = allLogs.ToList();
-            tempAllLogs.RemoveRange(0, allLogsDeletedCount);
-            allLogs = new AsyncObservableCollection<LogMessage>(tempAllLogs);
-
-            var tempLogs = Logs.ToList();
-            tempLogs.RemoveRange(0, logsDeletedCount);
-            Logs = new AsyncObservableCollection<LogMessage>(tempLogs);
-
-            tempLogs.Clear();
-            tempAllLogs.Clear();
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-
-            IsVisibleLoader = false;
-            Start();
-            isCleanupProcess = false;
         }
 
         /// <summary>
@@ -2292,7 +2284,6 @@ namespace LogViewer.MVVM.ViewModels
                 udpPacketsParser?.Dispose();
             }
             cancellationToken?.Dispose();
-            perfomarmanceTimer?.Dispose();
         }
     }
 }

@@ -59,7 +59,7 @@
                         <TextBlock Text="Auto start reading logs at startup:" ToolTip="Start read logs immediately when application startup" VerticalAlignment="Center" />
                         <ToggleButton Grid.Row="0" Grid.Column="1" IsChecked="{Binding Path=IsAutoStartReadAtStartup}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
 
-                        <TextBlock Text="Minimize to tray:" ToolTip="Minimize application to tray when click minimize button" VerticalAlignment="Center"  Grid.Row="1"/>
+                        <TextBlock Text="Minimize to Tray Icon:" ToolTip="Shows a tray icon when LogViewer is minimized" VerticalAlignment="Center"  Grid.Row="1"/>
                         <ToggleButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding Path=MinimizeToTray}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
 
                         <TextBlock Text="Only one instance of app:" ToolTip="Only one instance of Log Viewer in system" VerticalAlignment="Center"  Grid.Row="2"/>
@@ -258,7 +258,7 @@
                         <TextBlock Text="Log Viewer features:"/>
                         <Border BorderThickness="1" Height="100" Margin="0,5" Padding="5">
                             <StackPanel Orientation="Vertical">
-                                <TextBlock Text="- Read logs from UDP package by NLog template;"/>
+                                <TextBlock Text="- Read logs from UDP package by log4j template;"/>
                                 <TextBlock Text="- Export and import log files;"/>
                                 <TextBlock Text="- Sorting and filtering received logs;"/>
                                 <TextBlock Text="- and many other features (for details see ReleaseNotes file)."/>

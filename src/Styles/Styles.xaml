@@ -645,13 +645,13 @@
     </Style>
 
     <ContextMenu x:Key="ItemContextMenu" Style="{StaticResource BaseContextMenu}">
-        <MenuItem Header="Don't Show this Logger" Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <MenuItem Header="Don't Show this Logger" ToolTip="Hide this Logger Messages"  Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource HiddenEyeImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="Don't Receive this Logger" Margin="0" Command="{Binding Path=DataContext.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="Don't Receive this Logger" ToolTip="Don't add new messsages to buffer from this Logger" Margin="0" Command="{Binding Path=DataContext.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource StopImage}"/>
             </MenuItem.Icon>

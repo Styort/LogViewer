@@ -15,6 +15,7 @@ using LogViewer.Helpers;
 using LogViewer.MVVM.Commands;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
+using LogViewer.MVVM.Views;
 using NLog;
 using Application = System.Windows.Application;
 using CheckBox = System.Windows.Controls.CheckBox;
@@ -79,6 +80,7 @@ namespace LogViewer.MVVM.ViewModels
         private bool isIpVisible = false;
         private bool isEnableClearSearchLoggers;
         private string searchLoggerText = string.Empty;
+        private DateTime goToTimestampDateTime;
 
         private List<LogMessage> nearbyLastLogMessages = new List<LogMessage>();
         private LogMessage lastLogMessage;
@@ -578,6 +580,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand сlearSearchResultCommand;
         private RelayCommand searchLoggersCommand;
         private RelayCommand clearSearchLoggerResultCommand;
+        private RelayCommand goToTimestampCommand;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
@@ -604,6 +607,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand ClearSearchResultCommand => сlearSearchResultCommand ?? (сlearSearchResultCommand = new RelayCommand(ClearSearchResult));
         public RelayCommand SearchLoggersCommand => searchLoggersCommand ?? (searchLoggersCommand = new RelayCommand(SearchLoggers));
         public RelayCommand ClearSearchLoggerResultCommand => clearSearchLoggerResultCommand ?? (clearSearchLoggerResultCommand = new RelayCommand(ClearSearchLoggersResult));
+        public RelayCommand GoToTimestampCommand => goToTimestampCommand ??(goToTimestampCommand = new RelayCommand(GoToTimestamp));
 
         #endregion
 
@@ -1502,12 +1506,12 @@ namespace LogViewer.MVVM.ViewModels
         /// <param name="obj">Файл, полученный через drag and drop</param>
         public void ImportLogs(object obj)
         {
-            Views.LogImportTemplate logImportTemplateDialog = new Views.LogImportTemplate();
-            logImportTemplateDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            logImportTemplateDialog.ShowDialog();
-            if (logImportTemplateDialog.DialogResult.HasValue && logImportTemplateDialog.DialogResult.Value)
+            Views.LogImportTemplateDialog logImportTemplateDialogDialog = new Views.LogImportTemplateDialog();
+            logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            logImportTemplateDialogDialog.ShowDialog();
+            if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
             {
-                var template = logImportTemplateDialog.TemplateParameterses;
+                var template = logImportTemplateDialogDialog.TemplateParameterses;
 
                 importFilePath = string.Empty;
 
@@ -1671,6 +1675,20 @@ namespace LogViewer.MVVM.ViewModels
             IsEnableClearSearchLoggers = false;
             SearchLoggerText = string.Empty;
             isSearchLoggersProcess = false;
+        }
+
+        /// <summary>
+        /// Перейти к выбранной временной отметке
+        /// </summary>
+        private void GoToTimestamp()
+        {
+            SelectTimestampDialog selectTimestampDialog = new SelectTimestampDialog();
+            selectTimestampDialog.ShowDialog();
+
+            if (selectTimestampDialog.DialogResult.HasValue && selectTimestampDialog.DialogResult.Value)
+            {
+                goToTimestampDateTime = selectTimestampDialog.SelectedDate.Date + selectTimestampDialog.SelectedTime.TimeOfDay;
+            }
         }
 
         #endregion

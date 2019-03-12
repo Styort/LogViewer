@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:converters="clr-namespace:LogViewer.Converters"
-                    xmlns:helpers="clr-namespace:LogViewer.Helpers">
+                    xmlns:helpers="clr-namespace:LogViewer.Helpers"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="DrawingImages.xaml"/>
@@ -659,6 +660,12 @@
 
         <Separator />
 
+        <MenuItem Header="Go to Timestamp" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+            <MenuItem.Icon>
+                <Image Source="{StaticResource FindNextWarning}"/>
+            </MenuItem.Icon>
+        </MenuItem>
+
         <MenuItem Header="Go to Next Warning" InputGestureText="Ctrl+W" Margin="0" Command="{Binding Path=DataContext.FindNextWarningCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource FindNextWarning}"/>
@@ -1029,5 +1036,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
 
 </ResourceDictionary>

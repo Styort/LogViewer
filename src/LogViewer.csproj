@@ -56,8 +56,8 @@
     <Reference Include="CustomColorPicker">
       <HintPath>.\CustomColorPicker.dll</HintPath>
     </Reference>
-    <Reference Include="MaterialDesignColors, Version=1.0.0.14576, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\MaterialDesignColors.1.1.1\lib\net45\MaterialDesignColors.dll</HintPath>
+    <Reference Include="MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\MaterialDesignColors.1.1.3\lib\net45\MaterialDesignColors.dll</HintPath>
     </Reference>
     <Reference Include="MaterialDesignThemes.Wpf, Version=2.5.0.1205, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\MaterialDesignThemes.2.5.0.1205\lib\net45\MaterialDesignThemes.Wpf.dll</HintPath>
@@ -103,8 +103,8 @@
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
-    <Compile Include="MVVM\Views\LogImportTemplate.xaml.cs">
-      <DependentUpon>LogImportTemplate.xaml</DependentUpon>
+    <Compile Include="MVVM\Views\LogImportTemplateDialog.xaml.cs">
+      <DependentUpon>LogImportTemplateDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
@@ -113,6 +113,9 @@
     <Compile Include="MVVM\Models\Theme.cs" />
     <Compile Include="MVVM\Models\Settings.cs" />
     <Compile Include="MVVM\ViewModels\LogImportTemplateViewModel.cs" />
+    <Compile Include="MVVM\Views\SelectTimestampDialog.xaml.cs">
+      <DependentUpon>SelectTimestampDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Validations\IPValidation.cs" />
     <Compile Include="Validations\PortNumberValidation.cs" />
     <Compile Include="MVVM\Models\Receiver.cs" />
@@ -127,6 +130,10 @@
     <Compile Include="MVVM\TreeView\CheckBoxId.cs" />
     <Compile Include="MVVM\TreeView\Node.cs" />
     <Compile Include="UDPPacketsParser.cs" />
+    <Page Include="MVVM\Views\SelectTimestampDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\DrawingImages.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -145,7 +152,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MVVM\Views\LogImportTemplate.xaml">
+    <Page Include="MVVM\Views\LogImportTemplateDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,0 +1,84 @@
+﻿<Window x:Class="LogViewer.MVVM.Views.SelectTimestampDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LogViewer.MVVM.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        mc:Ignorable="d"
+        Title="Go to Timestamp" MinHeight="175" Height="175" Width="500">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <materialDesign:DialogHost Identifier="RootDialog" SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
+        <materialDesign:DrawerHost>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock HorizontalAlignment="Center" Text="Pick Date and Time"></TextBlock>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBox x:Name="SelectedDateTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateTB_OnTextChanged"/>
+                        <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                materialDesign:DialogHost.DialogOpenedAttached="CalendarDialogOpenedEventHandler"
+                                materialDesign:DialogHost.DialogClosingAttached="CalendarDialogClosingEventHandler">
+                            <Image Source="{StaticResource CalendarDrawingImage}"/>
+                            <Button.CommandParameter>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Calendar x:Name="Calendar" Margin="-1 -4 -1 0" />
+                                    <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="10,0">
+                        <TextBox x:Name="SelectedTimeTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedTimeTB_OnTextChanged"/>
+                        <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
+                                materialDesign:DialogHost.DialogOpenedAttached="ClockDialogOpenedEventHandler"
+                                materialDesign:DialogHost.DialogClosingAttached="ClockDialogClosingEventHandler">
+                            <Image Source="{StaticResource ClockDrawingImage}" Margin="0,0,2,0"/>
+                            <Button.CommandParameter>
+                                <Grid Margin="-1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <materialDesign:Clock Is24Hours="True" DisplayAutomation="Cycle" x:Name="Clock" />
+                                    <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Button.CommandParameter>
+                        </Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <WrapPanel Grid.Row="2"  HorizontalAlignment="Right" Margin="10" VerticalAlignment="Bottom">
+                    <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
+                    <Button IsCancel="True" MinWidth="100" Content="Cancel" />
+                </WrapPanel>
+            </Grid>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
+</Window>

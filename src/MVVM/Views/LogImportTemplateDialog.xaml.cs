@@ -9,10 +9,10 @@ namespace LogViewer.MVVM.Views
     /// <summary>
     /// Interaction logic for LogImportTemplate.xaml
     /// </summary>
-    public partial class LogImportTemplate : Window
+    public partial class LogImportTemplateDialog : Window
     {
         public Dictionary<eImportTemplateParameters, int> TemplateParameterses { get; } = new Dictionary<eImportTemplateParameters, int>();
-        public LogImportTemplate()
+        public LogImportTemplateDialog()
         {
             InitializeComponent();
         }

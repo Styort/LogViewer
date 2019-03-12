@@ -90,8 +90,8 @@
         <KeyBinding Command="{Binding Path=ClearSearchResultCommand}" Modifiers="Shift" Key="R"/>
         <KeyBinding Command="{Binding Path=ExportCommand}" Modifiers="Control" Key="S"/>
         <KeyBinding Command="{Binding Path=CleanCommand}" Modifiers="Control" Key="R"/>
+        <KeyBinding Command="{Binding Path=GoToTimestampCommand}" Modifiers="Control" Key="T"/>
     </Window.InputBindings>
-
 
     <Grid>
         <Grid.ColumnDefinitions>

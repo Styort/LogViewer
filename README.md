@@ -1,2 +1,2 @@
 # LogViewer
-Parse logs by NLog templates.
+Parse logs by log4j pattern.

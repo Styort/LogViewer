@@ -1682,12 +1682,25 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void GoToTimestamp()
         {
-            SelectTimestampDialog selectTimestampDialog = new SelectTimestampDialog();
+            SelectTimestampDialog selectTimestampDialog = new SelectTimestampDialog(SelectedLog?.Time);
             selectTimestampDialog.ShowDialog();
 
             if (selectTimestampDialog.DialogResult.HasValue && selectTimestampDialog.DialogResult.Value)
             {
                 goToTimestampDateTime = selectTimestampDialog.SelectedDate.Date + selectTimestampDialog.SelectedTime.TimeOfDay;
+
+                TimeSpan truncateValue = TimeSpan.FromMinutes(1);
+
+                if(goToTimestampDateTime.Second != 0)
+                    truncateValue = TimeSpan.FromSeconds(1);
+                if(goToTimestampDateTime.Millisecond != 0)
+                    truncateValue = TimeSpan.FromMilliseconds(1);
+
+                var firstTimestampLog = Logs.FirstOrDefault(x => x.Time.Truncate(truncateValue) == goToTimestampDateTime);
+                if (firstTimestampLog != null)
+                    SelectedLog = firstTimestampLog;
+                else
+                    MessageBox.Show($"Not found any messages with date {goToTimestampDateTime.ToString(Settings.Instance.DataFormat)}");
             }
         }
 

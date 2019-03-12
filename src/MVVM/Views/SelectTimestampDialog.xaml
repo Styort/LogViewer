@@ -33,7 +33,8 @@
                         <TextBox x:Name="SelectedDateTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="CalendarDialogOpenedEventHandler"
-                                materialDesign:DialogHost.DialogClosingAttached="CalendarDialogClosingEventHandler">
+                                materialDesign:DialogHost.DialogClosingAttached="CalendarDialogClosingEventHandler"
+                                ToolTip="Pick Date">
                             <Image Source="{StaticResource CalendarDrawingImage}"/>
                             <Button.CommandParameter>
                                 <Grid>
@@ -55,7 +56,8 @@
                         <TextBox x:Name="SelectedTimeTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedTimeTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="ClockDialogOpenedEventHandler"
-                                materialDesign:DialogHost.DialogClosingAttached="ClockDialogClosingEventHandler">
+                                materialDesign:DialogHost.DialogClosingAttached="ClockDialogClosingEventHandler"
+                                ToolTip="Pick Time">
                             <Image Source="{StaticResource ClockDrawingImage}" Margin="0,0,2,0"/>
                             <Button.CommandParameter>
                                 <Grid Margin="-1">

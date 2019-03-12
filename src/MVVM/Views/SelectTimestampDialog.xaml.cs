@@ -25,12 +25,26 @@ namespace LogViewer.MVVM.Views
         public DateTime SelectedDate { get; set; } = DateTime.Now;
         public DateTime SelectedTime { get; set; } = DateTime.Now;
 
-        public SelectTimestampDialog()
+        public SelectTimestampDialog(DateTime? currentLogDateTime)
         {
             InitializeComponent();
 
+            if (currentLogDateTime.HasValue)
+            {
+                SelectedDate = currentLogDateTime.Value;
+                SelectedTime = currentLogDateTime.Value;
+            }
+            else
+            {
+                // обнуляем секунды и мс. для удобства работы с датой
+                if (SelectedTime.Second != 0)
+                    SelectedTime = SelectedTime.AddSeconds(-SelectedTime.Second);
+                if (SelectedTime.Millisecond != 0)
+                    SelectedTime = SelectedTime.AddMilliseconds(-SelectedTime.Millisecond);
+            }
+            
             SelectedDateTB.Text = SelectedDate.ToString("d");
-            SelectedTimeTB.Text = SelectedTime.ToString("t");
+            SelectedTimeTB.Text = SelectedTime.ToString("HH:mm:ss.fff");
         }
 
 
@@ -63,7 +77,7 @@ namespace LogViewer.MVVM.Views
             if (Equals(eventArgs.Parameter, "1"))
             {
                 SelectedTime = Clock.Time;
-                SelectedTimeTB.Text = SelectedTime.ToString("t");
+                SelectedTimeTB.Text = SelectedTime.ToString("HH:mm:ss.fff");
             }
         }
 

@@ -52,6 +52,7 @@ namespace LogViewer.MVVM.ViewModels
         // коллекция всех логов
         private AsyncObservableCollection<LogMessage> allLogs = new AsyncObservableCollection<LogMessage>();
 
+        // TODO: Проверить, нужна ли. Если можно заменить на allLogs - убрать.
         // временная коллекция для осуществления поиска
         private AsyncObservableCollection<LogMessage> tempLogsList = new AsyncObservableCollection<LogMessage>();
 
@@ -82,6 +83,8 @@ namespace LogViewer.MVVM.ViewModels
         private bool isEnableClearSearchLoggers;
         private string searchLoggerText = string.Empty;
         private DateTime goToTimestampDateTime;
+        private DateTime fromTimeInverval;
+        private DateTime toTimeInverval;
 
         private List<LogMessage> nearbyLastLogMessages = new List<LogMessage>();
         private LogMessage lastLogMessage;
@@ -582,6 +585,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand searchLoggersCommand;
         private RelayCommand clearSearchLoggerResultCommand;
         private RelayCommand goToTimestampCommand;
+        private RelayCommand setTimeIntervalCommand;
         private RelayCommand toggleMarkCommand;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
@@ -610,6 +614,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand SearchLoggersCommand => searchLoggersCommand ?? (searchLoggersCommand = new RelayCommand(SearchLoggers));
         public RelayCommand ClearSearchLoggerResultCommand => clearSearchLoggerResultCommand ?? (clearSearchLoggerResultCommand = new RelayCommand(ClearSearchLoggersResult));
         public RelayCommand GoToTimestampCommand => goToTimestampCommand ?? (goToTimestampCommand = new RelayCommand(GoToTimestamp));
+        public RelayCommand SetTimeIntervalCommand => setTimeIntervalCommand ?? (setTimeIntervalCommand = new RelayCommand(SetTimeInterval));
         public RelayCommand ToggleMarkCommand => toggleMarkCommand ?? (toggleMarkCommand = new RelayCommand(ToggleMark));
 
         #endregion
@@ -1167,6 +1172,8 @@ namespace LogViewer.MVVM.ViewModels
             exceptLoggersWithBuffer.Clear();
             showOnlyThisLoggers.Clear();
 
+            toggledMarksCount = 0;
+
             Loggers.Add(new Node
             {
                 Logger = "Root",
@@ -1708,6 +1715,30 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
+        /// Установить интервал времени в пределах которого показывать логи
+        /// </summary>
+        private void SetTimeInterval()
+        {
+            SelectTimeIntervalDialog selectTimeIntervalDialog = new SelectTimeIntervalDialog(SelectedLog?.Time);
+            selectTimeIntervalDialog.ShowDialog();
+            if (selectTimeIntervalDialog.DialogResult.HasValue && selectTimeIntervalDialog.DialogResult.Value)
+            {
+                var dateFrom = selectTimeIntervalDialog.SelectedDateFrom.Date + selectTimeIntervalDialog.SelectedTimeFrom.TimeOfDay;
+                var dateTo = selectTimeIntervalDialog.SelectedDateTo.Date + selectTimeIntervalDialog.SelectedTimeTo.TimeOfDay;
+
+                tempLogsList = allLogs;
+
+                lock (logsLockObj)
+                {
+                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Time >= dateFrom && x.Time <= dateTo));
+                    ClearSearchResultIsEnabled = true;
+                }
+            }
+        }
+
+        private int toggledMarksCount = 0;
+
+        /// <summary>
         /// Выделить отдельным цветом сообщения от данного логгера
         /// </summary>
         /// <param name="obj"></param>
@@ -1718,9 +1749,13 @@ namespace LogViewer.MVVM.ViewModels
             {
                 SolidColorBrush currentColor;
                 if (node.ToggleMark.Color.ToString() != TRANSPARENT_COLOR)
-                    currentColor = new SolidColorBrush(Colors.Transparent); 
+                {
+                    toggledMarksCount--;
+                    currentColor = new SolidColorBrush(Colors.Transparent);
+                }
                 else
                 {
+                    toggledMarksCount++;
                     // назначаем выделение
                     Random rnd = new Random();
                     Color randomColor = Color.FromRgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
@@ -1974,8 +2009,11 @@ namespace LogViewer.MVVM.ViewModels
                 root = rootNode;
             }
 
-            var currentNode = GetNodeFromMessage(log);
-            log.ToggleMark = currentNode.ToggleMark;
+            if (toggledMarksCount > 0)
+            {
+                var currentNode = GetNodeFromMessage(log);
+                log.ToggleMark = currentNode.ToggleMark;
+            }
 
             if (availableLoggers.Contains(log.FullPath))
             {
@@ -2230,8 +2268,11 @@ namespace LogViewer.MVVM.ViewModels
                             // а все кидаем в общий список
                             if (ClearSearchResultIsEnabled)
                             {
-                                var currentNode = GetNodeFromMessage(log);
-                                log.ToggleMark = currentNode.ToggleMark;
+                                if (toggledMarksCount > 0)
+                                {
+                                    var currentNode = GetNodeFromMessage(log);
+                                    log.ToggleMark = currentNode.ToggleMark;
+                                }
 
                                 lock (logsLockObj) allLogs.Add(log);
 

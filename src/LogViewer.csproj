@@ -120,6 +120,9 @@
     <Compile Include="MVVM\Models\Theme.cs" />
     <Compile Include="MVVM\Models\Settings.cs" />
     <Compile Include="MVVM\ViewModels\LogImportTemplateViewModel.cs" />
+    <Compile Include="MVVM\Views\SelectTimeIntervalDialog.xaml.cs">
+      <DependentUpon>SelectTimeIntervalDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\Views\SelectTimestampDialog.xaml.cs">
       <DependentUpon>SelectTimestampDialog.xaml</DependentUpon>
     </Compile>
@@ -137,6 +140,10 @@
     <Compile Include="MVVM\TreeView\CheckBoxId.cs" />
     <Compile Include="MVVM\TreeView\Node.cs" />
     <Compile Include="UDPPacketsParser.cs" />
+    <Page Include="MVVM\Views\SelectTimeIntervalDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MVVM\Views\SelectTimestampDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

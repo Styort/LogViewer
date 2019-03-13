@@ -97,6 +97,7 @@
         <KeyBinding Command="{Binding Path=ExportCommand}" Modifiers="Control" Key="S"/>
         <KeyBinding Command="{Binding Path=CleanCommand}" Modifiers="Control" Key="R"/>
         <KeyBinding Command="{Binding Path=GoToTimestampCommand}" Modifiers="Control" Key="T"/>
+        <KeyBinding Command="{Binding Path=SetTimeIntervalCommand}" Modifiers="Control+Shift" Key="T"/>
     </Window.InputBindings>
 
     <Grid>

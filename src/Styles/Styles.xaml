@@ -688,22 +688,22 @@
     <Style x:Key="LogItemStyle" TargetType="{x:Type ListViewItem}">
         <Style.Triggers>
             <DataTrigger Binding="{Binding Level}" Value="Warn">
-                <Setter Property="Foreground" Value="Orange"></Setter>
+                <Setter Property="Foreground" Value="Orange"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Error">
-                <Setter Property="Foreground" Value="Red"></Setter>
+                <Setter Property="Foreground" Value="Red"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Fatal">
-                <Setter Property="Foreground" Value="DarkRed"></Setter>
+                <Setter Property="Foreground" Value="DarkRed"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Info">
-                <Setter Property="Foreground" Value="Green"></Setter>
+                <Setter Property="Foreground" Value="Green"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Debug">
-                <Setter Property="Foreground" Value="Black"></Setter>
+                <Setter Property="Foreground" Value="Black"/>
             </DataTrigger>
             <DataTrigger Binding="{Binding Level}" Value="Trace">
-                <Setter Property="Foreground" Value="Gray"></Setter>
+                <Setter Property="Foreground" Value="Gray"/>
             </DataTrigger>
             <Trigger Property="IsEnabled" Value="False">
                 <Setter Property="Opacity" Value="0.5"/>
@@ -711,6 +711,8 @@
         </Style.Triggers>
 
         <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}" />
+        <Setter Property="Background" Value="{Binding Path=ToggleMark}"/>
+        <Setter Property="Margin" Value="0,-1,0,-1"/>
     </Style>
 
     <Style x:Key="SearchLogItemStyle" TargetType="{x:Type ListViewItem}">

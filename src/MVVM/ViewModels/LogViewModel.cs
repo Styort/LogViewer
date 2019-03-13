@@ -34,6 +34,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private readonly object logsLockObj = new object();
         private const int RECEIVER_COLUMN_WIDTH = 15;
+        private const string TRANSPARENT_COLOR = "#00FFFFFF";
 
         private readonly List<UDPPacketsParser> parsers;
 
@@ -581,6 +582,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand searchLoggersCommand;
         private RelayCommand clearSearchLoggerResultCommand;
         private RelayCommand goToTimestampCommand;
+        private RelayCommand toggleMarkCommand;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
@@ -607,7 +609,8 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand ClearSearchResultCommand => сlearSearchResultCommand ?? (сlearSearchResultCommand = new RelayCommand(ClearSearchResult));
         public RelayCommand SearchLoggersCommand => searchLoggersCommand ?? (searchLoggersCommand = new RelayCommand(SearchLoggers));
         public RelayCommand ClearSearchLoggerResultCommand => clearSearchLoggerResultCommand ?? (clearSearchLoggerResultCommand = new RelayCommand(ClearSearchLoggersResult));
-        public RelayCommand GoToTimestampCommand => goToTimestampCommand ??(goToTimestampCommand = new RelayCommand(GoToTimestamp));
+        public RelayCommand GoToTimestampCommand => goToTimestampCommand ?? (goToTimestampCommand = new RelayCommand(GoToTimestamp));
+        public RelayCommand ToggleMarkCommand => toggleMarkCommand ?? (toggleMarkCommand = new RelayCommand(ToggleMark));
 
         #endregion
 
@@ -994,7 +997,7 @@ namespace LogViewer.MVVM.ViewModels
 
                             if (node.IsRoot)
                             {
-                                lock(logsLockObj)
+                                lock (logsLockObj)
                                     Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Address != node.Text));
                                 return;
                             }
@@ -1323,7 +1326,7 @@ namespace LogViewer.MVVM.ViewModels
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 exceptLoggers = availableLoggers.Except(showOnlyThisLoggers).ToHashSet();
-                                lock(logsLockObj)
+                                lock (logsLockObj)
                                     Logs = new AsyncObservableCollection<LogMessage>(allLogs.Where(x => x.FullPath.Contains(node.Logger)));
                             });
                         }
@@ -1506,7 +1509,7 @@ namespace LogViewer.MVVM.ViewModels
         /// <param name="obj">Файл, полученный через drag and drop</param>
         public void ImportLogs(object obj)
         {
-            Views.LogImportTemplateDialog logImportTemplateDialogDialog = new Views.LogImportTemplateDialog();
+            LogImportTemplateDialog logImportTemplateDialogDialog = new Views.LogImportTemplateDialog();
             logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             logImportTemplateDialogDialog.ShowDialog();
             if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
@@ -1691,9 +1694,9 @@ namespace LogViewer.MVVM.ViewModels
 
                 TimeSpan truncateValue = TimeSpan.FromMinutes(1);
 
-                if(goToTimestampDateTime.Second != 0)
+                if (goToTimestampDateTime.Second != 0)
                     truncateValue = TimeSpan.FromSeconds(1);
-                if(goToTimestampDateTime.Millisecond != 0)
+                if (goToTimestampDateTime.Millisecond != 0)
                     truncateValue = TimeSpan.FromMilliseconds(1);
 
                 var firstTimestampLog = Logs.FirstOrDefault(x => x.Time.Truncate(truncateValue) == goToTimestampDateTime);
@@ -1701,6 +1704,38 @@ namespace LogViewer.MVVM.ViewModels
                     SelectedLog = firstTimestampLog;
                 else
                     MessageBox.Show($"Not found any messages with date {goToTimestampDateTime.ToString(Settings.Instance.DataFormat)}");
+            }
+        }
+
+        /// <summary>
+        /// Выделить отдельным цветом сообщения от данного логгера
+        /// </summary>
+        /// <param name="obj"></param>
+        private void ToggleMark(object obj)
+        {
+            var node = obj as Node;
+            if (node != null)
+            {
+                SolidColorBrush currentColor;
+                if (node.ToggleMark.Color.ToString() != TRANSPARENT_COLOR)
+                    currentColor = new SolidColorBrush(Colors.Transparent); 
+                else
+                {
+                    // назначаем выделение
+                    Random rnd = new Random();
+                    Color randomColor = Color.FromRgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
+                    currentColor = new SolidColorBrush(randomColor);
+                }
+
+                node.ToggleMark = currentColor;
+                lock (logsLockObj)
+                {
+                    foreach (var logMessage in Logs.Where(x => x.FullPath.Contains(node.Logger)))
+                        logMessage.ToggleMark = currentColor;
+                    
+                    foreach (var logMessage in allLogs.Where(x => x.FullPath.Contains(node.Logger)))
+                        logMessage.ToggleMark = currentColor;
+                }
             }
         }
 
@@ -1731,7 +1766,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             node.IsChecked = false;
             exceptLoggers.Add(node.Logger);
-            lock(logsLockObj)
+            lock (logsLockObj)
                 Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(l => !exceptLoggers.Contains(l.FullPath)));
         }
 
@@ -1742,7 +1777,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             if (node.Logger == exceptLogger)
                 return;
-            
+
             node.IsChecked = false;
             if (node.Children.Any())
             {
@@ -1881,7 +1916,7 @@ namespace LogViewer.MVVM.ViewModels
                 UncheckAllLoggers(node);
                 DontReceiveThisLogger(node);
 
-                lock(logsLockObj)
+                lock (logsLockObj)
                     Logs = node.Logger == "Root" ? new AsyncObservableCollection<LogMessage>() : new AsyncObservableCollection<LogMessage>(allLogs.Where(x => !exceptLoggers.Contains(x.FullPath)));
 
                 showOnlyThisLoggers.Clear();
@@ -1938,6 +1973,9 @@ namespace LogViewer.MVVM.ViewModels
                 Loggers[0].Children.Add(rootNode);
                 root = rootNode;
             }
+
+            var currentNode = GetNodeFromMessage(log);
+            log.ToggleMark = currentNode.ToggleMark;
 
             if (availableLoggers.Contains(log.FullPath))
             {
@@ -2105,6 +2143,24 @@ namespace LogViewer.MVVM.ViewModels
 
         #endregion
 
+        /// <summary>
+        /// Ищет элемент дерева, к которому относится данное сообщение
+        /// </summary>
+        private Node GetNodeFromMessage(LogMessage message)
+        {
+            Node currentNode = Loggers[0].Children.FirstOrDefault(x => x.Text == message.Address);
+            Node foundNode = currentNode;
+            var nodes = message.Logger.Split('.').ToList();
+            foreach (var nodeName in nodes)
+            {
+                currentNode = currentNode.Children.FirstOrDefault(x => x.Text == nodeName);
+                if (currentNode == null)
+                    return foundNode;
+                foundNode = currentNode;
+            }
+            return foundNode;
+        }
+
         #endregion
 
         #region Остальные private методы
@@ -2174,6 +2230,9 @@ namespace LogViewer.MVVM.ViewModels
                             // а все кидаем в общий список
                             if (ClearSearchResultIsEnabled)
                             {
+                                var currentNode = GetNodeFromMessage(log);
+                                log.ToggleMark = currentNode.ToggleMark;
+
                                 lock (logsLockObj) allLogs.Add(log);
 
                                 if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)

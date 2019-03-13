@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Media;
 using LogViewer.Enums;
 using LogViewer.MVVM.ViewModels;
 
@@ -52,6 +53,18 @@ namespace LogViewer.MVVM.Models
         public int? ProcessID { get; set; }
 
         public Receiver Receiver { get; set; } = new Receiver();
+
+        private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
+
+        public SolidColorBrush ToggleMark
+        {
+            get => toggleMark;
+            set
+            {
+                toggleMark = value;
+                OnPropertyChanged();
+            }
+        }
 
         public object Clone()
         {

@@ -25,7 +25,7 @@
                     <CheckBox IsChecked="{Binding IsChecked}" Uid="{Binding Id}" Command="{Binding Path=DataContext.TreeViewElementCheckCommand, RelativeSource={RelativeSource AncestorType=Window}}" x:Name="TreeViewCheckBox"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" PreviewMouseLeftButtonDown="TreeViewCheckBox_OnPreviewMouseLeftButtonDown" PreviewKeyDown="TreeViewCheckBox_OnPreviewKeyDown">
                     </CheckBox>
-                    <TextBlock Text="{Binding Text}"/>
+                    <TextBlock Text="{Binding Text}" Background="{Binding ToggleMark}"/>
                     <StackPanel.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}">
                             <MenuItem Header="Collapse All" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
@@ -57,6 +57,12 @@
                             <MenuItem Header="Add current IP to Ignore List" ToolTip="Don't receive new messages from this IP address" Command="{Binding PlacementTarget.Tag.IgnoreThisIPCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource IgnoreIPStopImage}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+
+                            <MenuItem Header="Toggle Marking" ToolTip="Mark the messages of this logger in a different color" Command="{Binding PlacementTarget.Tag.ToggleMarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource MarkDrawingImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 

@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media;
 using LogViewer.Annotations;
 
 namespace LogViewer.MVVM.TreeView
@@ -99,6 +100,18 @@ namespace LogViewer.MVVM.TreeView
             set
             {
                 isVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
+
+        public SolidColorBrush ToggleMark
+        {
+            get => toggleMark;
+            set
+            {
+                toggleMark = value;
                 OnPropertyChanged();
             }
         }

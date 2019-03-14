@@ -22,10 +22,12 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class SelectTimeIntervalDialog : Window
     {
-        public DateTime SelectedDateFrom { get; set; } = DateTime.Now;
-        public DateTime SelectedTimeFrom { get; set; } = DateTime.Now;
-        public DateTime SelectedDateTo { get; set; } = DateTime.Now;
-        public DateTime SelectedTimeTo { get; set; } = DateTime.Now;
+        private DateTime selectedDateFrom = DateTime.Now;
+        private DateTime selectedTimeFrom = DateTime.Now;
+        private DateTime selectedDateTo = DateTime.Now;
+        private DateTime selectedTimeTo = DateTime.Now;
+        public DateTime DateTimeFrom => selectedDateFrom.Date + selectedTimeFrom.TimeOfDay;
+        public DateTime DateTimeTo => selectedDateTo.Date + selectedTimeTo.TimeOfDay;
 
         public SelectTimeIntervalDialog(DateTime? currentLogDateTime)
         {
@@ -33,28 +35,28 @@ namespace LogViewer.MVVM.Views
 
             if (currentLogDateTime.HasValue)
             {
-                SelectedDateFrom = currentLogDateTime.Value;
-                SelectedTimeFrom = currentLogDateTime.Value;
-                SelectedDateTo = currentLogDateTime.Value;
-                SelectedTimeTo = currentLogDateTime.Value;
+                selectedDateFrom = currentLogDateTime.Value;
+                selectedTimeFrom = currentLogDateTime.Value;
+                selectedDateTo = currentLogDateTime.Value;
+                selectedTimeTo = currentLogDateTime.Value;
             }
             else
             {
                 // обнуляем секунды и мс. для удобства работы с датой
-                if (SelectedTimeFrom.Second != 0)
-                    SelectedTimeFrom = SelectedTimeFrom.AddSeconds(-SelectedTimeFrom.Second);
-                if (SelectedTimeFrom.Millisecond != 0)
-                    SelectedTimeFrom = SelectedTimeFrom.AddMilliseconds(-SelectedTimeFrom.Millisecond);
-                if (SelectedTimeTo.Second != 0)
-                    SelectedTimeTo = SelectedTimeTo.AddSeconds(-SelectedTimeTo.Second);
-                if (SelectedTimeTo.Millisecond != 0)
-                    SelectedTimeTo = SelectedTimeTo.AddMilliseconds(-SelectedTimeTo.Millisecond);
+                if (selectedTimeFrom.Second != 0)
+                    selectedTimeFrom = selectedTimeFrom.AddSeconds(-selectedTimeFrom.Second);
+                if (selectedTimeFrom.Millisecond != 0)
+                    selectedTimeFrom = selectedTimeFrom.AddMilliseconds(-selectedTimeFrom.Millisecond);
+                if (selectedTimeTo.Second != 0)
+                    selectedTimeTo = selectedTimeTo.AddSeconds(-selectedTimeTo.Second);
+                if (selectedTimeTo.Millisecond != 0)
+                    selectedTimeTo = selectedTimeTo.AddMilliseconds(-selectedTimeTo.Millisecond);
             }
             
-            SelectedDateFromTB.Text = SelectedDateFrom.ToString("d");
-            SelectedTimeFromTB.Text = SelectedTimeFrom.ToString("HH:mm:ss.fff");
-            SelectedDateToTB.Text = SelectedDateTo.ToString("d");
-            SelectedTimeToTB.Text = SelectedTimeTo.ToString("HH:mm:ss.fff");
+            SelectedDateFromTB.Text = selectedDateFrom.ToString("d");
+            SelectedTimeFromTB.Text = selectedTimeFrom.ToString("HH:mm:ss.fff");
+            SelectedDateToTB.Text = selectedDateTo.ToString("d");
+            SelectedTimeToTB.Text = selectedTimeTo.ToString("HH:mm:ss.fff");
         }
 
         private void SelectedDateFromTB_OnTextChanged(object sender, TextChangedEventArgs e)
@@ -63,7 +65,7 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedDateFromTB.Text, out DateTime date))
             {
-                SelectedDateFrom = date;
+                selectedDateFrom = date;
             }
         }
 
@@ -73,7 +75,7 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedTimeFromTB.Text, out DateTime date))
             {
-                SelectedTimeFrom = date;
+                selectedTimeFrom = date;
             }
         }
 
@@ -83,7 +85,7 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedDateToTB.Text, out DateTime date))
             {
-                SelectedDateTo = date;
+                selectedDateTo = date;
             }
         }
 
@@ -93,14 +95,14 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedTimeToTB.Text, out DateTime date))
             {
-                SelectedTimeTo = date;
+                selectedTimeTo = date;
             }
         }
 
 
         public void CalendarFromDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            CalendarFrom.SelectedDate = SelectedDateFrom;
+            CalendarFrom.SelectedDate = selectedDateFrom;
         }
 
         public void CalendarFromDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
@@ -113,13 +115,13 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            SelectedDateFrom = CalendarFrom.SelectedDate.Value;
-            SelectedDateFromTB.Text = SelectedDateFrom.ToString("d");
+            selectedDateFrom = CalendarFrom.SelectedDate.Value;
+            SelectedDateFromTB.Text = selectedDateFrom.ToString("d");
         }
 
         public void CalendarToDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            CalendarTo.SelectedDate = SelectedDateTo;
+            CalendarTo.SelectedDate = selectedDateTo;
         }
 
         public void CalendarToDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
@@ -132,36 +134,36 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            SelectedDateTo = CalendarTo.SelectedDate.Value;
-            SelectedDateToTB.Text = SelectedDateTo.ToString("d");
+            selectedDateTo = CalendarTo.SelectedDate.Value;
+            SelectedDateToTB.Text = selectedDateTo.ToString("d");
         }
 
 
         public void ClockFromDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            ClockFrom.Time = SelectedTimeFrom;
+            ClockFrom.Time = selectedTimeFrom;
         }
 
         public void ClockFromDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
             if (Equals(eventArgs.Parameter, "1"))
             {
-                SelectedTimeFrom = ClockFrom.Time;
-                SelectedTimeFromTB.Text = SelectedTimeFrom.ToString("HH:mm:ss.fff");
+                selectedTimeFrom = ClockFrom.Time;
+                SelectedTimeFromTB.Text = selectedTimeFrom.ToString("HH:mm:ss.fff");
             }
         }
 
         public void ClockToDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            ClockTo.Time = SelectedTimeTo;
+            ClockTo.Time = selectedTimeTo;
         }
 
         public void ClockToDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
             if (Equals(eventArgs.Parameter, "1"))
             {
-                SelectedTimeTo = ClockTo.Time;
-                SelectedTimeToTB.Text = SelectedTimeTo.ToString("HH:mm:ss.fff");
+                selectedTimeTo = ClockTo.Time;
+                SelectedTimeToTB.Text = selectedTimeTo.ToString("HH:mm:ss.fff");
             }
         }
 

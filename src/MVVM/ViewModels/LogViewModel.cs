@@ -1697,8 +1697,7 @@ namespace LogViewer.MVVM.ViewModels
 
             if (selectTimestampDialog.DialogResult.HasValue && selectTimestampDialog.DialogResult.Value)
             {
-                goToTimestampDateTime = selectTimestampDialog.SelectedDate.Date + selectTimestampDialog.SelectedTime.TimeOfDay;
-
+                goToTimestampDateTime = selectTimestampDialog.PickedDateTime;
                 TimeSpan truncateValue = TimeSpan.FromMinutes(1);
 
                 if (goToTimestampDateTime.Second != 0)
@@ -1723,14 +1722,16 @@ namespace LogViewer.MVVM.ViewModels
             selectTimeIntervalDialog.ShowDialog();
             if (selectTimeIntervalDialog.DialogResult.HasValue && selectTimeIntervalDialog.DialogResult.Value)
             {
-                var dateFrom = selectTimeIntervalDialog.SelectedDateFrom.Date + selectTimeIntervalDialog.SelectedTimeFrom.TimeOfDay;
-                var dateTo = selectTimeIntervalDialog.SelectedDateTo.Date + selectTimeIntervalDialog.SelectedTimeTo.TimeOfDay;
-
+                fromTimeInverval = selectTimeIntervalDialog.DateTimeFrom;
+                toTimeInverval = selectTimeIntervalDialog.DateTimeTo;
+                
                 tempLogsList = allLogs;
 
                 lock (logsLockObj)
                 {
-                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Time >= dateFrom && x.Time <= dateTo));
+                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(
+                        x => x.Time >= fromTimeInverval &&
+                             x.Time <= toTimeInverval));
                     ClearSearchResultIsEnabled = true;
                 }
             }

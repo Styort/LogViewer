@@ -22,8 +22,9 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class SelectTimestampDialog : Window
     {
-        public DateTime SelectedDate { get; set; } = DateTime.Now;
-        public DateTime SelectedTime { get; set; } = DateTime.Now;
+        private DateTime selectedDate = DateTime.Now;
+        private DateTime selectedTime = DateTime.Now;
+        public DateTime PickedDateTime => selectedDate.Date + selectedTime.TimeOfDay;
 
         public SelectTimestampDialog(DateTime? currentLogDateTime)
         {
@@ -31,26 +32,26 @@ namespace LogViewer.MVVM.Views
 
             if (currentLogDateTime.HasValue)
             {
-                SelectedDate = currentLogDateTime.Value;
-                SelectedTime = currentLogDateTime.Value;
+                selectedDate = currentLogDateTime.Value;
+                selectedTime = currentLogDateTime.Value;
             }
             else
             {
                 // обнуляем секунды и мс. для удобства работы с датой
-                if (SelectedTime.Second != 0)
-                    SelectedTime = SelectedTime.AddSeconds(-SelectedTime.Second);
-                if (SelectedTime.Millisecond != 0)
-                    SelectedTime = SelectedTime.AddMilliseconds(-SelectedTime.Millisecond);
+                if (selectedTime.Second != 0)
+                    selectedTime = selectedTime.AddSeconds(-selectedTime.Second);
+                if (selectedTime.Millisecond != 0)
+                    selectedTime = selectedTime.AddMilliseconds(-selectedTime.Millisecond);
             }
             
-            SelectedDateTB.Text = SelectedDate.ToString("d");
-            SelectedTimeTB.Text = SelectedTime.ToString("HH:mm:ss.fff");
+            SelectedDateTB.Text = selectedDate.ToString("d");
+            SelectedTimeTB.Text = selectedTime.ToString("HH:mm:ss.fff");
         }
 
 
         public void CalendarDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            Calendar.SelectedDate = SelectedDate;
+            Calendar.SelectedDate = selectedDate;
         }
 
         public void CalendarDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
@@ -63,21 +64,21 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            SelectedDate = Calendar.SelectedDate.Value;
-            SelectedDateTB.Text = SelectedDate.ToString("d");
+            selectedDate = Calendar.SelectedDate.Value;
+            SelectedDateTB.Text = selectedDate.ToString("d");
         }
 
         public void ClockDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            Clock.Time = SelectedTime;
+            Clock.Time = selectedTime;
         }
 
         public void ClockDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
             if (Equals(eventArgs.Parameter, "1"))
             {
-                SelectedTime = Clock.Time;
-                SelectedTimeTB.Text = SelectedTime.ToString("HH:mm:ss.fff");
+                selectedTime = Clock.Time;
+                SelectedTimeTB.Text = selectedTime.ToString("HH:mm:ss.fff");
             }
         }
 
@@ -92,7 +93,7 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedTimeTB.Text, out DateTime date))
             {
-                SelectedTime = date;
+                selectedTime = date;
             }
         }
 
@@ -102,7 +103,7 @@ namespace LogViewer.MVVM.Views
                 return;
             if (DateTime.TryParse(SelectedDateTB.Text, out DateTime date))
             {
-                SelectedDate = date;
+                selectedDate = date;
             }
         }
     }

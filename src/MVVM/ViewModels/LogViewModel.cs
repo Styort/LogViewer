@@ -1967,8 +1967,7 @@ namespace LogViewer.MVVM.ViewModels
             if (!string.IsNullOrEmpty(executableName))
                 nodesStr.Add(executableName);
             nodesStr.AddRange(logger.Split('.'));
-
-
+            
             var parent = root;
             foreach (var node in nodesStr)
             {
@@ -2183,8 +2182,13 @@ namespace LogViewer.MVVM.ViewModels
         {
             Node currentNode = Loggers[0].Children.FirstOrDefault(x => x.Text == message.Address);
             Node foundNode = currentNode;
-            var nodes = message.Logger.Split('.').ToList();
-            foreach (var nodeName in nodes)
+
+            List<string> nodesStr = new List<string>();
+            if (!string.IsNullOrEmpty(message.ExecutableName))
+                nodesStr.Add(message.ExecutableName);
+            nodesStr.AddRange(message.Logger.Split('.'));
+
+            foreach (var nodeName in nodesStr)
             {
                 currentNode = currentNode.Children.FirstOrDefault(x => x.Text == nodeName);
                 if (currentNode == null)

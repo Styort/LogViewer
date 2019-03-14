@@ -66,6 +66,11 @@ namespace LogViewer.MVVM.Models
             }
         }
 
+        public LogMessage()
+        {
+            toggleMark.Freeze();
+        }
+
         public object Clone()
         {
             return new LogMessage

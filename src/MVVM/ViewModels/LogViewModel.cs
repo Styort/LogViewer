@@ -52,10 +52,6 @@ namespace LogViewer.MVVM.ViewModels
         // коллекция всех логов
         private AsyncObservableCollection<LogMessage> allLogs = new AsyncObservableCollection<LogMessage>();
 
-        // TODO: Проверить, нужна ли. Если можно заменить на allLogs - убрать.
-        // временная коллекция для осуществления поиска
-        private AsyncObservableCollection<LogMessage> tempLogsList = new AsyncObservableCollection<LogMessage>();
-
         private AsyncObservableCollection<LogMessage> logs = new AsyncObservableCollection<LogMessage>();
         private CancellationTokenSource cancellationToken;
         private bool startIsEnabled = true;
@@ -684,7 +680,6 @@ namespace LogViewer.MVVM.ViewModels
             previousMessages.Clear();
             currentWarnLoggers.Clear();
             currentErrorLoggers.Clear();
-            tempLogsList.Clear();
             importData.Clear();
             currentExceptLoggers.Clear();
             exceptLoggersWithBuffer.Clear();
@@ -737,14 +732,12 @@ namespace LogViewer.MVVM.ViewModels
 
                     bool isOpenInAnotherWinow = (bool)obj;
 
-                    ClearSearchResultIsEnabled = !isOpenInAnotherWinow || tempLogsList.Any();
-
-                    tempLogsList = allLogs;
-
-                    if (tempLogsList.Any())
+                    ClearSearchResultIsEnabled = !isOpenInAnotherWinow;
+                    
+                    if (allLogs.Any())
                     {
                         // осуществляем поиск всему списку логов
-                        IEnumerable<LogMessage> searchResult = tempLogsList.ToList();
+                        IEnumerable<LogMessage> searchResult = allLogs.ToList();
                         if (!IsMatchCase && IsMatchLogLevel)
                         {
                             searchResult = searchResult.Where(x => SelectedMinLogLevel.HasFlag(x.Level) &&
@@ -1658,11 +1651,10 @@ namespace LogViewer.MVVM.ViewModels
         private void ClearSearchResult()
         {
             ClearSearchResultIsEnabled = false;
+            isTimeIntervalProcess = false;
             SearchText = string.Empty;
-            if (!tempLogsList.Any()) return;
-            Logs = new AsyncObservableCollection<LogMessage>(tempLogsList.ToList()
+            Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
                 .Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath)));
-            tempLogsList = new AsyncObservableCollection<LogMessage>();
             SelectedLog = GetLastSelecterOrNearbyMessage();
         }
 
@@ -1713,6 +1705,8 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        private bool isTimeIntervalProcess = false;
+
         /// <summary>
         /// Установить интервал времени в пределах которого показывать логи
         /// </summary>
@@ -1725,14 +1719,13 @@ namespace LogViewer.MVVM.ViewModels
                 fromTimeInverval = selectTimeIntervalDialog.DateTimeFrom;
                 toTimeInverval = selectTimeIntervalDialog.DateTimeTo;
                 
-                tempLogsList = allLogs;
-
                 lock (logsLockObj)
                 {
                     Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(
                         x => x.Time >= fromTimeInverval &&
                              x.Time <= toTimeInverval));
                     ClearSearchResultIsEnabled = true;
+                    isTimeIntervalProcess = true;
                 }
             }
         }
@@ -2020,7 +2013,8 @@ namespace LogViewer.MVVM.ViewModels
             {
                 if (addLog)
                 {
-                    if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !ClearSearchResultIsEnabled)
+                    if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !ClearSearchResultIsEnabled
+                        && (!isTimeIntervalProcess || isTimeIntervalProcess && log.Time > fromTimeInverval && log.Time < toTimeInverval))
                     {
                         lock (logsLockObj) Logs.Add(log);
                     }
@@ -2269,13 +2263,20 @@ namespace LogViewer.MVVM.ViewModels
                             // а все кидаем в общий список
                             if (ClearSearchResultIsEnabled)
                             {
+                                lock (logsLockObj) allLogs.Add(log);
+
+                                if (isTimeIntervalProcess) 
+                                {
+                                    if(log.Time > fromTimeInverval && log.Time < toTimeInverval)
+                                        lock (logsLockObj) Logs.Add(log);
+                                    return;
+                                }
+
                                 if (toggledMarksCount > 0)
                                 {
                                     var currentNode = GetNodeFromMessage(log);
                                     log.ToggleMark = currentNode.ToggleMark;
                                 }
-
-                                lock (logsLockObj) allLogs.Add(log);
 
                                 if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
                                     && log.Message.ToUpper().Contains(currentSearch.ToUpper()))

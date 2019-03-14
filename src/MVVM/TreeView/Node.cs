@@ -16,6 +16,7 @@ namespace LogViewer.MVVM.TreeView
 
         public Node(Node parent, string txt)
         {
+            toggleMark.Freeze();
             this.Id = Guid.NewGuid().ToString();
             this.Parent = parent;
             this.Text = txt;

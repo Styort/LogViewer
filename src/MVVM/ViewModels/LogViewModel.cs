@@ -766,8 +766,12 @@ namespace LogViewer.MVVM.ViewModels
                             {
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    Views.SearchResult sr = new Views.SearchResult(logMessages);
+                                    SearchResult sr = new SearchResult(logMessages);
                                     sr.Show();
+                                    sr.ShowLogEvent += delegate(object sender, LogMessage message)
+                                    {
+                                        SelectedLog = message;
+                                    };
                                 });
                             }
                             else

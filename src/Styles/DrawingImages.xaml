@@ -320,6 +320,16 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="CurrentThemeSearchDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="F1 M30.239,30.239z M0,0z M20.194,3.46C15.581,-1.153 8.073,-1.153 3.46,3.46 -1.152,8.074 -1.152,15.581 3.46,20.195 7.568,24.302 13.966,24.742 18.576,21.535 18.673,21.994 18.895,22.432 19.252,22.789L25.97,29.507C26.949,30.484 28.531,30.484 29.505,29.507 30.483,28.529 30.483,26.947 29.505,25.972L22.787,19.252C22.432,18.898 21.993,18.675 21.534,18.578 24.743,13.967 24.303,7.57 20.194,3.46z M18.073,18.074C14.629,21.518 9.024,21.518 5.581,18.074 2.139,14.63 2.139,9.026 5.581,5.582 9.024,2.139 14.629,2.139 18.073,5.582 21.517,9.026 21.517,14.63 18.073,18.074z" />
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <DrawingImage x:Key="CleanSearchResultImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V400 H400 V0 H0 Z">

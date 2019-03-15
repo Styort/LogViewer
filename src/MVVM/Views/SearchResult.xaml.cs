@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
@@ -14,6 +15,8 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class SearchResult : Window
     {
+        public event EventHandler<LogMessage> ShowLogEvent;
+
         public SearchResult(List<LogMessage> searchResult)
         {
             InitializeComponent();
@@ -72,13 +75,22 @@ namespace LogViewer.MVVM.Views
 
         private void Sort(string sortBy, ListSortDirection direction)
         {
-            ICollectionView dataView =
-                CollectionViewSource.GetDefaultView(FoundResultListView.ItemsSource);
+            ICollectionView dataView = CollectionViewSource.GetDefaultView(FoundResultListView.ItemsSource);
 
             dataView.SortDescriptions.Clear();
             SortDescription sd = new SortDescription(sortBy, direction);
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
+        }
+
+        protected virtual void OnShowLogEvent(LogMessage e)
+        {
+            ShowLogEvent?.Invoke(this, e);
+        }
+
+        private void ShowMessageInMainWindowClick(object sender, RoutedEventArgs e)
+        {
+            OnShowLogEvent((LogMessage)FoundResultListView.SelectedItem);
         }
     }
 }

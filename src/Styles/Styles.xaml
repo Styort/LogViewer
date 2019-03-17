@@ -3,7 +3,8 @@
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
                     xmlns:converters="clr-namespace:LogViewer.Converters"
                     xmlns:helpers="clr-namespace:LogViewer.Helpers"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:localization="clr-namespace:LogViewer.Localization">
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="DrawingImages.xaml"/>
@@ -924,7 +925,7 @@
     <Style x:Key="RemoveIgnoreIpButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
         <Setter Property="Width" Value="100"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Content" Value="Remove"/>
+        <Setter Property="Content" Value="{localization:LocBinding Remove}"/>
         <Setter Property="Margin" Value="120,0,0,0"/>
         <Setter Property="Command" Value="{Binding Path=RemoveIgnoreIPCommand}"/>
 
@@ -938,7 +939,7 @@
     <Style x:Key="AddIgnoreIpButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
         <Setter Property="Width" Value="100"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Content" Value="Add"/>
+        <Setter Property="Content" Value="{localization:LocBinding Add}"/>
         <Setter Property="Margin" Value="0,0,120,0"/>
         <Setter Property="Command" Value="{Binding Path=AddIgnoreIPCommand}"/>
 
@@ -957,7 +958,7 @@
     </Style>
 
     <Style x:Key="SetDefaultButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Set Default"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding SetDefault}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="Margin" Value="10,0"/>
         <Setter Property="Width" Value="25"/>

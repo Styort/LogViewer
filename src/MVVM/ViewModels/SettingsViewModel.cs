@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
 using LogViewer.Helpers;
+using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
 using NLog;
 using LogViewer.MVVM.Models;
@@ -28,6 +30,7 @@ namespace LogViewer.MVVM.ViewModels
         private IgnoredIPAddress selectedIP;
         private string typedIP;
         private string selectedDataFormat;
+        private CultureInfo selectedLanguage;
         private int maxMessageBufferSize;
         private int deletedMessagesCount;
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
@@ -50,7 +53,7 @@ namespace LogViewer.MVVM.ViewModels
             get => ignoredIpAdresses;
             set
             {
-                ignoredIpAdresses = new AsyncObservableCollection<IgnoredIPAddress>(value.OrderBy(x=>x.IP));
+                ignoredIpAdresses = new AsyncObservableCollection<IgnoredIPAddress>(value.OrderBy(x => x.IP));
                 OnPropertyChanged();
             }
         }
@@ -229,6 +232,23 @@ namespace LogViewer.MVVM.ViewModels
             "HH:mm:ss.fff",
             "dd/MM/yyyy"
         };
+
+        public Dictionary<CultureInfo, string> Languages { get; set; } = new Dictionary<CultureInfo, string>
+        {
+            {new CultureInfo("en"), "English"},
+            {new CultureInfo("ru"), "Русский"},
+        };
+
+        public CultureInfo SelectedLanguage
+        {
+            get => selectedLanguage;
+            set
+            {
+                selectedLanguage = value;
+                TranslationSource.Instance.CurrentCulture = selectedLanguage;
+                OnPropertyChanged();
+            }
+        }
 
         public string SelectedDataFormat
         {

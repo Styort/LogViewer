@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using System.Windows;
 using System.Windows.Media;
 using LogViewer.Enums;
 using LogViewer.Helpers;
+using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;

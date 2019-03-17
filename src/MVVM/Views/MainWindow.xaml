@@ -8,6 +8,7 @@
         xmlns:helpers="clr-namespace:LogViewer.Helpers"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
         Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized">
     <Window.DataContext>
@@ -238,7 +239,7 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Message Details" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                        <TextBlock Text="{localization:LocBinding MessageDetails}" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
                         <TextBlock Grid.Column="1" Text="Logs count:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
                         <TextBlock Grid.Column="2" Text="{Binding Path=DataContext.Logs.Count, RelativeSource={RelativeSource AncestorType=Window}}" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>

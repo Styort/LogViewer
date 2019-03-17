@@ -109,6 +109,14 @@
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
+    <Compile Include="Localization\LanguageEventArgs.cs" />
+    <Compile Include="Localization\Locals.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Locals.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Localization\LocBinding.cs" />
+    <Compile Include="Localization\TranslationSource.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
     <Compile Include="MVVM\Views\LogImportTemplateDialog.xaml.cs">
       <DependentUpon>LogImportTemplateDialog.xaml</DependentUpon>
@@ -198,6 +206,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Localization\Locals.en.resx" />
+    <EmbeddedResource Include="Localization\Locals.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Locals.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

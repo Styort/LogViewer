@@ -102,7 +102,7 @@
                 <GroupBox FontSize="16" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <GroupBox.HeaderTemplate>
                         <DataTemplate>
-                            <TextBlock Text="List of eceivers" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                            <TextBlock Text="List of Receivers" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
                         </DataTemplate>
                     </GroupBox.HeaderTemplate>
                     <Grid>

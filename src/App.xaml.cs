@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Windows;
 using System.Xml.Serialization;
+using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using NLog;
 
@@ -52,9 +54,11 @@ namespace LogViewer
                         Settings.Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
                         Settings.Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
                         Settings.Instance.IsShowIpColumn = settings.IsShowIpColumn;
+                        Settings.Instance.Language = settings.Language;
                     }
 
                     Settings.Instance.ApplyTheme();
+                    Settings.Instance.ApplyLanguage(Settings.Instance.Language);
                 }
                 catch (Exception ex)
                 {

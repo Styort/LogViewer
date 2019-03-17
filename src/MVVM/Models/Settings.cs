@@ -1,6 +1,7 @@
 ﻿using NLog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
@@ -8,6 +9,7 @@ using System.Web;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using LogViewer.Localization;
 
 namespace LogViewer.MVVM.Models
 {
@@ -32,6 +34,7 @@ namespace LogViewer.MVVM.Models
         public int DeletedMessagesCount { get; set; } = 100000;
         public string DataFormat { get; set; } = "dd/MM/yyyy HH:mm:ss.fff";
         public string FontColor { get; set; } = "#FFFFFFFF";
+        public string Language { get; set; } = "en";
         public Theme CurrentTheme { get; set; } =  new Theme
         {
             Name = "Indigo",
@@ -66,6 +69,22 @@ namespace LogViewer.MVVM.Models
             {
                 logger.Warn(e, $"An error occurred while ApplyTheme. SelectedTheme - {CurrentTheme.Name}");
             }
+        }
+
+        /// <summary>
+        /// Применить язык по названию
+        /// </summary>
+        public void ApplyLanguage(string lang)
+        {
+            TranslationSource.Instance.CurrentCulture = new CultureInfo(lang);
+        }
+
+        /// <summary>
+        /// Применить язык по культуре
+        /// </summary>
+        public void ApplyLanguage(CultureInfo culture)
+        {
+            TranslationSource.Instance.CurrentCulture = culture;
         }
 
         /// <summary>

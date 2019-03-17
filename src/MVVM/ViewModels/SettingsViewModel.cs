@@ -245,7 +245,6 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 selectedLanguage = value;
-                TranslationSource.Instance.CurrentCulture = selectedLanguage;
                 OnPropertyChanged();
             }
         }
@@ -409,6 +408,7 @@ namespace LogViewer.MVVM.ViewModels
                 FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
                 SelectedFontColor = SelectedFontColor.FromARGB(Settings.Instance.FontColor);
                 IsShowIpColumn = Settings.Instance.IsShowIpColumn;
+                SelectedLanguage = TranslationSource.Instance.CurrentCulture;
 
                 var theme = Themes.FirstOrDefault(x => x.Name == Settings.Instance.CurrentTheme.Name);
                 if (theme != null)
@@ -506,11 +506,12 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.MaxMessageBufferSize = MaxMessageBufferSize;
             Settings.Instance.DeletedMessagesCount = DeletedMessagesCount;
             Settings.Instance.OnlyOneAppInstance = OnlyOneAppInstance;
+            Settings.Instance.Language = SelectedLanguage.Name;
 
             if (!string.IsNullOrEmpty(currentThemeName) && SelectedTheme.Name != currentThemeName)
-            {
                 Settings.Instance.ApplyTheme();
-            }
+            if(!Equals(TranslationSource.Instance.CurrentCulture, SelectedLanguage))
+                Settings.Instance.ApplyLanguage(SelectedLanguage);
 
             window.DialogResult = Settings.Instance.Save();
         }

@@ -42,7 +42,7 @@
                     </GroupBox.HeaderTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="265"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
@@ -70,7 +70,7 @@
                         <TextBlock Grid.Row="3" Text="{localization:LocBinding DisplayedDataFormat}" ToolTip="{localization:LocBinding DisplayedDataFormatToolTip}" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding Path=DataFormats}" SelectedItem="{Binding Path=SelectedDataFormat}" Width="210" HorizontalAlignment="Left" ToolTip="{Binding Path=ExampleDateTime}"/>
 
-                        <TextBlock Grid.Row="4" Text="{localization:LocBinding Theme}" ToolTip="Application theme" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="4" Text="{localization:LocBinding Theme}" ToolTip="{localization:LocBinding ApplicationTheme}" VerticalAlignment="Center"/>
                         <ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding Path=Themes}" SelectedItem="{Binding Path=SelectedTheme}" Width="210" HorizontalAlignment="Left">
                             <ComboBox.ItemTemplate>
                                 <DataTemplate>
@@ -272,7 +272,7 @@
                 </GroupBox>
             </TabItem>
         </TabControl>
-        <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="100" HorizontalAlignment="Right" Margin="0,0,120,0" Content="{localization:LocBinding Save}" Command="{Binding Path=SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-        <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="100" HorizontalAlignment="Right" Margin="120,0,5,0" Content="{localization:LocBinding Cancel}" Command="{Binding Path=CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="105" HorizontalAlignment="Right" Margin="0,0,120,0" Content="{localization:LocBinding Save}" Command="{Binding Path=SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
+        <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="105" HorizontalAlignment="Right" Margin="120,0,5,0" Content="{localization:LocBinding Cancel}" Command="{Binding Path=CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Grid>
 </Window>

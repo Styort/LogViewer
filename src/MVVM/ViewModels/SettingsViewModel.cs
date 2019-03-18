@@ -483,7 +483,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             if (Receivers.Count != Receivers.DistinctBy(x => x.Port).Count())
             {
-                MessageBox.Show("There are the same port numbers in the sources.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Locals.SettingsSaveErrorSamePortNumber, Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

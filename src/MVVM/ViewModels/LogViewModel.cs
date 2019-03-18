@@ -626,7 +626,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             if (!parsers.Any())
             {
-                MessageBox.Show("There are no receivers.\n Click \"Settings\" button to add new receivers.", "Info",
+                MessageBox.Show(Locals.NoReceiversMessageBoxInfo, Locals.Information,
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
@@ -777,7 +777,7 @@ namespace LogViewer.MVVM.ViewModels
                                 });
                             }
                             else
-                                MessageBox.Show("Nothing found");
+                                MessageBox.Show(Locals.NothingFoundMessageBoxInfo);
                         }
                         else
                         {
@@ -1571,7 +1571,7 @@ namespace LogViewer.MVVM.ViewModels
                                         catch (Exception e)
                                         {
                                             logger.Error(e, "An error occured while LogParse");
-                                            MessageBox.Show("Incorrect log message template!");
+                                            MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
                                             throw;
                                         }
                                         sb = new StringBuilder();
@@ -1707,7 +1707,7 @@ namespace LogViewer.MVVM.ViewModels
                 if (firstTimestampLog != null)
                     SelectedLog = firstTimestampLog;
                 else
-                    MessageBox.Show($"Not found any messages with date {goToTimestampDateTime.ToString(Settings.Instance.DataFormat)}");
+                    MessageBox.Show(string.Format(Locals.NotFoundAnyMessagesWithDateMessageBoxInfo, goToTimestampDateTime.ToString(Settings.Instance.DataFormat)));
             }
         }
 

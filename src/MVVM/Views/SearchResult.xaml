@@ -74,17 +74,19 @@
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="{localization:LocBinding Message, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Top" Margin="0,5,0,0"/>
-                <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Content="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5"/>
+                <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" ToolTip="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5">
+                    <Image Source="{StaticResource CopyDrawingImage}"/>
+                </Button>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
 
 
-                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10">
+                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,10,10,10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>

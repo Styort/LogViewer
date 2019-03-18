@@ -75,7 +75,7 @@ namespace LogViewer
                 else
                 {
                     logger.Trace("OnStartup: one instance of Log Viewer already started");
-                    MessageBox.Show("Only one instance of Log Viewer can be started.");
+                    MessageBox.Show(Locals.OnlyOneInstanceCanBeStartedMessageBoxText);
                     Environment.Exit(0);
                 }
             }

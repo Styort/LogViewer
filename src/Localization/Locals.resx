@@ -132,11 +132,14 @@
   <data name="AddTemplateItem" xml:space="preserve">
     <value>Добавить элемент шаблона</value>
   </data>
+  <data name="ApplicationTheme" xml:space="preserve">
+    <value>Цветовое оформление приложения</value>
+  </data>
   <data name="Author" xml:space="preserve">
     <value>Автор: </value>
   </data>
   <data name="AutoStartReadingLogsAtStartup" xml:space="preserve">
-    <value>Автоматически считывать логи при запуске:</value>
+    <value>Считывание логов при запуске:</value>
   </data>
   <data name="AutoStartReadingLogsAtStartupToolTip" xml:space="preserve">
     <value>Запускать считывание логов по UDP при запуске программы</value>
@@ -194,6 +197,13 @@
   </data>
   <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
     <value>Включить автоматический переход к последнему сообщению</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Ошибка</value>
+  </data>
+  <data name="ErrorToPortConnect" xml:space="preserve">
+    <value>Произошла ошибка при подключении к порту {0}.
+{1}"</value>
   </data>
   <data name="ExpandAll" xml:space="preserve">
     <value>Развернуть все</value>
@@ -267,11 +277,17 @@
   <data name="InAnotherWindowHotKeys" xml:space="preserve">
     <value>В отдельном окне (Ctrl+Shift+F)</value>
   </data>
+  <data name="IncorrectLogMessageTemplateMessageBoxInfo" xml:space="preserve">
+    <value>Некорректный шаблон сообщения!</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Информация</value>
+  </data>
   <data name="IPAddress" xml:space="preserve">
     <value>IP Адрес</value>
   </data>
   <data name="IsActive" xml:space="preserve">
-    <value>Активна</value>
+    <value>Активно/не активно</value>
   </data>
   <data name="Launguage" xml:space="preserve">
     <value>Язык:</value>
@@ -283,7 +299,7 @@
     <value>Уровень</value>
   </data>
   <data name="ListOfReceivers" xml:space="preserve">
-    <value>Список получателей</value>
+    <value>Список сетевых приёмников</value>
   </data>
   <data name="LogCount" xml:space="preserve">
     <value>Количество логов</value>
@@ -324,17 +340,33 @@
   <data name="MessageDetails" xml:space="preserve">
     <value>Подробности сообщения</value>
   </data>
+  <data name="MessageTemplateErrorSameParameters" xml:space="preserve">
+    <value>Шаблон сообщения не должен содержать одинаковых параметров!</value>
+  </data>
   <data name="MinimizeToTrayIcon" xml:space="preserve">
     <value>Сворачивать в трей:</value>
   </data>
   <data name="MinimizeToTrayIconToolTip" xml:space="preserve">
-    <value>Показывать иконку в трее, при сворачивании приложения</value>
+    <value>Показывать иконку в трее при сворачивании приложения</value>
+  </data>
+  <data name="NoReceiversMessageBoxInfo" xml:space="preserve">
+    <value>Не добавлено ни одного сетевого приёмника.
+Добавьте хотя бы один сетевой приёмник в настройках.</value>
+  </data>
+  <data name="NotFoundAnyMessagesWithDateMessageBoxInfo" xml:space="preserve">
+    <value>Не найдено ни одного сообщения с датой {0}</value>
+  </data>
+  <data name="NothingFoundMessageBoxInfo" xml:space="preserve">
+    <value>Ничего не найдено</value>
+  </data>
+  <data name="OnlyOneInstanceCanBeStartedMessageBoxText" xml:space="preserve">
+    <value>Может быть запущен только один экземпляр приложения LogViewer.</value>
   </data>
   <data name="OnlyOneInstanceOfApp" xml:space="preserve">
-    <value>Только один экземпляр приложения:</value>
+    <value>Один экземпляр приложения:</value>
   </data>
   <data name="OnlyOneInstanceOfAppToolTip" xml:space="preserve">
-    <value>Возмжность запуска только единственного экземпляра приложения</value>
+    <value>Возмжность запуска только одного экземпляра приложения</value>
   </data>
   <data name="OrCreateYourOwnTemplate" xml:space="preserve">
     <value>Создать свой собственный шаблон</value>
@@ -360,11 +392,14 @@
   <data name="Port" xml:space="preserve">
     <value>Порт</value>
   </data>
+  <data name="PortIsBusy" xml:space="preserve">
+    <value>Порт {0} занят!</value>
+  </data>
   <data name="ReceiverName" xml:space="preserve">
     <value>Название:</value>
   </data>
   <data name="Receivers" xml:space="preserve">
-    <value>Получатели</value>
+    <value>Приёмники</value>
   </data>
   <data name="Remove" xml:space="preserve">
     <value>Удалить</value>
@@ -398,6 +433,9 @@
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Настройки</value>
+  </data>
+  <data name="SettingsSaveErrorSamePortNumber" xml:space="preserve">
+    <value>В сетевых приёмниках есть приёмники с одинаковыми портами.</value>
   </data>
   <data name="ShowIPColumn" xml:space="preserve">
     <value>Показывать колонку IP:</value>

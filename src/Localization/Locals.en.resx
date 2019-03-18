@@ -163,7 +163,7 @@
     <value>IP Address</value>
   </data>
   <data name="ListOfReceivers" xml:space="preserve">
-    <value>List of Receivers</value>
+    <value>List of Network Receivers</value>
   </data>
   <data name="LogCount" xml:space="preserve">
     <value>Logs count</value>
@@ -294,6 +294,9 @@
   <data name="AddTemplateItem" xml:space="preserve">
     <value>Add Template Item</value>
   </data>
+  <data name="ApplicationTheme" xml:space="preserve">
+    <value>Application theme</value>
+  </data>
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
   </data>
@@ -317,6 +320,13 @@
   </data>
   <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
     <value>Enable Auto Scroll to Last Log Message</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorToPortConnect" xml:space="preserve">
+    <value>An error occurred while connect to port {0}.
+{1}"</value>
   </data>
   <data name="ExpandAll" xml:space="preserve">
     <value>Expand All</value>
@@ -369,6 +379,12 @@
   <data name="InAnotherWindowHotKeys" xml:space="preserve">
     <value>In another window (Ctrl+Shift+F)</value>
   </data>
+  <data name="IncorrectLogMessageTemplateMessageBoxInfo" xml:space="preserve">
+    <value>Incorrect log message template!</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
   <data name="Level" xml:space="preserve">
     <value>Level</value>
   </data>
@@ -389,6 +405,22 @@
   </data>
   <data name="MatchLogLevel" xml:space="preserve">
     <value>Match Log Level (Only for 'Find All')</value>
+  </data>
+  <data name="MessageTemplateErrorSameParameters" xml:space="preserve">
+    <value>The message template should not have the same parameters!</value>
+  </data>
+  <data name="NoReceiversMessageBoxInfo" xml:space="preserve">
+    <value>There are no network receivers.
+Click "Settings" button to add new receivers.</value>
+  </data>
+  <data name="NotFoundAnyMessagesWithDateMessageBoxInfo" xml:space="preserve">
+    <value>Not found any messages with date {0}</value>
+  </data>
+  <data name="NothingFoundMessageBoxInfo" xml:space="preserve">
+    <value>Nothing found</value>
+  </data>
+  <data name="OnlyOneInstanceCanBeStartedMessageBoxText" xml:space="preserve">
+    <value>Only one instance of Log Viewer can be started.</value>
   </data>
   <data name="OrCreateYourOwnTemplate" xml:space="preserve">
     <value>Or create your own template</value>
@@ -411,6 +443,9 @@
   <data name="PickTime" xml:space="preserve">
     <value>Pick Time</value>
   </data>
+  <data name="PortIsBusy" xml:space="preserve">
+    <value>Port {0} is busy!</value>
+  </data>
   <data name="RemoveTemplateItem" xml:space="preserve">
     <value>Remove Template Item</value>
   </data>
@@ -428,6 +463,9 @@
   </data>
   <data name="SetTimeInterval" xml:space="preserve">
     <value>Set Time Interval</value>
+  </data>
+  <data name="SettingsSaveErrorSamePortNumber" xml:space="preserve">
+    <value>There are the same port numbers in the sources.</value>
   </data>
   <data name="ShowOnlyThisLogger" xml:space="preserve">
     <value>Show Only this Logger</value>

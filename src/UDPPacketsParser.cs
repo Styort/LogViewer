@@ -8,6 +8,7 @@ using System.Windows;
 using System.Xml;
 using LogViewer.Enums;
 using LogViewer.Helpers;
+using LogViewer.Localization;
 using NLog;
 using LogViewer.MVVM.Models;
 
@@ -45,14 +46,14 @@ namespace LogViewer
             catch (SocketException socketException)
             {
                 logger.Warn(socketException, "An error occurred in UDPPacketsParser ctor.");
-                MessageBox.Show($"Port {Port} is busy!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(Locals.PortIsBusy, Port), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
                 IsInitialized = false;
                 return IsInitialized;
             }
             catch (Exception e)
             {
                 logger.Warn(e, "An error occured in UDPPacketsParser ctor.");
-                MessageBox.Show($"An error occurred while connect to port {Port} \n {e.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(string.Format(Locals.ErrorToPortConnect, Port, e.Message), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
                 IsInitialized = false;
                 return IsInitialized;
             }

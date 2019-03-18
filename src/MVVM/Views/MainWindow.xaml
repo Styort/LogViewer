@@ -259,7 +259,7 @@
 
                 <TextBlock Text="{localization:LocBinding Message, StringFormat={}{0}:}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
                 <Button Grid.Row="0" Grid.Column="0" Width="70" VerticalAlignment="Bottom" ToolTip="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5" Style="{StaticResource BaseButtonStyle}">
-                    <Image Source="{StaticResource CopyDrawingImage}"></Image>
+                    <Image Source="{StaticResource CopyDrawingImage}"/>
                 </Button>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>

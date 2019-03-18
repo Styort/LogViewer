@@ -106,6 +106,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Цветовое оформление приложения.
+        /// </summary>
+        internal static string ApplicationTheme {
+            get {
+                return ResourceManager.GetString("ApplicationTheme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Автор: .
         /// </summary>
         internal static string Author {
@@ -115,7 +124,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Автоматически считывать логи при запуске:.
+        ///   Looks up a localized string similar to Считывание логов при запуске:.
         /// </summary>
         internal static string AutoStartReadingLogsAtStartup {
             get {
@@ -291,6 +300,25 @@ namespace LogViewer.Localization {
         internal static string EnableAutoScrollToLastLogMessage {
             get {
                 return ResourceManager.GetString("EnableAutoScrollToLastLogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Произошла ошибка при подключении к порту {0}.
+        ///{1}&quot;.
+        /// </summary>
+        internal static string ErrorToPortConnect {
+            get {
+                return ResourceManager.GetString("ErrorToPortConnect", resourceCulture);
             }
         }
         
@@ -511,6 +539,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Некорректный шаблон сообщения!.
+        /// </summary>
+        internal static string IncorrectLogMessageTemplateMessageBoxInfo {
+            get {
+                return ResourceManager.GetString("IncorrectLogMessageTemplateMessageBoxInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Информация.
+        /// </summary>
+        internal static string Information {
+            get {
+                return ResourceManager.GetString("Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IP Адрес.
         /// </summary>
         internal static string IPAddress {
@@ -520,7 +566,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Активна.
+        ///   Looks up a localized string similar to Активно/не активно.
         /// </summary>
         internal static string IsActive {
             get {
@@ -556,7 +602,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Список получателей.
+        ///   Looks up a localized string similar to Список сетевых приёмников.
         /// </summary>
         internal static string ListOfReceivers {
             get {
@@ -682,6 +728,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Шаблон сообщения не должен содержать одинаковых параметров!.
+        /// </summary>
+        internal static string MessageTemplateErrorSameParameters {
+            get {
+                return ResourceManager.GetString("MessageTemplateErrorSameParameters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Сворачивать в трей:.
         /// </summary>
         internal static string MinimizeToTrayIcon {
@@ -691,7 +746,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Показывать иконку в трее, при сворачивании приложения.
+        ///   Looks up a localized string similar to Показывать иконку в трее при сворачивании приложения.
         /// </summary>
         internal static string MinimizeToTrayIconToolTip {
             get {
@@ -700,7 +755,44 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Только один экземпляр приложения:.
+        ///   Looks up a localized string similar to Не добавлено ни одного сетевого приёмника.
+        ///Добавьте хотя бы один сетевой приёмник в настройках..
+        /// </summary>
+        internal static string NoReceiversMessageBoxInfo {
+            get {
+                return ResourceManager.GetString("NoReceiversMessageBoxInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не найдено ни одного сообщения с датой {0}.
+        /// </summary>
+        internal static string NotFoundAnyMessagesWithDateMessageBoxInfo {
+            get {
+                return ResourceManager.GetString("NotFoundAnyMessagesWithDateMessageBoxInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ничего не найдено.
+        /// </summary>
+        internal static string NothingFoundMessageBoxInfo {
+            get {
+                return ResourceManager.GetString("NothingFoundMessageBoxInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Может быть запущен только один экземпляр приложения LogViewer..
+        /// </summary>
+        internal static string OnlyOneInstanceCanBeStartedMessageBoxText {
+            get {
+                return ResourceManager.GetString("OnlyOneInstanceCanBeStartedMessageBoxText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Один экземпляр приложения:.
         /// </summary>
         internal static string OnlyOneInstanceOfApp {
             get {
@@ -709,7 +801,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Возмжность запуска только единственного экземпляра приложения.
+        ///   Looks up a localized string similar to Возмжность запуска только одного экземпляра приложения.
         /// </summary>
         internal static string OnlyOneInstanceOfAppToolTip {
             get {
@@ -790,6 +882,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Порт {0} занят!.
+        /// </summary>
+        internal static string PortIsBusy {
+            get {
+                return ResourceManager.GetString("PortIsBusy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Название:.
         /// </summary>
         internal static string ReceiverName {
@@ -799,7 +900,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Получатели.
+        ///   Looks up a localized string similar to Приёмники.
         /// </summary>
         internal static string Receivers {
             get {
@@ -903,6 +1004,15 @@ namespace LogViewer.Localization {
         internal static string Settings {
             get {
                 return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В сетевых приёмниках есть приёмники с одинаковыми портами..
+        /// </summary>
+        internal static string SettingsSaveErrorSamePortNumber {
+            get {
+                return ResourceManager.GetString("SettingsSaveErrorSamePortNumber", resourceCulture);
             }
         }
         

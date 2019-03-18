@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using LogViewer.Enums;
+using LogViewer.Localization;
 using LogViewer.MVVM.ViewModels;
 
 namespace LogViewer.MVVM.Views
@@ -40,7 +41,7 @@ namespace LogViewer.MVVM.Views
                         catch (Exception exception)
                         {
                             TemplateParameterses.Clear();
-                            MessageBox.Show("The message template should not have the same parameters!");
+                            MessageBox.Show(Locals.MessageTemplateErrorSameParameters);
                             return;
                         }
                     }

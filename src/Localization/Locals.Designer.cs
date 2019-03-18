@@ -19,7 +19,7 @@ namespace LogViewer.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Locals {
@@ -61,11 +61,983 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to О программе.
+        /// </summary>
+        internal static string About {
+            get {
+                return ResourceManager.GetString("About", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить.
+        /// </summary>
+        internal static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить текущий IP в список игнорируемых.
+        /// </summary>
+        internal static string AddCurrentIPtoIgnoreList {
+            get {
+                return ResourceManager.GetString("AddCurrentIPtoIgnoreList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не получать новые сообщения от текущего IP адреса.
+        /// </summary>
+        internal static string AddCurrentIPtoIgnoreListToolTip {
+            get {
+                return ResourceManager.GetString("AddCurrentIPtoIgnoreListToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Добавить элемент шаблона.
+        /// </summary>
+        internal static string AddTemplateItem {
+            get {
+                return ResourceManager.GetString("AddTemplateItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Автор: .
+        /// </summary>
+        internal static string Author {
+            get {
+                return ResourceManager.GetString("Author", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Автоматически считывать логи при запуске:.
+        /// </summary>
+        internal static string AutoStartReadingLogsAtStartup {
+            get {
+                return ResourceManager.GetString("AutoStartReadingLogsAtStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Запускать считывание логов по UDP при запуске программы.
+        /// </summary>
+        internal static string AutoStartReadingLogsAtStartupToolTip {
+            get {
+                return ResourceManager.GetString("AutoStartReadingLogsAtStartupToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отмена.
+        /// </summary>
+        internal static string Cancel {
+            get {
+                return ResourceManager.GetString("Cancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить.
+        /// </summary>
+        internal static string Clear {
+            get {
+                return ResourceManager.GetString("Clear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить все.
+        /// </summary>
+        internal static string ClearAll {
+            get {
+                return ResourceManager.GetString("ClearAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить все сообщения (Ctr+R).
+        /// </summary>
+        internal static string ClearAllLogsToolTip {
+            get {
+                return ResourceManager.GetString("ClearAllLogsToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить результат поиска логгеров.
+        /// </summary>
+        internal static string ClearFindLoggersResultToolTip {
+            get {
+                return ResourceManager.GetString("ClearFindLoggersResultToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Очистить результат поиска (Shift+R).
+        /// </summary>
+        internal static string ClearSearchResultToolTip {
+            get {
+                return ResourceManager.GetString("ClearSearchResultToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Свернуть все.
+        /// </summary>
+        internal static string CollapseAll {
+            get {
+                return ResourceManager.GetString("CollapseAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Цвет.
+        /// </summary>
+        internal static string Color {
+            get {
+                return ResourceManager.GetString("Color", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Конфигурация.
+        /// </summary>
+        internal static string Configuration {
+            get {
+                return ResourceManager.GetString("Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Копировать.
+        /// </summary>
+        internal static string Copy {
+            get {
+                return ResourceManager.GetString("Copy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество удаляемых сообщений:.
+        /// </summary>
+        internal static string CountOfDeletedMessages {
+            get {
+                return ResourceManager.GetString("CountOfDeletedMessages", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество сообщений, которые будут удалены при переполнении буфера.
+        /// </summary>
+        internal static string CountOfDeletedMessagesToolTip {
+            get {
+                return ResourceManager.GetString("CountOfDeletedMessagesToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отображаемый формат даты:.
+        /// </summary>
+        internal static string DisplayedDataFormat {
+            get {
+                return ResourceManager.GetString("DisplayedDataFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отображаемый формат даты в основном списке.
+        /// </summary>
+        internal static string DisplayedDataFormatToolTip {
+            get {
+                return ResourceManager.GetString("DisplayedDataFormatToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не получать сообщения от выбранного логгера.
+        /// </summary>
+        internal static string DontReceiveThisLogger {
+            get {
+                return ResourceManager.GetString("DontReceiveThisLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не добавлять сообщения в буфер от выбранного логгера.
+        /// </summary>
+        internal static string DontReceiveThisLoggerToolTip {
+            get {
+                return ResourceManager.GetString("DontReceiveThisLoggerToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Скрыть сообщения от выбранного логгера.
+        /// </summary>
+        internal static string DontShowThisLogger {
+            get {
+                return ResourceManager.GetString("DontShowThisLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Включить автоматический переход к последнему сообщению.
+        /// </summary>
+        internal static string EnableAutoScrollToLastLogMessage {
+            get {
+                return ResourceManager.GetString("EnableAutoScrollToLastLogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Развернуть все.
+        /// </summary>
+        internal static string ExpandAll {
+            get {
+                return ResourceManager.GetString("ExpandAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Экспорт выбранного логгера в файл.
+        /// </summary>
+        internal static string ExportCurrentLoggerToFile {
+            get {
+                return ResourceManager.GetString("ExportCurrentLoggerToFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Экспорт логов в файл (Ctrl+S).
+        /// </summary>
+        internal static string ExportLogsToFileToolTip {
+            get {
+                return ResourceManager.GetString("ExportLogsToFileToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Считывание логов по UDP по шаблону log4j;.
+        /// </summary>
+        internal static string FeaturesStr1 {
+            get {
+                return ResourceManager.GetString("FeaturesStr1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Экспорт и импорт файлов лога;.
+        /// </summary>
+        internal static string FeaturesStr2 {
+            get {
+                return ResourceManager.GetString("FeaturesStr2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Сортировка и фильтрация считанных логов;.
+        /// </summary>
+        internal static string FeaturesStr3 {
+            get {
+                return ResourceManager.GetString("FeaturesStr3", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - и много других возможностей. (подробности см. в файле ReleaseNotes).
+        /// </summary>
+        internal static string FeaturesStr4 {
+            get {
+                return ResourceManager.GetString("FeaturesStr4", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Найти все (Ctrl+F).
+        /// </summary>
+        internal static string FindAllHotKeys {
+            get {
+                return ResourceManager.GetString("FindAllHotKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Найти в дереве.
+        /// </summary>
+        internal static string FindInTree {
+            get {
+                return ResourceManager.GetString("FindInTree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Найти логгеры.
+        /// </summary>
+        internal static string FindLoggersToolTip {
+            get {
+                return ResourceManager.GetString("FindLoggersToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Найти следующее сообщение (Shift+F).
+        /// </summary>
+        internal static string FindNextLogMessageToolTip {
+            get {
+                return ResourceManager.GetString("FindNextLogMessageToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Найти предыдущее сообщение (Shift+D).
+        /// </summary>
+        internal static string FindPreviousLogMessageToolTip {
+            get {
+                return ResourceManager.GetString("FindPreviousLogMessageToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество найденных логов:.
+        /// </summary>
+        internal static string FoundLogs {
+            get {
+                return ResourceManager.GetString("FoundLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Основное.
+        /// </summary>
+        internal static string General {
+            get {
+                return ResourceManager.GetString("General", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Основные настройки.
+        /// </summary>
+        internal static string GeneralSettings {
+            get {
+                return ResourceManager.GetString("GeneralSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к следующему Error-у.
+        /// </summary>
+        internal static string GoToNextError {
+            get {
+                return ResourceManager.GetString("GoToNextError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к следующему Warning-у.
+        /// </summary>
+        internal static string GoToNextWarning {
+            get {
+                return ResourceManager.GetString("GoToNextWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к текущему сообщению.
+        /// </summary>
+        internal static string GoToThisLogMessage {
+            get {
+                return ResourceManager.GetString("GoToThisLogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к текущему сообщению на главном окне программы.
+        /// </summary>
+        internal static string GoToThisLogMessageToolTip {
+            get {
+                return ResourceManager.GetString("GoToThisLogMessageToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к выбранному времени.
+        /// </summary>
+        internal static string GoToTimestamp {
+            get {
+                return ResourceManager.GetString("GoToTimestamp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Игнорируемые IP-Адреса.
+        /// </summary>
+        internal static string IgnoredIPAddresses {
+            get {
+                return ResourceManager.GetString("IgnoredIPAddresses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Игнор.
+        /// </summary>
+        internal static string IgnoredList {
+            get {
+                return ResourceManager.GetString("IgnoredList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Импорт логов из файла.
+        /// </summary>
+        internal static string ImportLogsToolTip {
+            get {
+                return ResourceManager.GetString("ImportLogsToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В отдельном окне (Ctrl+Shift+F).
+        /// </summary>
+        internal static string InAnotherWindowHotKeys {
+            get {
+                return ResourceManager.GetString("InAnotherWindowHotKeys", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP Адрес.
+        /// </summary>
+        internal static string IPAddress {
+            get {
+                return ResourceManager.GetString("IPAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Активна.
+        /// </summary>
+        internal static string IsActive {
+            get {
+                return ResourceManager.GetString("IsActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Язык:.
+        /// </summary>
+        internal static string Launguage {
+            get {
+                return ResourceManager.GetString("Launguage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Язык пользовательского интерфейса программы.
+        /// </summary>
+        internal static string LaunguageToolTip {
+            get {
+                return ResourceManager.GetString("LaunguageToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Уровень.
+        /// </summary>
+        internal static string Level {
+            get {
+                return ResourceManager.GetString("Level", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Список получателей.
+        /// </summary>
+        internal static string ListOfReceivers {
+            get {
+                return ResourceManager.GetString("ListOfReceivers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество логов.
+        /// </summary>
+        internal static string LogCount {
+            get {
+                return ResourceManager.GetString("LogCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логгер.
+        /// </summary>
+        internal static string Logger {
+            get {
+                return ResourceManager.GetString("Logger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логгеры.
+        /// </summary>
+        internal static string Loggers {
+            get {
+                return ResourceManager.GetString("Loggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Шаблон импорта.
+        /// </summary>
+        internal static string LogImportTemplate {
+            get {
+                return ResourceManager.GetString("LogImportTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Количество сообщений:.
+        /// </summary>
+        internal static string LogsCount {
+            get {
+                return ResourceManager.GetString("LogsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Возможности Log Viewer:.
+        /// </summary>
+        internal static string LogViewerFeatures {
+            get {
+                return ResourceManager.GetString("LogViewerFeatures", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LogViewer Результат поиска.
+        /// </summary>
+        internal static string LogViewerSearchResult {
+            get {
+                return ResourceManager.GetString("LogViewerSearchResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Учитывать регистр.
+        /// </summary>
+        internal static string MatchCase {
+            get {
+                return ResourceManager.GetString("MatchCase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Учитывать уровень лога (Только для &apos;Найти все&apos;).
+        /// </summary>
+        internal static string MatchLogLevel {
+            get {
+                return ResourceManager.GetString("MatchLogLevel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Максимальный размер буфера:.
+        /// </summary>
+        internal static string MaxMessageBufferSize {
+            get {
+                return ResourceManager.GetString("MaxMessageBufferSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Максимальное количество считанных логов.
+        /// </summary>
+        internal static string MaxMessageBufferSizeToolTip {
+            get {
+                return ResourceManager.GetString("MaxMessageBufferSizeToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сообщение.
+        /// </summary>
+        internal static string Message {
+            get {
+                return ResourceManager.GetString("Message", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Подробности сообщения.
         /// </summary>
         internal static string MessageDetails {
             get {
                 return ResourceManager.GetString("MessageDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сворачивать в трей:.
+        /// </summary>
+        internal static string MinimizeToTrayIcon {
+            get {
+                return ResourceManager.GetString("MinimizeToTrayIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать иконку в трее, при сворачивании приложения.
+        /// </summary>
+        internal static string MinimizeToTrayIconToolTip {
+            get {
+                return ResourceManager.GetString("MinimizeToTrayIconToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Только один экземпляр приложения:.
+        /// </summary>
+        internal static string OnlyOneInstanceOfApp {
+            get {
+                return ResourceManager.GetString("OnlyOneInstanceOfApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Возмжность запуска только единственного экземпляра приложения.
+        /// </summary>
+        internal static string OnlyOneInstanceOfAppToolTip {
+            get {
+                return ResourceManager.GetString("OnlyOneInstanceOfAppToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Создать свой собственный шаблон.
+        /// </summary>
+        internal static string OrCreateYourOwnTemplate {
+            get {
+                return ResourceManager.GetString("OrCreateYourOwnTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пауза.
+        /// </summary>
+        internal static string Pause {
+            get {
+                return ResourceManager.GetString("Pause", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выбрать дату.
+        /// </summary>
+        internal static string PickDate {
+            get {
+                return ResourceManager.GetString("PickDate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выберите дату и время.
+        /// </summary>
+        internal static string PickDateAndTime {
+            get {
+                return ResourceManager.GetString("PickDateAndTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выберите начальную дату и время.
+        /// </summary>
+        internal static string PickDateAndTimeFrom {
+            get {
+                return ResourceManager.GetString("PickDateAndTimeFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выберите конечную дату и время.
+        /// </summary>
+        internal static string PickDateAndTimeTo {
+            get {
+                return ResourceManager.GetString("PickDateAndTimeTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выбрать время.
+        /// </summary>
+        internal static string PickTime {
+            get {
+                return ResourceManager.GetString("PickTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Порт.
+        /// </summary>
+        internal static string Port {
+            get {
+                return ResourceManager.GetString("Port", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Название:.
+        /// </summary>
+        internal static string ReceiverName {
+            get {
+                return ResourceManager.GetString("ReceiverName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Получатели.
+        /// </summary>
+        internal static string Receivers {
+            get {
+                return ResourceManager.GetString("Receivers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить.
+        /// </summary>
+        internal static string Remove {
+            get {
+                return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить элемент шаблона.
+        /// </summary>
+        internal static string RemoveTemplateItem {
+            get {
+                return ResourceManager.GetString("RemoveTemplateItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сохранить.
+        /// </summary>
+        internal static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к первому сообщению.
+        /// </summary>
+        internal static string ScrollToFirstLogMessage {
+            get {
+                return ResourceManager.GetString("ScrollToFirstLogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Перейти к последнему сообщению.
+        /// </summary>
+        internal static string ScrollToLastLogMessage {
+            get {
+                return ResourceManager.GetString("ScrollToLastLogMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поиск.
+        /// </summary>
+        internal static string Search {
+            get {
+                return ResourceManager.GetString("Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выбрать из существующих шаблонов.
+        /// </summary>
+        internal static string SelectFromExistingTemplates {
+            get {
+                return ResourceManager.GetString("SelectFromExistingTemplates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Выбор интервала времени.
+        /// </summary>
+        internal static string SelectTimeInterval {
+            get {
+                return ResourceManager.GetString("SelectTimeInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to По умолчанию.
+        /// </summary>
+        internal static string SetDefault {
+            get {
+                return ResourceManager.GetString("SetDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Установить интервал времени.
+        /// </summary>
+        internal static string SetTimeInterval {
+            get {
+                return ResourceManager.GetString("SetTimeInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Настройки.
+        /// </summary>
+        internal static string Settings {
+            get {
+                return ResourceManager.GetString("Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку IP:.
+        /// </summary>
+        internal static string ShowIPColumn {
+            get {
+                return ResourceManager.GetString("ShowIPColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку IP-Адреса в списке считанных логов.
+        /// </summary>
+        internal static string ShowIPColumnToolTip {
+            get {
+                return ResourceManager.GetString("ShowIPColumnToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать сообщения только от выбранного логгера.
+        /// </summary>
+        internal static string ShowOnlyThisLogger {
+            get {
+                return ResourceManager.GetString("ShowOnlyThisLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Синёв Виктор.
+        /// </summary>
+        internal static string SinevViktor {
+            get {
+                return ResourceManager.GetString("SinevViktor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to удалить.
+        /// </summary>
+        internal static string small_remove {
+            get {
+                return ResourceManager.GetString("small_remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Запуск.
+        /// </summary>
+        internal static string Start {
+            get {
+                return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тема:.
+        /// </summary>
+        internal static string Theme {
+            get {
+                return ResourceManager.GetString("Theme", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Цвет шрифта:.
+        /// </summary>
+        internal static string ThemeFontColor {
+            get {
+                return ResourceManager.GetString("ThemeFontColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Цвет шрифта.
+        /// </summary>
+        internal static string ThemeFontColorToolTip {
+            get {
+                return ResourceManager.GetString("ThemeFontColorToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поток.
+        /// </summary>
+        internal static string Thread {
+            get {
+                return ResourceManager.GetString("Thread", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Время.
+        /// </summary>
+        internal static string Time {
+            get {
+                return ResourceManager.GetString("Time", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пометить логгер.
+        /// </summary>
+        internal static string ToggleMarking {
+            get {
+                return ResourceManager.GetString("ToggleMarking", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пометить сообщения от выбранного логгера другим цветом.
+        /// </summary>
+        internal static string ToggleMarkingToolTip {
+            get {
+                return ResourceManager.GetString("ToggleMarkingToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Номер порта:.
+        /// </summary>
+        internal static string UDPPortNumber {
+            get {
+                return ResourceManager.GetString("UDPPortNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Версия: .
+        /// </summary>
+        internal static string Version {
+            get {
+                return ResourceManager.GetString("Version", resourceCulture);
             }
         }
     }

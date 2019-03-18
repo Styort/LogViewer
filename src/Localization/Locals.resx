@@ -117,7 +117,331 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="About" xml:space="preserve">
+    <value>О программе</value>
+  </data>
+  <data name="Add" xml:space="preserve">
+    <value>Добавить</value>
+  </data>
+  <data name="AddCurrentIPtoIgnoreList" xml:space="preserve">
+    <value>Добавить текущий IP в список игнорируемых</value>
+  </data>
+  <data name="AddCurrentIPtoIgnoreListToolTip" xml:space="preserve">
+    <value>Не получать новые сообщения от текущего IP адреса</value>
+  </data>
+  <data name="AddTemplateItem" xml:space="preserve">
+    <value>Добавить элемент шаблона</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Автор: </value>
+  </data>
+  <data name="AutoStartReadingLogsAtStartup" xml:space="preserve">
+    <value>Автоматически считывать логи при запуске:</value>
+  </data>
+  <data name="AutoStartReadingLogsAtStartupToolTip" xml:space="preserve">
+    <value>Запускать считывание логов по UDP при запуске программы</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Отмена</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
+  <data name="ClearAll" xml:space="preserve">
+    <value>Очистить все</value>
+  </data>
+  <data name="ClearAllLogsToolTip" xml:space="preserve">
+    <value>Очистить все сообщения (Ctr+R)</value>
+  </data>
+  <data name="ClearFindLoggersResultToolTip" xml:space="preserve">
+    <value>Очистить результат поиска логгеров</value>
+  </data>
+  <data name="ClearSearchResultToolTip" xml:space="preserve">
+    <value>Очистить результат поиска (Shift+R)</value>
+  </data>
+  <data name="CollapseAll" xml:space="preserve">
+    <value>Свернуть все</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Цвет</value>
+  </data>
+  <data name="Configuration" xml:space="preserve">
+    <value>Конфигурация</value>
+  </data>
+  <data name="Copy" xml:space="preserve">
+    <value>Копировать</value>
+  </data>
+  <data name="CountOfDeletedMessages" xml:space="preserve">
+    <value>Количество удаляемых сообщений:</value>
+  </data>
+  <data name="CountOfDeletedMessagesToolTip" xml:space="preserve">
+    <value>Количество сообщений, которые будут удалены при переполнении буфера</value>
+  </data>
+  <data name="DisplayedDataFormat" xml:space="preserve">
+    <value>Отображаемый формат даты:</value>
+  </data>
+  <data name="DisplayedDataFormatToolTip" xml:space="preserve">
+    <value>Отображаемый формат даты в основном списке</value>
+  </data>
+  <data name="DontReceiveThisLogger" xml:space="preserve">
+    <value>Не получать сообщения от выбранного логгера</value>
+  </data>
+  <data name="DontReceiveThisLoggerToolTip" xml:space="preserve">
+    <value>Не добавлять сообщения в буфер от выбранного логгера</value>
+  </data>
+  <data name="DontShowThisLogger" xml:space="preserve">
+    <value>Скрыть сообщения от выбранного логгера</value>
+  </data>
+  <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
+    <value>Включить автоматический переход к последнему сообщению</value>
+  </data>
+  <data name="ExpandAll" xml:space="preserve">
+    <value>Развернуть все</value>
+  </data>
+  <data name="ExportCurrentLoggerToFile" xml:space="preserve">
+    <value>Экспорт выбранного логгера в файл</value>
+  </data>
+  <data name="ExportLogsToFileToolTip" xml:space="preserve">
+    <value>Экспорт логов в файл (Ctrl+S)</value>
+  </data>
+  <data name="FeaturesStr1" xml:space="preserve">
+    <value>- Считывание логов по UDP по шаблону log4j;</value>
+  </data>
+  <data name="FeaturesStr2" xml:space="preserve">
+    <value>- Экспорт и импорт файлов лога;</value>
+  </data>
+  <data name="FeaturesStr3" xml:space="preserve">
+    <value>- Сортировка и фильтрация считанных логов;</value>
+  </data>
+  <data name="FeaturesStr4" xml:space="preserve">
+    <value>- и много других возможностей. (подробности см. в файле ReleaseNotes)</value>
+  </data>
+  <data name="FindAllHotKeys" xml:space="preserve">
+    <value>Найти все (Ctrl+F)</value>
+  </data>
+  <data name="FindInTree" xml:space="preserve">
+    <value>Найти в дереве</value>
+  </data>
+  <data name="FindLoggersToolTip" xml:space="preserve">
+    <value>Найти логгеры</value>
+  </data>
+  <data name="FindNextLogMessageToolTip" xml:space="preserve">
+    <value>Найти следующее сообщение (Shift+F)</value>
+  </data>
+  <data name="FindPreviousLogMessageToolTip" xml:space="preserve">
+    <value>Найти предыдущее сообщение (Shift+D)</value>
+  </data>
+  <data name="FoundLogs" xml:space="preserve">
+    <value>Количество найденных логов:</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Основное</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>Основные настройки</value>
+  </data>
+  <data name="GoToNextError" xml:space="preserve">
+    <value>Перейти к следующему Error-у</value>
+  </data>
+  <data name="GoToNextWarning" xml:space="preserve">
+    <value>Перейти к следующему Warning-у</value>
+  </data>
+  <data name="GoToThisLogMessage" xml:space="preserve">
+    <value>Перейти к текущему сообщению</value>
+  </data>
+  <data name="GoToThisLogMessageToolTip" xml:space="preserve">
+    <value>Перейти к текущему сообщению на главном окне программы</value>
+  </data>
+  <data name="GoToTimestamp" xml:space="preserve">
+    <value>Перейти к выбранному времени</value>
+  </data>
+  <data name="IgnoredIPAddresses" xml:space="preserve">
+    <value>Игнорируемые IP-Адреса</value>
+  </data>
+  <data name="IgnoredList" xml:space="preserve">
+    <value>Игнор</value>
+  </data>
+  <data name="ImportLogsToolTip" xml:space="preserve">
+    <value>Импорт логов из файла</value>
+  </data>
+  <data name="InAnotherWindowHotKeys" xml:space="preserve">
+    <value>В отдельном окне (Ctrl+Shift+F)</value>
+  </data>
+  <data name="IPAddress" xml:space="preserve">
+    <value>IP Адрес</value>
+  </data>
+  <data name="IsActive" xml:space="preserve">
+    <value>Активна</value>
+  </data>
+  <data name="Launguage" xml:space="preserve">
+    <value>Язык:</value>
+  </data>
+  <data name="LaunguageToolTip" xml:space="preserve">
+    <value>Язык пользовательского интерфейса программы</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Уровень</value>
+  </data>
+  <data name="ListOfReceivers" xml:space="preserve">
+    <value>Список получателей</value>
+  </data>
+  <data name="LogCount" xml:space="preserve">
+    <value>Количество логов</value>
+  </data>
+  <data name="Logger" xml:space="preserve">
+    <value>Логгер</value>
+  </data>
+  <data name="Loggers" xml:space="preserve">
+    <value>Логгеры</value>
+  </data>
+  <data name="LogImportTemplate" xml:space="preserve">
+    <value>Шаблон импорта</value>
+  </data>
+  <data name="LogsCount" xml:space="preserve">
+    <value>Количество сообщений:</value>
+  </data>
+  <data name="LogViewerFeatures" xml:space="preserve">
+    <value>Возможности Log Viewer:</value>
+  </data>
+  <data name="LogViewerSearchResult" xml:space="preserve">
+    <value>LogViewer Результат поиска</value>
+  </data>
+  <data name="MatchCase" xml:space="preserve">
+    <value>Учитывать регистр</value>
+  </data>
+  <data name="MatchLogLevel" xml:space="preserve">
+    <value>Учитывать уровень лога (Только для 'Найти все')</value>
+  </data>
+  <data name="MaxMessageBufferSize" xml:space="preserve">
+    <value>Максимальный размер буфера:</value>
+  </data>
+  <data name="MaxMessageBufferSizeToolTip" xml:space="preserve">
+    <value>Максимальное количество считанных логов</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Сообщение</value>
+  </data>
   <data name="MessageDetails" xml:space="preserve">
     <value>Подробности сообщения</value>
+  </data>
+  <data name="MinimizeToTrayIcon" xml:space="preserve">
+    <value>Сворачивать в трей:</value>
+  </data>
+  <data name="MinimizeToTrayIconToolTip" xml:space="preserve">
+    <value>Показывать иконку в трее, при сворачивании приложения</value>
+  </data>
+  <data name="OnlyOneInstanceOfApp" xml:space="preserve">
+    <value>Только один экземпляр приложения:</value>
+  </data>
+  <data name="OnlyOneInstanceOfAppToolTip" xml:space="preserve">
+    <value>Возмжность запуска только единственного экземпляра приложения</value>
+  </data>
+  <data name="OrCreateYourOwnTemplate" xml:space="preserve">
+    <value>Создать свой собственный шаблон</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Пауза</value>
+  </data>
+  <data name="PickDate" xml:space="preserve">
+    <value>Выбрать дату</value>
+  </data>
+  <data name="PickDateAndTime" xml:space="preserve">
+    <value>Выберите дату и время</value>
+  </data>
+  <data name="PickDateAndTimeFrom" xml:space="preserve">
+    <value>Выберите начальную дату и время</value>
+  </data>
+  <data name="PickDateAndTimeTo" xml:space="preserve">
+    <value>Выберите конечную дату и время</value>
+  </data>
+  <data name="PickTime" xml:space="preserve">
+    <value>Выбрать время</value>
+  </data>
+  <data name="Port" xml:space="preserve">
+    <value>Порт</value>
+  </data>
+  <data name="ReceiverName" xml:space="preserve">
+    <value>Название:</value>
+  </data>
+  <data name="Receivers" xml:space="preserve">
+    <value>Получатели</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="RemoveTemplateItem" xml:space="preserve">
+    <value>Удалить элемент шаблона</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="ScrollToFirstLogMessage" xml:space="preserve">
+    <value>Перейти к первому сообщению</value>
+  </data>
+  <data name="ScrollToLastLogMessage" xml:space="preserve">
+    <value>Перейти к последнему сообщению</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Поиск</value>
+  </data>
+  <data name="SelectFromExistingTemplates" xml:space="preserve">
+    <value>Выбрать из существующих шаблонов</value>
+  </data>
+  <data name="SelectTimeInterval" xml:space="preserve">
+    <value>Выбор интервала времени</value>
+  </data>
+  <data name="SetDefault" xml:space="preserve">
+    <value>По умолчанию</value>
+  </data>
+  <data name="SetTimeInterval" xml:space="preserve">
+    <value>Установить интервал времени</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Настройки</value>
+  </data>
+  <data name="ShowIPColumn" xml:space="preserve">
+    <value>Показывать колонку IP:</value>
+  </data>
+  <data name="ShowIPColumnToolTip" xml:space="preserve">
+    <value>Показывать колонку IP-Адреса в списке считанных логов</value>
+  </data>
+  <data name="ShowOnlyThisLogger" xml:space="preserve">
+    <value>Показывать сообщения только от выбранного логгера</value>
+  </data>
+  <data name="SinevViktor" xml:space="preserve">
+    <value>Синёв Виктор</value>
+  </data>
+  <data name="small_remove" xml:space="preserve">
+    <value>удалить</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Запуск</value>
+  </data>
+  <data name="Theme" xml:space="preserve">
+    <value>Тема:</value>
+  </data>
+  <data name="ThemeFontColor" xml:space="preserve">
+    <value>Цвет шрифта:</value>
+  </data>
+  <data name="ThemeFontColorToolTip" xml:space="preserve">
+    <value>Цвет шрифта</value>
+  </data>
+  <data name="Thread" xml:space="preserve">
+    <value>Поток</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Время</value>
+  </data>
+  <data name="ToggleMarking" xml:space="preserve">
+    <value>Пометить логгер</value>
+  </data>
+  <data name="ToggleMarkingToolTip" xml:space="preserve">
+    <value>Пометить сообщения от выбранного логгера другим цветом</value>
+  </data>
+  <data name="UDPPortNumber" xml:space="preserve">
+    <value>Номер порта:</value>
+  </data>
+  <data name="Version" xml:space="preserve">
+    <value>Версия: </value>
   </data>
 </root>

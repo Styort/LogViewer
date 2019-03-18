@@ -129,7 +129,7 @@
   <data name="Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
-  <data name="Clear All" xml:space="preserve">
+  <data name="ClearAll" xml:space="preserve">
     <value>Clear All</value>
   </data>
   <data name="CollapseAll" xml:space="preserve">
@@ -297,8 +297,14 @@
   <data name="Clear" xml:space="preserve">
     <value>Clear</value>
   </data>
+  <data name="ClearAllLogsToolTip" xml:space="preserve">
+    <value>Clear all logs (Ctr+R)</value>
+  </data>
   <data name="ClearFindLoggersResultToolTip" xml:space="preserve">
     <value>Clear search loggers result</value>
+  </data>
+  <data name="ClearSearchResultToolTip" xml:space="preserve">
+    <value>Clear search result (Shift+R)</value>
   </data>
   <data name="DontReceiveThisLogger" xml:space="preserve">
     <value>Don't Receive this Logger</value>
@@ -306,23 +312,62 @@
   <data name="DontReceiveThisLoggerToolTip" xml:space="preserve">
     <value>Don't add new messsages to buffer from this Logger</value>
   </data>
+  <data name="DontShowThisLogger" xml:space="preserve">
+    <value>Hide Messages from this Logger</value>
+  </data>
+  <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
+    <value>Enable Auto Scroll to Last Log Message</value>
+  </data>
   <data name="ExpandAll" xml:space="preserve">
     <value>Expand All</value>
   </data>
   <data name="ExportCurrentLoggerToFile" xml:space="preserve">
     <value>Export Current Logger to File</value>
   </data>
+  <data name="ExportLogsToFileToolTip" xml:space="preserve">
+    <value>Export all logs to file (Ctrl+S)</value>
+  </data>
+  <data name="FindAllHotKeys" xml:space="preserve">
+    <value>Find All (Ctrl+F)</value>
+  </data>
+  <data name="FindInTree" xml:space="preserve">
+    <value>Find in tree</value>
+  </data>
   <data name="FindLoggersToolTip" xml:space="preserve">
     <value>Find Loggers</value>
   </data>
+  <data name="FindNextLogMessageToolTip" xml:space="preserve">
+    <value>Find next log message (Shift+F)</value>
+  </data>
+  <data name="FindPreviousLogMessageToolTip" xml:space="preserve">
+    <value>Find previous log message (Shift+D)</value>
+  </data>
   <data name="FoundLogs" xml:space="preserve">
     <value>Fount Logs:</value>
+  </data>
+  <data name="GeneralSettings" xml:space="preserve">
+    <value>General Settings</value>
+  </data>
+  <data name="GoToNextError" xml:space="preserve">
+    <value>Go to Next Error</value>
+  </data>
+  <data name="GoToNextWarning" xml:space="preserve">
+    <value>Go to Next Warning</value>
   </data>
   <data name="GoToThisLogMessage" xml:space="preserve">
     <value>Go to this log message</value>
   </data>
   <data name="GoToThisLogMessageToolTip" xml:space="preserve">
     <value>Go to this log message in main Log Viewer window</value>
+  </data>
+  <data name="GoToTimestamp" xml:space="preserve">
+    <value>Go to Timestamp</value>
+  </data>
+  <data name="ImportLogsToolTip" xml:space="preserve">
+    <value>Import logs from file</value>
+  </data>
+  <data name="InAnotherWindowHotKeys" xml:space="preserve">
+    <value>In another window (Ctrl+Shift+F)</value>
   </data>
   <data name="Level" xml:space="preserve">
     <value>Level</value>
@@ -339,8 +384,23 @@
   <data name="LogViewerSearchResult" xml:space="preserve">
     <value>LogViewer Search Result</value>
   </data>
+  <data name="MatchCase" xml:space="preserve">
+    <value>Match Case</value>
+  </data>
+  <data name="MatchLogLevel" xml:space="preserve">
+    <value>Match Log Level (Only for 'Find All')</value>
+  </data>
   <data name="OrCreateYourOwnTemplate" xml:space="preserve">
     <value>Or create your own template</value>
+  </data>
+  <data name="Pause" xml:space="preserve">
+    <value>Pause</value>
+  </data>
+  <data name="PickDate" xml:space="preserve">
+    <value>Pick Date</value>
+  </data>
+  <data name="PickDateAndTime" xml:space="preserve">
+    <value>Pick Date and Time</value>
   </data>
   <data name="PickDateAndTimeFrom" xml:space="preserve">
     <value>Pick Date and Time From</value>
@@ -348,8 +408,17 @@
   <data name="PickDateAndTimeTo" xml:space="preserve">
     <value>Pick Date and Time To</value>
   </data>
+  <data name="PickTime" xml:space="preserve">
+    <value>Pick Time</value>
+  </data>
   <data name="RemoveTemplateItem" xml:space="preserve">
     <value>Remove Template Item</value>
+  </data>
+  <data name="ScrollToFirstLogMessage" xml:space="preserve">
+    <value>Scroll to First Log Message</value>
+  </data>
+  <data name="ScrollToLastLogMessage" xml:space="preserve">
+    <value>Scroll to Last Log Message</value>
   </data>
   <data name="SelectFromExistingTemplates" xml:space="preserve">
     <value>Select from existing templates</value>
@@ -357,11 +426,17 @@
   <data name="SelectTimeInterval" xml:space="preserve">
     <value>Select Time Interval</value>
   </data>
+  <data name="SetTimeInterval" xml:space="preserve">
+    <value>Set Time Interval</value>
+  </data>
   <data name="ShowOnlyThisLogger" xml:space="preserve">
     <value>Show Only this Logger</value>
   </data>
   <data name="small_remove" xml:space="preserve">
     <value>remove</value>
+  </data>
+  <data name="Start" xml:space="preserve">
+    <value>Start</value>
   </data>
   <data name="ToggleMarking" xml:space="preserve">
     <value>Toggle Marking</value>

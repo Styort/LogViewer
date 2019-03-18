@@ -21,7 +21,7 @@
         <Style.Resources>
             <VisualBrush x:Key="CueBannerBrush" AlignmentX="Left" AlignmentY="Center" Stretch="None">
                 <VisualBrush.Visual>
-                    <Label Padding="5,0,0,0" Content="Search..." Foreground="LightGray" />
+                    <Label Padding="5,0,0,0" Content="{localization:LocBinding Search, StringFormat={}{0}...}" Foreground="LightGray" />
                 </VisualBrush.Visual>
             </VisualBrush>
         </Style.Resources>
@@ -84,7 +84,7 @@
 
     <Style x:Key="StartButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-        <Setter Property="ToolTip" Value="Start"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding Start}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -123,7 +123,7 @@
 
     <Style x:Key="PauseButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-        <Setter Property="ToolTip" Value="Pause"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding Pause}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -161,7 +161,7 @@
     </Style>
 
     <Style x:Key="SettingsButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Settings"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding Settings}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
 
         <Setter Property="Template">
@@ -187,7 +187,7 @@
     </Style>
 
     <Style x:Key="ScrollToTop" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Scroll to First Log Message"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding ScrollToFirstLogMessage}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -216,7 +216,7 @@
     </Style>
 
     <Style x:Key="AutoScrollToBottom" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Enable Auto Scroll to Last Log Message"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding EnableAutoScrollToLastLogMessage}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -245,7 +245,7 @@
     </Style>
 
     <Style x:Key="ScrollToBottom" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Scroll to Last Log Message"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding ScrollToLastLogMessage}"/>
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
                 <Setter Property="Template">
@@ -272,20 +272,15 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="GridViewColumnHeaderGripper"
-           TargetType="Thumb">
-        <Setter Property="Width"
-                Value="18" />
+    <Style x:Key="GridViewColumnHeaderGripper" TargetType="Thumb">
+        <Setter Property="Width" Value="18" />
         <Setter Property="Background">
             <Setter.Value>
-                <LinearGradientBrush StartPoint="0,0"
-                                     EndPoint="0,1">
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                     <LinearGradientBrush.GradientStops>
                         <GradientStopCollection>
-                            <GradientStop Color="{DynamicResource BorderLightColor}"
-                                          Offset="0.0" />
-                            <GradientStop Color="{DynamicResource BorderDarkColor}"
-                                          Offset="1.0" />
+                            <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0.0" />
+                            <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1.0" />
                         </GradientStopCollection>
                     </LinearGradientBrush.GradientStops>
                 </LinearGradientBrush>
@@ -294,23 +289,17 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border Padding="{TemplateBinding Padding}"
-                            Background="Transparent">
-                        <Rectangle HorizontalAlignment="Center"
-                                   Width="1"
-                                   Fill="{TemplateBinding Background}" />
+                    <Border Padding="{TemplateBinding Padding}" Background="Transparent">
+                        <Rectangle HorizontalAlignment="Center" Width="1" Fill="{TemplateBinding Background}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Setter Property="BorderBrush">
             <Setter.Value>
-                <LinearGradientBrush EndPoint="0.5,1"
-                                     StartPoint="0.5,0">
-                    <GradientStop Color="Black"
-                                  Offset="0" />
-                    <GradientStop Color="White"
-                                  Offset="1" />
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="Black" Offset="0" />
+                    <GradientStop Color="White" Offset="1" />
                 </LinearGradientBrush>
             </Setter.Value>
         </Setter>
@@ -547,7 +536,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
                     <StackPanel Orientation="Horizontal" Width="1200">
-                        <TextBlock Margin="7,0,0,0" Text="Message" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Gray" x:Name="contentTB"/>
+                        <TextBlock Margin="7,0,0,0" Text="{localization:LocBinding Message}" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Gray" x:Name="contentTB"/>
 
                         <TextBox Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" Height="30" HorizontalAlignment="Right" VerticalContentAlignment="Center" Style="{StaticResource TextBoxWithHint}" x:Name="SearchTextBox" Width="200">
                             <TextBox.InputBindings>
@@ -557,12 +546,12 @@
                         </TextBox>
 
 
-                        <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="Find All (Ctrl+F)" Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
+                        <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindAllHotKeys}" Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
                             <Image Source="{StaticResource SearchDrawingImage}"/>
 
                             <Button.ContextMenu>
                                 <ContextMenu Style="{StaticResource BaseContextMenu}">
-                                    <MenuItem Margin="0" Header="In another window (Ctrl+Shift+F)" Command="{Binding PlacementTarget.Tag.SearchLogCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{StaticResource True}"/>
+                                    <MenuItem Margin="0" Header="{localization:LocBinding InAnotherWindowHotKeys}" Command="{Binding PlacementTarget.Tag.SearchLogCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{StaticResource True}"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
 
@@ -577,16 +566,16 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="Clear search result (Shift+R)" Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding ClearSearchResultToolTip}" Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
                                 Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.ClearSearchResultIsEnabled}">
                             <Image Source="{StaticResource CleanSearchResultImage}"/>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="Find previous log message (Shift+D)" Margin="5,0,0,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="5,0,0,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
                             <Image Source="{StaticResource SearchPrevious}"/>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="Find next log message (Shift+F)" Margin="5,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindNextCommand}">
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindNextLogMessageToolTip}" Margin="5,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindNextCommand}">
                             <Image Source="{StaticResource SearchNext}"/>
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -599,12 +588,12 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="Clear all logs (Ctr+R)" Command="{Binding ElementName=LogsListView, Path=DataContext.CleanCommand}" 
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding ClearAllLogsToolTip}" Command="{Binding ElementName=LogsListView, Path=DataContext.CleanCommand}" 
                                 IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.CleanIsEnabled}" Margin="0">
                             <Image Source="{StaticResource CleanWhiteImage}"/>
                         </Button>
 
-                        <ToggleButton Margin="5,0" ToolTip="Match Case" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchCase}">
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchCase}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchCase}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" Width="33" BorderBrush="DeepSkyBlue">
@@ -619,7 +608,7 @@
                             </ToggleButton.Template>
                         </ToggleButton>
 
-                        <ToggleButton Margin="0" ToolTip="Match Log Level (Only for 'Find All')" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchLogLevel}">
+                        <ToggleButton Margin="0" ToolTip="{localization:LocBinding MatchLogLevel}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchLogLevel}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
@@ -647,13 +636,13 @@
     </Style>
 
     <ContextMenu x:Key="ItemContextMenu" Style="{StaticResource BaseContextMenu}">
-        <MenuItem Header="Don't Show this Logger" ToolTip="Hide this Logger Messages"  Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <MenuItem Header="{localization:LocBinding DontShowThisLogger}"  Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource HiddenEyeImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="Don't Receive this Logger" ToolTip="Don't add new messsages to buffer from this Logger" Margin="0" Command="{Binding Path=DataContext.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Margin="0" Command="{Binding Path=DataContext.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource StopImage}"/>
             </MenuItem.Icon>
@@ -661,31 +650,31 @@
 
         <Separator />
 
-        <MenuItem Header="Set Time Interval" InputGestureText="Ctrl+Shift+T" Margin="0" Command="{Binding Path=DataContext.SetTimeIntervalCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
-            <MenuItem.Icon>
-                <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
-            </MenuItem.Icon>
-        </MenuItem>
-        
-        <MenuItem Header="Go to Timestamp" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding SetTimeInterval}" InputGestureText="Ctrl+Shift+T" Margin="0" Command="{Binding Path=DataContext.SetTimeIntervalCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="Go to Next Warning" InputGestureText="Ctrl+W" Margin="0" Command="{Binding Path=DataContext.FindNextWarningCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding GoToTimestamp}" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+            <MenuItem.Icon>
+                <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Header="{localization:LocBinding GoToNextWarning}" InputGestureText="Ctrl+W" Margin="0" Command="{Binding Path=DataContext.FindNextWarningCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource FindNextWarning}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="Go to Next Error" InputGestureText="Ctrl+E" Margin="0" Command="{Binding Path=DataContext.FindNextErrorCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding GoToNextError}" InputGestureText="Ctrl+E" Margin="0" Command="{Binding Path=DataContext.FindNextErrorCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource FindNextError}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <!--<MenuItem Header="Find in tree (not working)" Margin="0" Command="{Binding Path=DataContext.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <!--<MenuItem Header="{localization:LocBinding FindInTree}" Margin="0" Command="{Binding Path=DataContext.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource TreeImage}"/>
             </MenuItem.Icon>
@@ -989,7 +978,7 @@
     </Style>
 
     <Style x:Key="ExportButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Export all logs to file (Ctrl+S)"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding ExportLogsToFileToolTip}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -1018,7 +1007,7 @@
     </Style>
 
     <Style x:Key="ImportButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="Import logs from file"/>
+        <Setter Property="ToolTip" Value="{localization:LocBinding ImportLogsToolTip}"/>
 
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
@@ -1045,6 +1034,4 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-
-
 </ResourceDictionary>

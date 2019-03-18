@@ -64,7 +64,7 @@
                         <TextBlock Text="{localization:LocBinding MinimizeToTrayIcon}" ToolTip="{localization:LocBinding MinimizeToTrayIconToolTip}" VerticalAlignment="Center"  Grid.Row="1"/>
                         <ToggleButton Grid.Row="1" Grid.Column="1" IsChecked="{Binding Path=MinimizeToTray}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
 
-                        <TextBlock Text="" ToolTip="{localization:LocBinding OnlyOneInstanceOfAppToolTip}" VerticalAlignment="Center"  Grid.Row="2"/>
+                        <TextBlock Text="{localization:LocBinding OnlyOneInstanceOfApp}" ToolTip="{localization:LocBinding OnlyOneInstanceOfAppToolTip}" VerticalAlignment="Center"  Grid.Row="2"/>
                         <ToggleButton Grid.Row="2" Grid.Column="1" IsChecked="{Binding Path=OnlyOneAppInstance}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
 
                         <TextBlock Grid.Row="3" Text="{localization:LocBinding DisplayedDataFormat}" ToolTip="{localization:LocBinding DisplayedDataFormatToolTip}" VerticalAlignment="Center"/>

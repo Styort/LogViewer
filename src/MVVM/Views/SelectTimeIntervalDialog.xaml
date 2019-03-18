@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="Go to Timestamp" MinHeight="250" Height="250" Width="500">
+        Title="{localization:LocBinding SelectTimeInterval}" MinHeight="250" Height="250" Width="500">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -26,7 +27,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Pick Date and Time From"></TextBlock>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{localization:LocBinding PickDateAndTimeFrom}"/>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
@@ -34,7 +35,7 @@
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="CalendarFromDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="CalendarFromDialogClosingEventHandler"
-                                ToolTip="Pick Date">
+                                ToolTip="{localization:LocBinding PickDate}">
                             <Image Source="{StaticResource CalendarDrawingImage}"/>
                             <Button.CommandParameter>
                                 <Grid>
@@ -44,8 +45,8 @@
                                     </Grid.RowDefinitions>
                                     <Calendar x:Name="CalendarFrom" Margin="-1 -4 -1 0" />
                                     <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}" Content="OK"/>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}" Content="{localization:LocBinding Cancel}"/>
                                     </StackPanel>
                                 </Grid>
                             </Button.CommandParameter>
@@ -57,26 +58,26 @@
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="ClockFromDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="ClockFromDialogClosingEventHandler"
-                                ToolTip="Pick Time">
+                                ToolTip="{localization:LocBinding PickTime}">
                             <Image Source="{StaticResource ClockDrawingImage}" Margin="0,0,2,0"/>
                             <Button.CommandParameter>
                                 <Grid Margin="-1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" /> 
                                     </Grid.RowDefinitions>
                                     <materialDesign:Clock Is24Hours="True" DisplayAutomation="Cycle" x:Name="ClockFrom" />
                                     <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}" Content="OK"/>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}" Content="{localization:LocBinding Cancel}"/>
                                     </StackPanel>
                                 </Grid>
                             </Button.CommandParameter>
                         </Button>
                     </StackPanel>
                 </StackPanel>
-                
-                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="Pick Date and Time To"></TextBlock>
+
+                <TextBlock Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{localization:LocBinding PickDateAndTimeTo}"/>
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
@@ -84,7 +85,7 @@
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="CalendarToDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="CalendarToDialogClosingEventHandler"
-                                ToolTip="Pick Date">
+                                ToolTip="{localization:LocBinding PickDate}">
                             <Image Source="{StaticResource CalendarDrawingImage}"/>
                             <Button.CommandParameter>
                                 <Grid>
@@ -94,8 +95,8 @@
                                     </Grid.RowDefinitions>
                                     <Calendar x:Name="CalendarTo" Margin="-1 -4 -1 0" />
                                     <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}" Content="OK"/>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}" Content="{localization:LocBinding Cancel}"/>
                                     </StackPanel>
                                 </Grid>
                             </Button.CommandParameter>
@@ -107,7 +108,7 @@
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="ClockToDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="ClockToDialogClosingEventHandler"
-                                ToolTip="Pick Time">
+                                ToolTip="{localization:LocBinding PickTime}">
                             <Image Source="{StaticResource ClockDrawingImage}" Margin="0,0,2,0"/>
                             <Button.CommandParameter>
                                 <Grid Margin="-1">
@@ -117,8 +118,8 @@
                                     </Grid.RowDefinitions>
                                     <materialDesign:Clock Is24Hours="True" DisplayAutomation="Cycle" x:Name="ClockTo" />
                                     <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}">OK</Button>
-                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}">CANCEL</Button>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="1" Style="{DynamicResource MaterialDesignFlatButton}" Content="OK"/>
+                                        <Button Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" CommandParameter="0" Style="{DynamicResource MaterialDesignFlatButton}" Content="{localization:LocBinding Cancel}"/>
                                     </StackPanel>
                                 </Grid>
                             </Button.CommandParameter>
@@ -128,7 +129,7 @@
 
                 <WrapPanel Grid.Row="4"  HorizontalAlignment="Right" Margin="10" VerticalAlignment="Bottom">
                     <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
-                    <Button IsCancel="True" MinWidth="100" Content="Cancel" />
+                    <Button IsCancel="True" MinWidth="100" Content="{localization:LocBinding Cancel}"/>
                 </WrapPanel>
             </Grid>
         </materialDesign:DrawerHost>

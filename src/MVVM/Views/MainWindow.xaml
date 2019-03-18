@@ -29,13 +29,13 @@
                     <TextBlock Text="{Binding Text}" Background="{Binding ToggleMark}"/>
                     <StackPanel.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}">
-                            <MenuItem Header="Collapse All" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding CollapseAll}" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CollapseImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="Expand All" Margin="0" Command="{Binding PlacementTarget.Tag.ExpandChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ExpandAll}" Margin="0" Command="{Binding PlacementTarget.Tag.ExpandChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ExpandImage}"/>
                                 </MenuItem.Icon>
@@ -43,25 +43,25 @@
 
                             <Separator />
 
-                            <MenuItem Header="Show Only this Logger" Command="{Binding PlacementTarget.Tag.ShowOnlyThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ShowOnlyThisLogger}" Command="{Binding PlacementTarget.Tag.ShowOnlyThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource EyeImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="Don't Receive this Logger" ToolTip="Don't add new messsages to buffer from this Logger" Command="{Binding PlacementTarget.Tag.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Command="{Binding PlacementTarget.Tag.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource StopImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="Add current IP to Ignore List" ToolTip="Don't receive new messages from this IP address" Command="{Binding PlacementTarget.Tag.IgnoreThisIPCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding AddCurrentIPtoIgnoreList}" ToolTip="{localization:LocBinding AddCurrentIPtoIgnoreListToolTip}" Command="{Binding PlacementTarget.Tag.IgnoreThisIPCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource IgnoreIPStopImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="Toggle Marking" ToolTip="Mark the messages of this logger in a different color" Command="{Binding PlacementTarget.Tag.ToggleMarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ToggleMarking}" ToolTip="{localization:LocBinding ToggleMarkingToolTip}" Command="{Binding PlacementTarget.Tag.ToggleMarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource MarkDrawingImage}"/>
                                 </MenuItem.Icon>
@@ -69,7 +69,7 @@
 
                             <Separator />
 
-                            <MenuItem Header="Clear" Margin="0" Command="{Binding PlacementTarget.Tag.ClearChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding Clear}" Margin="0" Command="{Binding PlacementTarget.Tag.ClearChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CleanImage}"/>
                                 </MenuItem.Icon>
@@ -77,7 +77,7 @@
 
                             <Separator />
 
-                            <MenuItem Header="Export Current Logger to File" Margin="0" Command="{Binding PlacementTarget.Tag.ExportCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ExportCurrentLoggerToFile}" Margin="0" Command="{Binding PlacementTarget.Tag.ExportCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ExportDrawingImage}"/>
                                 </MenuItem.Icon>
@@ -147,7 +147,7 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Loggers" FontSize="14" Margin="10, 5" HorizontalAlignment="Left"/>
+            <TextBlock Text="{localization:LocBinding Loggers}" FontSize="14" Margin="10, 5" HorizontalAlignment="Left"/>
 
             <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,10,0">
                 <Grid.ColumnDefinitions>
@@ -158,7 +158,7 @@
 
                 <TextBox x:Name="SearchLoggerTextBox" Text="{Binding Path=SearchLoggerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" Height="30" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Style="{StaticResource TextBoxWithHint}"/>
 
-                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="Find Loggers" Command="{Binding Path=SearchLoggersCommand}">
+                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindLoggersToolTip}" Command="{Binding Path=SearchLoggersCommand}">
                     <Image Source="{StaticResource SearchDrawingImage}"/>
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -171,13 +171,13 @@
                     </Button.Style>
                 </Button>
 
-                <Button Grid.Column="2" Height="32" Width="32" Padding="2" ToolTip="Clear search loggers result" Command="{Binding Path=ClearSearchLoggerResultCommand}" IsEnabled="{Binding Path= IsEnableClearSearchLoggers}">
+                <Button Grid.Column="2" Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding ClearFindLoggersResultToolTip}" Command="{Binding Path=ClearSearchLoggerResultCommand}" IsEnabled="{Binding Path= IsEnableClearSearchLoggers}">
                     <Image Source="{StaticResource CleanSearchResultImage}"/>
                 </Button>
             </Grid>
 
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Content="Collapse All" Width="110" Command="{Binding Path=CollapseLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="Clear All" Width="110" Command="{Binding Path=ClearLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Content="{localization:LocBinding CollapseAll}" Width="110" Command="{Binding Path=CollapseLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="{localization:LocBinding ClearAll}" Width="110" Command="{Binding Path=ClearLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
 
             <TreeView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Path=Loggers}" MaxHeight="900" IsEnabled="{Binding Path=IsEnableLogList}" x:Name="LoggersTreeView"
                       VirtualizingStackPanel.IsVirtualizing="True"
@@ -209,11 +209,11 @@
                 <GridView>
                     <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}"/>
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
-                    <GridViewColumn Header="Time" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Thread" Width="Auto" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Thread}" Width="Auto" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="IP" Width="{Binding IpColumnWidth}" DisplayMemberBinding="{Binding Address}" HeaderContainerStyle="{StaticResource IpGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Logger" Width="180" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Message" Width="Auto" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource MessageHeaderTemplate}"/>
+                    <GridViewColumn Header="{localization:LocBinding Logger}" Width="180" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Message}" Width="Auto" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource MessageHeaderTemplate}"/>
                 </GridView>
             </ListView.View>
             <ListView.InputBindings>
@@ -240,7 +240,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{localization:LocBinding MessageDetails}" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
-                        <TextBlock Grid.Column="1" Text="Logs count:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                        <TextBlock Grid.Column="1" Text="{localization:LocBinding LogsCount}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
                         <TextBlock Grid.Column="2" Text="{Binding Path=DataContext.Logs.Count, RelativeSource={RelativeSource AncestorType=Window}}" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
                     </Grid>
@@ -257,8 +257,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Message:" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
-                <Button Grid.Row="0" Grid.Column="0" Width="70" VerticalAlignment="Bottom" Content="Copy" Command="{Binding Path=CopyMessageCommand}" Margin="0,5" Style="{StaticResource BaseButtonStyle}"/>
+                <TextBlock Text="{localization:LocBinding Message, StringFormat={}{0}:}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
+                <Button Grid.Row="0" Grid.Column="0" Width="70" VerticalAlignment="Bottom" Content="{localization:LocBinding Port}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5" Style="{StaticResource BaseButtonStyle}"/>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
 
@@ -275,19 +275,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Logger:" FontSize="14"  VerticalAlignment="Center"/>
+                    <TextBlock Text="{localization:LocBinding Logger, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center"/>
                     <TextBox Text="{Binding Path=SelectedLog.Logger}" FontSize="14" Grid.Column="1" Height="35" Margin="23,0,10,0" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="2" Text="Time:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="2" Text="{localization:LocBinding Time, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
                     <TextBox Text="{Binding Path=SelectedLog.Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" FontSize="14" Grid.Column="3" Height="35" Margin="10,0" Width="180" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="4" Text="Thread:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="4" Text="{localization:LocBinding Thread, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <TextBox Text="{Binding Path=SelectedLog.Thread}" FontSize="14" Grid.Column="5" Height="35" Margin="10,0" Width="80" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="6" Text="Port:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="6" Text="{localization:LocBinding Port, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <TextBox Text="{Binding Path=SelectedLog.Receiver.Port}" FontSize="14" Grid.Column="7" Height="35" Margin="10,0,0,0" Width="80" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Right" Padding="5,0" IsReadOnly="True"/>
                 </Grid>

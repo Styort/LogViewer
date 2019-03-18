@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogViewer.MVVM"
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="LogViewer Search Result" Height="600" Width="1024">
+        Title="{localization:LocBinding LogViewerSearchResult}" Height="600" Width="1024">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -33,17 +34,17 @@
             </ListView.ItemsPanel>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Level" Width="Auto" CellTemplate="{StaticResource LogLevelImagesDataTemplate}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Time" Width="Auto" DisplayMemberBinding="{Binding Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Thread" Width="Auto" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Level}" Width="Auto" CellTemplate="{StaticResource LogLevelImagesDataTemplate}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Thread}" Width="Auto" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="IP" Width="115" DisplayMemberBinding="{Binding Address}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Logger" Width="120" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="Message" Width="1500" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Logger}" Width="120" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Message}" Width="1500" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>
                 <ContextMenu Style="{StaticResource BaseContextMenu}">
-                    <MenuItem Header="Go to this log message" ToolTip="Go to this log message in main Log Viewer window" Margin="0" Click="ShowMessageInMainWindowClick"/>
+                    <MenuItem Header="{localization:LocBinding GoToThisLogMessage}" ToolTip="{localization:LocBinding GoToThisLogMessageToolTip}" Margin="0" Click="ShowMessageInMainWindowClick"/>
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
@@ -59,8 +60,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Text="Message Details" FontSize="16" Foreground="LightGray"/>
-                        <TextBlock Grid.Column="1" Text="Found logs:" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Foreground="LightGray"/>
+                        <TextBlock Text="{localization:LocBinding MessageDetails}" FontSize="16" Foreground="LightGray"/>
+                        <TextBlock Grid.Column="1" Text="{localization:LocBinding FoundLogs}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,5,0" Foreground="LightGray"/>
                         <TextBlock Grid.Column="2" Text="{Binding Path=DataContext.SearchResult.Count, RelativeSource={RelativeSource AncestorType=Window}}" 
                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,15,0" Foreground="LightGray"/>
                     </Grid>
@@ -77,8 +78,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Message:" FontSize="14"  VerticalAlignment="Top" Margin="0,5,0,0"/>
-                <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Content="Copy" Command="{Binding Path=CopyMessageCommand}" Margin="0,5"/>
+                <TextBlock Text="{localization:LocBinding Message, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Top" Margin="0,5,0,0"/>
+                <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" Content="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5"/>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
 
@@ -95,19 +96,19 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="Logger:" FontSize="14"  VerticalAlignment="Center"/>
+                    <TextBlock Text="{localization:LocBinding Logger, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center"/>
                     <TextBox Text="{Binding Path=SelectedLog.Logger}" FontSize="14" Grid.Column="1" Height="35" Margin="23,0,10,0" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="2" Text="Time:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <TextBlock Grid.Column="2" Text="{localization:LocBinding Time, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
                     <TextBox Text="{Binding Path=SelectedLog.Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" FontSize="14" Grid.Column="3" Height="35" Margin="10,0" Width="180" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="4" Text="Thread:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="4" Text="{localization:LocBinding Thread, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <TextBox Text="{Binding Path=SelectedLog.Thread}" FontSize="14" Grid.Column="5" Height="35" Margin="10,0" Width="80" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
-                    <TextBlock Grid.Column="6" Text="Port:" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="6" Text="{localization:LocBinding Port, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
                     <TextBox Text="{Binding Path=SelectedLog.Receiver.Port}" FontSize="14" Grid.Column="7" Height="35" Margin="10,0,0,0" Width="80" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Right" Padding="5,0" IsReadOnly="True"/>
                 </Grid>

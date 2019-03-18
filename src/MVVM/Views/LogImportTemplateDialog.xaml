@@ -5,8 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogViewer.MVVM"
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="Log Import Template" Height="320" Width="700">
+        Title="{localization:LocBinding LogImportTemplate}" Height="320" Width="700">
 
     <Window.DataContext>
         <viewModels:LogImportTemplateViewModel/>
@@ -35,11 +36,11 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <RadioButton Margin="10,0" Content="Select from existing templates" IsChecked="{Binding Path=IsPopularTemplateSelected}"/>
+        <RadioButton Margin="10,0" Content="{localization:LocBinding SelectFromExistingTemplates}" IsChecked="{Binding Path=IsPopularTemplateSelected}"/>
 
         <ComboBox Grid.Row="1" Margin="10" ItemsSource="{Binding Path=PopularTemplates}" SelectedValue="{Binding Path=SelectedPopularTemplate}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
 
-        <RadioButton Grid.Row="3" Margin="10,0" Content="Or create your own template" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
+        <RadioButton Grid.Row="3" Margin="10,0" Content="{localization:LocBinding OrCreateYourOwnTemplate}" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
 
         <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10" Height="80">
             <ItemsControl x:Name="TemplateLogItemsIC" ItemsSource="{Binding Path=TemplateLogItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" >
@@ -55,8 +56,8 @@
                                 <ComboBox Margin="5,5" ItemsSource="{Binding Path=TemplateParameters}" SelectedItem="{Binding Path=SelectedTemplateParameter}" Height="30" VerticalContentAlignment="Center"/>
                                 <Label Padding="0" FontStyle="Normal" FontSize="18" VerticalContentAlignment="Center">;</Label>
                             </StackPanel>
-                            
-                            <Button Padding="0" Width="60" Content="remove" Margin="1" Height="30" ToolTip="Remove Template Item" Foreground="White"
+
+                            <Button Padding="0" Width="60" Content="{localization:LocBinding small_remove}" Margin="1" Height="30" ToolTip="{localization:LocBinding RemoveTemplateItem}" Foreground="White"
                                     Command="{Binding ElementName=TemplateLogItemsIC, Path=DataContext.RemoveTemplateItemCommand}" CommandParameter="{Binding}"/>
                         </StackPanel>
                     </DataTemplate>
@@ -64,12 +65,12 @@
             </ItemsControl>
         </StackPanel>
 
-        <Button Grid.Row="4" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="Add Template Item" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
+        <Button Grid.Row="4" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
                 Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
 
         <WrapPanel Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
             <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
-            <Button IsCancel="True" MinWidth="100" Content="Cancel"/>
+            <Button IsCancel="True" MinWidth="100" Content="{localization:LocBinding Cancel}"/>
         </WrapPanel>
     </Grid>
 </Window>

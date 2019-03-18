@@ -285,4 +285,88 @@
   <data name="ThemeFontColorToolTip" xml:space="preserve">
     <value>Theme font color</value>
   </data>
+  <data name="AddCurrentIPtoIgnoreList" xml:space="preserve">
+    <value>Add current IP to Ignore List</value>
+  </data>
+  <data name="AddCurrentIPtoIgnoreListToolTip" xml:space="preserve">
+    <value>Don't receive new messages from this IP address</value>
+  </data>
+  <data name="AddTemplateItem" xml:space="preserve">
+    <value>Add Template Item</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="ClearFindLoggersResultToolTip" xml:space="preserve">
+    <value>Clear search loggers result</value>
+  </data>
+  <data name="DontReceiveThisLogger" xml:space="preserve">
+    <value>Don't Receive this Logger</value>
+  </data>
+  <data name="DontReceiveThisLoggerToolTip" xml:space="preserve">
+    <value>Don't add new messsages to buffer from this Logger</value>
+  </data>
+  <data name="ExpandAll" xml:space="preserve">
+    <value>Expand All</value>
+  </data>
+  <data name="ExportCurrentLoggerToFile" xml:space="preserve">
+    <value>Export Current Logger to File</value>
+  </data>
+  <data name="FindLoggersToolTip" xml:space="preserve">
+    <value>Find Loggers</value>
+  </data>
+  <data name="FoundLogs" xml:space="preserve">
+    <value>Fount Logs:</value>
+  </data>
+  <data name="GoToThisLogMessage" xml:space="preserve">
+    <value>Go to this log message</value>
+  </data>
+  <data name="GoToThisLogMessageToolTip" xml:space="preserve">
+    <value>Go to this log message in main Log Viewer window</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="Loggers" xml:space="preserve">
+    <value>Loggers</value>
+  </data>
+  <data name="LogImportTemplate" xml:space="preserve">
+    <value>Log Import Template</value>
+  </data>
+  <data name="LogsCount" xml:space="preserve">
+    <value>Logs Count:</value>
+  </data>
+  <data name="LogViewerSearchResult" xml:space="preserve">
+    <value>LogViewer Search Result</value>
+  </data>
+  <data name="OrCreateYourOwnTemplate" xml:space="preserve">
+    <value>Or create your own template</value>
+  </data>
+  <data name="PickDateAndTimeFrom" xml:space="preserve">
+    <value>Pick Date and Time From</value>
+  </data>
+  <data name="PickDateAndTimeTo" xml:space="preserve">
+    <value>Pick Date and Time To</value>
+  </data>
+  <data name="RemoveTemplateItem" xml:space="preserve">
+    <value>Remove Template Item</value>
+  </data>
+  <data name="SelectFromExistingTemplates" xml:space="preserve">
+    <value>Select from existing templates</value>
+  </data>
+  <data name="SelectTimeInterval" xml:space="preserve">
+    <value>Select Time Interval</value>
+  </data>
+  <data name="ShowOnlyThisLogger" xml:space="preserve">
+    <value>Show Only this Logger</value>
+  </data>
+  <data name="small_remove" xml:space="preserve">
+    <value>remove</value>
+  </data>
+  <data name="ToggleMarking" xml:space="preserve">
+    <value>Toggle Marking</value>
+  </data>
+  <data name="ToggleMarkingToolTip" xml:space="preserve">
+    <value>Mark the messages of this logger in a different color</value>
+  </data>
 </root>

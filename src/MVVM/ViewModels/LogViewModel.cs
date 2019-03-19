@@ -585,6 +585,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand goToTimestampCommand;
         private RelayCommand setTimeIntervalCommand;
         private RelayCommand toggleMarkCommand;
+        private RelayCommand findInTreeCommand;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
@@ -614,6 +615,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand GoToTimestampCommand => goToTimestampCommand ?? (goToTimestampCommand = new RelayCommand(GoToTimestamp));
         public RelayCommand SetTimeIntervalCommand => setTimeIntervalCommand ?? (setTimeIntervalCommand = new RelayCommand(SetTimeInterval));
         public RelayCommand ToggleMarkCommand => toggleMarkCommand ?? (toggleMarkCommand = new RelayCommand(ToggleMark));
+        public RelayCommand FindInTreeCommand => findInTreeCommand ?? (findInTreeCommand = new RelayCommand(FindLoggerInTreeByMessage));
 
         #endregion
 
@@ -735,7 +737,7 @@ namespace LogViewer.MVVM.ViewModels
                     bool isOpenInAnotherWinow = (bool)obj;
 
                     ClearSearchResultIsEnabled = !isOpenInAnotherWinow;
-                    
+
                     if (allLogs.Any())
                     {
                         // осуществляем поиск всему списку логов
@@ -770,7 +772,7 @@ namespace LogViewer.MVVM.ViewModels
                                 {
                                     SearchResult sr = new SearchResult(logMessages);
                                     sr.Show();
-                                    sr.ShowLogEvent += delegate(object sender, LogMessage message)
+                                    sr.ShowLogEvent += delegate (object sender, LogMessage message)
                                     {
                                         SelectedLog = message;
                                     };
@@ -1724,7 +1726,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 fromTimeInverval = selectTimeIntervalDialog.DateTimeFrom;
                 toTimeInverval = selectTimeIntervalDialog.DateTimeTo;
-                
+
                 lock (logsLockObj)
                 {
                     Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(
@@ -1767,11 +1769,22 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     foreach (var logMessage in Logs.Where(x => x.FullPath.Contains(node.Logger)))
                         logMessage.ToggleMark = currentColor;
-                    
+
                     foreach (var logMessage in allLogs.Where(x => x.FullPath.Contains(node.Logger)))
                         logMessage.ToggleMark = currentColor;
                 }
             }
+        }
+
+        /// <summary>
+        /// Поиск логгера в дереве по выбранному сообщению
+        /// </summary>
+        private void FindLoggerInTreeByMessage()
+        {
+            SearchLoggerText = SelectedLog.FullPath;
+            exceptParents.Clear();
+            FindLastNodesAndUpdateVisibility(Loggers[0], true);
+            exceptParents.ForEach(x => x.IsVisible = true);
         }
 
         #endregion
@@ -1973,7 +1986,7 @@ namespace LogViewer.MVVM.ViewModels
             if (!string.IsNullOrEmpty(executableName))
                 nodesStr.Add(executableName);
             nodesStr.AddRange(logger.Split('.'));
-            
+
             var parent = root;
             foreach (var node in nodesStr)
             {
@@ -2100,12 +2113,13 @@ namespace LogViewer.MVVM.ViewModels
         /// Используется при поискел логгеров
         /// </summary>
         /// <param name="node"></param>
-        private void UpdateLoggersVisibility(Node node)
+        private void UpdateLoggersVisibility(Node node, bool fullPath = false)
         {
             if (exceptParents.Contains(node))
                 return;
 
-            if (node.Text.ToUpper().Contains(SearchLoggerText.ToUpper()) || CheckChildContainsText(node.Children))
+            if (fullPath && node.Logger.ToUpper().Contains(SearchLoggerText.ToUpper()) || CheckChildContainsText(node.Children, fullPath) ||
+                node.Text.ToUpper().Contains(SearchLoggerText.ToUpper()))
             {
                 node.IsVisible = true;
                 AddParentsToExcept(node);
@@ -2118,7 +2132,7 @@ namespace LogViewer.MVVM.ViewModels
             node.IsVisible = false;
             if (node.Parent?.Parent != null)
             {
-                UpdateLoggersVisibility(node.Parent);
+                UpdateLoggersVisibility(node.Parent, fullPath);
             }
         }
 
@@ -2134,14 +2148,15 @@ namespace LogViewer.MVVM.ViewModels
             if (node.Parent != null) AddParentsToExcept(node.Parent);
         }
 
-        private bool CheckChildContainsText(ObservableCollection<Node> nodeChildren)
+        private bool CheckChildContainsText(ObservableCollection<Node> nodeChildren, bool fullPath = false)
         {
             if (!nodeChildren.Any())
                 return false;
 
             foreach (var nodeChild in nodeChildren)
             {
-                if (nodeChild.Text.ToUpper().Contains(SearchLoggerText.ToUpper()))
+                if (fullPath && nodeChild.Logger.ToUpper().Contains(SearchLoggerText.ToUpper()) ||
+                    nodeChild.Text.ToUpper().Contains(SearchLoggerText.ToUpper()))
                     return true;
                 CheckChildContainsText(nodeChild.Children);
             }
@@ -2152,18 +2167,18 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Находит конечные элементы дерева и начиная с них проставляет видимость логгерам
         /// </summary>
-        public void FindLastNodesAndUpdateVisibility(Node node)
+        public void FindLastNodesAndUpdateVisibility(Node node, bool fullPath = false)
         {
             if (node.Children.Any())
             {
                 foreach (var child in node.Children)
                 {
                     child.IsVisible = true;
-                    FindLastNodesAndUpdateVisibility(child);
+                    FindLastNodesAndUpdateVisibility(child, fullPath);
                 }
             }
             else
-                UpdateLoggersVisibility(node);
+                UpdateLoggersVisibility(node, fullPath);
         }
 
         /// <summary>
@@ -2275,9 +2290,9 @@ namespace LogViewer.MVVM.ViewModels
                             {
                                 lock (logsLockObj) allLogs.Add(log);
 
-                                if (isTimeIntervalProcess) 
+                                if (isTimeIntervalProcess)
                                 {
-                                    if(log.Time > fromTimeInverval && log.Time < toTimeInverval)
+                                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval)
                                         lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }

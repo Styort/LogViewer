@@ -674,11 +674,11 @@
             </MenuItem.Icon>
         </MenuItem>
 
-        <!--<MenuItem Header="{localization:LocBinding FindInTree}" Margin="0" Command="{Binding Path=DataContext.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <MenuItem Header="{localization:LocBinding FindInTree}" Margin="0" Command="{Binding Path=DataContext.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource TreeImage}"/>
             </MenuItem.Icon>
-        </MenuItem>-->
+        </MenuItem>
     </ContextMenu>
 
     <Style x:Key="LogItemStyle" TargetType="{x:Type ListViewItem}">

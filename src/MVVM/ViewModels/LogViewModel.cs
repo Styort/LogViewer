@@ -78,6 +78,7 @@ namespace LogViewer.MVVM.ViewModels
         private SolidColorBrush iconColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#3F51B5");
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
         private bool isIpVisible = false;
+        private bool isThreadVisible = true;
         private bool isEnableClearSearchLoggers;
         private string searchLoggerText = string.Empty;
         private DateTime goToTimestampDateTime;
@@ -402,10 +403,26 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public bool IsThreadVisible
+        {
+            get => isThreadVisible;
+            set
+            {
+                isThreadVisible = value;
+                OnPropertyChanged(nameof(ThreadColumnWidth));
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Ширина колонки с IP
         /// </summary>
-        public int IpColumnWidth => IsIpVisible ? 115 : 0;
+        public double IpColumnWidth => IsIpVisible ? Double.NaN : 0;
+        
+        /// <summary>
+        /// Ширина колонки Thread
+        /// </summary>
+        public double ThreadColumnWidth => IsThreadVisible ? Double.NaN : 0;
 
         public SolidColorBrush IconColor
         {
@@ -492,6 +509,7 @@ namespace LogViewer.MVVM.ViewModels
             maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
             deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
             IsIpVisible = Settings.Instance.IsShowIpColumn;
+            IsThreadVisible = Settings.Instance.IsShowThreadColumn;
 
             receivers = Settings.Instance.Receivers;
 
@@ -1049,6 +1067,7 @@ namespace LogViewer.MVVM.ViewModels
                         maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
                         deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
                         IsIpVisible = Settings.Instance.IsShowIpColumn;
+                        IsThreadVisible = Settings.Instance.IsShowThreadColumn;
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {

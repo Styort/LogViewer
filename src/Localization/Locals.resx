@@ -482,4 +482,10 @@
   <data name="Version" xml:space="preserve">
     <value>Версия: </value>
   </data>
+  <data name="ShowThreadColumn" xml:space="preserve">
+    <value>Показывать колонку с № потока:</value>
+  </data>
+  <data name="ShowThreadColumnToolTip" xml:space="preserve">
+    <value>Показывать колонку с номером потока в списке считанных логов</value>
+  </data>
 </root>

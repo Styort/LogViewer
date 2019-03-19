@@ -54,6 +54,7 @@ namespace LogViewer
                         Settings.Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
                         Settings.Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
                         Settings.Instance.IsShowIpColumn = settings.IsShowIpColumn;
+                        Settings.Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
                         Settings.Instance.Language = settings.Language;
                     }
 

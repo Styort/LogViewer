@@ -35,6 +35,7 @@ namespace LogViewer.MVVM.ViewModels
         private int deletedMessagesCount;
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
         private bool isShowIPColumn;
+        private bool isShowThreadColumn;
 
         #region Свойства
 
@@ -384,6 +385,16 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public bool IsShowThreadColumn
+        {
+            get => isShowThreadColumn;
+            set
+            {
+                isShowThreadColumn = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Version { get; set; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         #endregion
@@ -408,6 +419,7 @@ namespace LogViewer.MVVM.ViewModels
                 FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
                 SelectedFontColor = SelectedFontColor.FromARGB(Settings.Instance.FontColor);
                 IsShowIpColumn = Settings.Instance.IsShowIpColumn;
+                IsShowThreadColumn = Settings.Instance.IsShowThreadColumn;
                 SelectedLanguage = TranslationSource.Instance.CurrentCulture;
 
                 var theme = Themes.FirstOrDefault(x => x.Name == Settings.Instance.CurrentTheme.Name);
@@ -497,6 +509,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.MinimizeToTray = MinimizeToTray;
             Settings.Instance.AutoStartInStartup = IsAutoStartReadAtStartup;
             Settings.Instance.IsShowIpColumn = IsShowIpColumn;
+            Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;
             Settings.Instance.CurrentTheme = SelectedTheme;
             Settings.Instance.DataFormat = SelectedDataFormat;
             Settings.Instance.IgnoredIPs = IgnoredIpAdresses.ToList();

@@ -210,7 +210,7 @@
                     <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}"/>
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
                     <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="{localization:LocBinding Thread}" Width="Auto" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Width="{Binding Path=ThreadColumnWidth}" Header="{localization:LocBinding Thread}" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="IP" Width="{Binding IpColumnWidth}" DisplayMemberBinding="{Binding Address}" HeaderContainerStyle="{StaticResource IpGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="{localization:LocBinding Logger}" Width="180" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="{localization:LocBinding Message}" Width="Auto" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource MessageHeaderTemplate}"/>

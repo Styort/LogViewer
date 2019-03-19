@@ -1044,6 +1044,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку с № потока:.
+        /// </summary>
+        internal static string ShowThreadColumn {
+            get {
+                return ResourceManager.GetString("ShowThreadColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку с номером потока в списке считанных логов.
+        /// </summary>
+        internal static string ShowThreadColumnToolTip {
+            get {
+                return ResourceManager.GetString("ShowThreadColumnToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Синёв Виктор.
         /// </summary>
         internal static string SinevViktor {

@@ -230,7 +230,7 @@
     <value>Найти все (Ctrl+F)</value>
   </data>
   <data name="FindInTree" xml:space="preserve">
-    <value>Найти в дереве</value>
+    <value>Найти логгер в дереве</value>
   </data>
   <data name="FindLoggersToolTip" xml:space="preserve">
     <value>Найти логгеры</value>

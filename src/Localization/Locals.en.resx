@@ -341,7 +341,7 @@
     <value>Find All (Ctrl+F)</value>
   </data>
   <data name="FindInTree" xml:space="preserve">
-    <value>Find in tree</value>
+    <value>Find Logger in Tree</value>
   </data>
   <data name="FindLoggersToolTip" xml:space="preserve">
     <value>Find Loggers</value>

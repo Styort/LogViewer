@@ -38,11 +38,16 @@
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+    </Style>
+
     <Style x:Key="BaseButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
         <Setter Property="Height" Value="30"/>
         <Setter Property="Width" Value="150"/>
         <Setter Property="Margin" Value="10"/>
         <Setter Property="Foreground" Value="{Binding FontColor}"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
     </Style>
 
     <Style x:Key="DataGridCellStyle" TargetType="TextBlock">
@@ -402,7 +407,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" >
                         <ComboBox Margin="10,0,0,0" ItemsSource="{Binding Path=DataContext.LogLevels, RelativeSource={RelativeSource AncestorType=Window}}" 
                                   SelectedItem="{Binding Path=DataContext.SelectedMinLogLevel, RelativeSource={RelativeSource AncestorType=Window}}">
                             <ComboBox.ItemTemplate>
@@ -436,12 +441,6 @@
                             </ComboBox.ItemTemplate>
                         </ComboBox>
                     </StackPanel>
-
-                    <!--<ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="contentTB" Property="Foreground" Value="Black"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>-->
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -544,7 +543,6 @@
                                              CommandParameter="{StaticResource False}" Key="Return" />
                             </TextBox.InputBindings>
                         </TextBox>
-
 
                         <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindAllHotKeys}" Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
                             <Image Source="{StaticResource SearchDrawingImage}"/>

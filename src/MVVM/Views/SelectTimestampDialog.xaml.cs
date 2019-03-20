@@ -22,36 +22,31 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class SelectTimestampDialog : Window
     {
-        private DateTime selectedDate = DateTime.Now;
-        private DateTime selectedTime = DateTime.Now;
-        public DateTime PickedDateTime => selectedDate.Date + selectedTime.TimeOfDay;
+        private DateTime selectedDateTime = DateTime.Now;
+        public DateTime PickedDateTime => selectedDateTime;
 
         public SelectTimestampDialog(DateTime? currentLogDateTime)
         {
             InitializeComponent();
 
             if (currentLogDateTime.HasValue)
-            {
-                selectedDate = currentLogDateTime.Value;
-                selectedTime = currentLogDateTime.Value;
-            }
+                selectedDateTime = currentLogDateTime.Value;
+            
             else
             {
                 // обнуляем секунды и мс. для удобства работы с датой
-                if (selectedTime.Second != 0)
-                    selectedTime = selectedTime.AddSeconds(-selectedTime.Second);
-                if (selectedTime.Millisecond != 0)
-                    selectedTime = selectedTime.AddMilliseconds(-selectedTime.Millisecond);
+                if (selectedDateTime.Second != 0)
+                    selectedDateTime = selectedDateTime.AddSeconds(-selectedDateTime.Second);
+                if (selectedDateTime.Millisecond != 0)
+                    selectedDateTime = selectedDateTime.AddMilliseconds(-selectedDateTime.Millisecond);
             }
             
-            SelectedDateTB.Text = selectedDate.ToString("d");
-            SelectedTimeTB.Text = selectedTime.ToString("HH:mm:ss.fff");
+            SelectedDateTimeTB.Text = selectedDateTime.ToString("dd/MM/yyyy HH:mm:ss.fff");
         }
-
-
+        
         public void CalendarDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            Calendar.SelectedDate = selectedDate;
+            Calendar.SelectedDate = selectedDateTime;
         }
 
         public void CalendarDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
@@ -64,21 +59,21 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            selectedDate = Calendar.SelectedDate.Value;
-            SelectedDateTB.Text = selectedDate.ToString("d");
+            selectedDateTime = Calendar.SelectedDate.Value;
+            SelectedDateTimeTB.Text = selectedDateTime.ToString("dd/MM/yyyy HH:mm:ss.fff");
         }
 
         public void ClockDialogOpenedEventHandler(object sender, DialogOpenedEventArgs eventArgs)
         {
-            Clock.Time = selectedTime;
+            Clock.Time = selectedDateTime;
         }
 
         public void ClockDialogClosingEventHandler(object sender, DialogClosingEventArgs eventArgs)
         {
             if (Equals(eventArgs.Parameter, "1"))
             {
-                selectedTime = Clock.Time;
-                SelectedTimeTB.Text = selectedTime.ToString("HH:mm:ss.fff");
+                selectedDateTime = Clock.Time;
+                SelectedDateTimeTB.Text = selectedDateTime.ToString("dd/MM/yyyy HH:mm:ss.fff");
             }
         }
 
@@ -87,23 +82,13 @@ namespace LogViewer.MVVM.Views
             this.DialogResult = true;
         }
 
-        private void SelectedTimeTB_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            if(string.IsNullOrEmpty(SelectedTimeTB.Text))
-                return;
-            if (DateTime.TryParse(SelectedTimeTB.Text, out DateTime date))
-            {
-                selectedTime = date;
-            }
-        }
-
         private void SelectedDateTB_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            if (string.IsNullOrEmpty(SelectedDateTB.Text))
+            if (string.IsNullOrEmpty(SelectedDateTimeTB.Text))
                 return;
-            if (DateTime.TryParse(SelectedDateTB.Text, out DateTime date))
+            if (DateTime.TryParse(SelectedDateTimeTB.Text, out DateTime date))
             {
-                selectedDate = date;
+                selectedDateTime = date;
             }
         }
     }

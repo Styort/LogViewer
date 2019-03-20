@@ -247,21 +247,33 @@
                             <TextBlock Text="{Binding Path=Version}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{localization:LocBinding Author}" FontWeight="Bold"/>
-                            <TextBlock Text="{localization:LocBinding SinevViktor}"/>
-                            <TextBlock Text=" ("/>
-                            <TextBlock>
+                            <TextBlock VerticalAlignment="Center" Text="{localization:LocBinding Author}" FontWeight="Bold"/>
+                            <TextBlock VerticalAlignment="Center" Text="{localization:LocBinding SinevViktor}"/>
+                            <materialDesign:Chip
+                                ToolTip="https://github.com/Styort"
+                                Margin="10,0,10,0"
+                                IconBackground="{DynamicResource PrimaryHueDarkBrush}"
+                                IconForeground="{DynamicResource PrimaryHueDarkForegroundBrush}">
                                 <Hyperlink NavigateUri="https://github.com/Styort" Click="Hyperlink_OnClick">
-                                    <TextBlock Text="GitHub" ToolTip="https://github.com/Styort"/>
+                                    <TextBlock Text="GitHub"/>
                                 </Hyperlink>
-                            </TextBlock>
-                            <TextBlock Text=", "/>
-                            <TextBlock>
+                                <materialDesign:Chip.Icon>
+                                    <materialDesign:PackIcon Kind="GithubCircle" />
+                                </materialDesign:Chip.Icon>
+                            </materialDesign:Chip>
+
+                            <materialDesign:Chip
+                                ToolTip="https://stackoverflow.com/users/6551141/%D0%92%D0%B8%D1%82%D1%91%D0%BA-%D0%A1%D0%B8%D0%BD%D1%91%D0%B2"
+                                IconBackground="{DynamicResource PrimaryHueDarkBrush}"
+                                IconForeground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+>
                                 <Hyperlink NavigateUri="https://stackoverflow.com/users/6551141/%D0%92%D0%B8%D1%82%D1%91%D0%BA-%D0%A1%D0%B8%D0%BD%D1%91%D0%B2" Click="Hyperlink_OnClick">
-                                    <TextBlock Text="Stack Overflow" ToolTip="https://stackoverflow.com/users/6551141/%D0%92%D0%B8%D1%82%D1%91%D0%BA-%D0%A1%D0%B8%D0%BD%D1%91%D0%B2"/>
+                                    <TextBlock Text="Stack Overflow"/>
                                 </Hyperlink>
-                            </TextBlock>
-                            <TextBlock Text=")"/>
+                                <materialDesign:Chip.Icon>
+                                    <materialDesign:PackIcon Kind="StackOverflow" />
+                                </materialDesign:Chip.Icon>
+                            </materialDesign:Chip>
                         </StackPanel>
                         <TextBlock Text="{localization:LocBinding LogViewerFeatures}"/>
                         <Border BorderThickness="1" Height="100" Margin="0,5" Padding="5">

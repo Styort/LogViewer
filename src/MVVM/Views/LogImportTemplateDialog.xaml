@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding LogImportTemplate}" Height="320" Width="700">
+        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="320" Width="700">
 
     <Window.DataContext>
         <viewModels:LogImportTemplateViewModel/>

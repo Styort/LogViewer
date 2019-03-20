@@ -23,10 +23,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="0.35*"/>
         </Grid.RowDefinitions>
-        <ListView x:Name="FoundResultListView"  ItemsSource="{Binding Path=SearchResult, IsAsync=True}" ItemContainerStyle="{StaticResource SearchLogItemStyle}" 
+        <ListView x:Name="FoundResultListView"  ItemsSource="{Binding Path=SearchResult, IsAsync=True}"
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" SelectedValue="{Binding Path=SelectedLog}"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" VirtualizingStackPanel.IsVirtualizing="True" 
-                  VirtualizingStackPanel.VirtualizationMode="Recycling" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                  VirtualizingStackPanel.VirtualizationMode="Recycling" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler" >
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <VirtualizingStackPanel/>
@@ -47,6 +47,34 @@
                     <MenuItem Header="{localization:LocBinding GoToThisLogMessage}" ToolTip="{localization:LocBinding GoToThisLogMessageToolTip}" Margin="0" Click="ShowMessageInMainWindowClick"/>
                 </ContextMenu>
             </ListView.ContextMenu>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Level}" Value="Warn">
+                            <Setter Property="Foreground" Value="Orange"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="Error">
+                            <Setter Property="Foreground" Value="Red"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="Fatal">
+                            <Setter Property="Foreground" Value="DarkRed"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="Info">
+                            <Setter Property="Foreground" Value="Green"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="Debug">
+                            <Setter Property="Foreground" Value="Black"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Level}" Value="Trace">
+                            <Setter Property="Foreground" Value="Gray"></Setter>
+                        </DataTrigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
         <GridSplitter Grid.Column="0" Height="3" Grid.Row="1" ResizeDirection="Rows" Background="Gray"
                       HorizontalAlignment="Stretch"/>

@@ -417,7 +417,7 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Ширина колонки с IP
         /// </summary>
-        public double IpColumnWidth => IsIpVisible ? Double.NaN : 0;
+        public double IpColumnWidth => IsIpVisible ? 115 : 0;
         
         /// <summary>
         /// Ширина колонки Thread
@@ -712,6 +712,7 @@ namespace LogViewer.MVVM.ViewModels
             lastSelectedPreviousMessageCounter = 0;
             warnSearchCounter = 0;
 
+            SearchText = string.Empty;
             prevFindNext = string.Empty;
             prevFindPrevious = string.Empty;
 

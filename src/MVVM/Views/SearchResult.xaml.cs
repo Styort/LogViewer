@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
 
@@ -91,6 +92,14 @@ namespace LogViewer.MVVM.Views
         private void ShowMessageInMainWindowClick(object sender, RoutedEventArgs e)
         {
             OnShowLogEvent((LogMessage)FoundResultListView.SelectedItem);
+        }
+
+        private void ListViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is ListViewItem item && item.Content is LogMessage logMessage)
+            {
+                OnShowLogEvent(logMessage);
+            }
         }
     }
 }

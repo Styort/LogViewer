@@ -31,7 +31,7 @@
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="SelectedDateFromTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateFromTB_OnTextChanged"/>
+                        <TextBox x:Name="SelectedDateTimeFromTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateFromTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="CalendarFromDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="CalendarFromDialogClosingEventHandler"
@@ -51,10 +51,7 @@
                                 </Grid>
                             </Button.CommandParameter>
                         </Button>
-                    </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="10,0">
-                        <TextBox x:Name="SelectedTimeFromTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedTimeFromTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="ClockFromDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="ClockFromDialogClosingEventHandler"
@@ -64,7 +61,7 @@
                                 <Grid Margin="-1">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" /> 
+                                        <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <materialDesign:Clock Is24Hours="True" DisplayAutomation="Cycle" x:Name="ClockFrom" />
                                     <StackPanel Grid.Row="1" Margin="8" HorizontalAlignment="Right" Orientation="Horizontal">
@@ -81,7 +78,7 @@
 
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
                     <StackPanel Orientation="Horizontal">
-                        <TextBox x:Name="SelectedDateToTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateToTB_OnTextChanged"/>
+                        <TextBox x:Name="SelectedDateTimeToTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedDateToTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="CalendarToDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="CalendarToDialogClosingEventHandler"
@@ -101,10 +98,7 @@
                                 </Grid>
                             </Button.CommandParameter>
                         </Button>
-                    </StackPanel>
 
-                    <StackPanel Orientation="Horizontal" Margin="10,0">
-                        <TextBox x:Name="SelectedTimeToTB" VerticalAlignment="Center" FontSize="24" Padding="0, -5" TextChanged="SelectedTimeToTB_OnTextChanged"/>
                         <Button Margin="8 0 0 0" Width="35" Height="35" Padding="2,2,2,2" Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}"
                                 materialDesign:DialogHost.DialogOpenedAttached="ClockToDialogOpenedEventHandler"
                                 materialDesign:DialogHost.DialogClosingAttached="ClockToDialogClosingEventHandler"

@@ -835,6 +835,10 @@ namespace LogViewer.MVVM.ViewModels
                 try
                 {
                     IsVisibleLoader = true;
+
+                    if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
+                        SearchText = selectedLog.Message;
+
                     if (!string.IsNullOrEmpty(SearchText))
                     {
                         // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск
@@ -909,6 +913,10 @@ namespace LogViewer.MVVM.ViewModels
                 try
                 {
                     IsVisibleLoader = true;
+
+                    if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
+                        SearchText = selectedLog.Message;
+
                     if (!string.IsNullOrEmpty(SearchText))
                     {
                         // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск

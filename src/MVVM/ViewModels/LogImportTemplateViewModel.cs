@@ -10,13 +10,14 @@ namespace LogViewer.MVVM.ViewModels
     public class LogImportTemplateViewModel : BaseViewModel
     {
         public Dictionary<string, List<eImportTemplateParameters>> PopularTemplates { get; set; } = new Dictionary<string, List<eImportTemplateParameters>>();
-        public List<eImportTemplateParameters> SelectedPopularTemplate { get; set; }
+        public List<eImportTemplateParameters> SelectedPopularTemplate { get; set; } 
 
         public ObservableCollection<LogTemplateItem> TemplateLogItems { get; set; } = new ObservableCollection<LogTemplateItem>();
-        public bool IsPopularTemplateSelected { get; set; } = true;
+
+        public bool IsAutomaticDetectTemplateSelected { get; set; } = true;
+        public bool IsPopularTemplateSelected { get; set; }
         public bool IsUserTemplateSelected { get; set; }
-
-
+        
         public LogImportTemplateViewModel()
         {
             PopularTemplates.Add("DateTime;LogLevel;EventID;ProcessID;ThreadNumber;Callsite;Logger;Message",

@@ -1545,27 +1545,29 @@ namespace LogViewer.MVVM.ViewModels
         /// <param name="obj">Файл, полученный через drag and drop</param>
         public void ImportLogs(object obj)
         {
-            LogImportTemplateDialog logImportTemplateDialogDialog = new Views.LogImportTemplateDialog();
+            // выбираем файл
+            importFilePath = string.Empty;
+
+            if (obj is string filePath && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            {
+                importFilePath = filePath;
+            }
+            else
+            {
+                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*" };
+                if (fileDialog.ShowDialog() == true)
+                    importFilePath = fileDialog.FileName;
+                else
+                    return;
+            }
+
+            // выбираем шаблон парсинга
+            LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importFilePath);
             logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             logImportTemplateDialogDialog.ShowDialog();
             if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
             {
                 var template = logImportTemplateDialogDialog.TemplateParameterses;
-
-                importFilePath = string.Empty;
-
-                if (obj is string filePath && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
-                {
-                    importFilePath = filePath;
-                }
-                else
-                {
-                    OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*" };
-                    if (fileDialog.ShowDialog() == true)
-                        importFilePath = fileDialog.FileName;
-                    else
-                        return;
-                }
 
                 Pause();
 

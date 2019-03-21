@@ -482,4 +482,11 @@ Click "Settings" button to add new receivers.</value>
   <data name="ToggleMarkingToolTip" xml:space="preserve">
     <value>Mark the messages of this logger in a different color</value>
   </data>
+  <data name="AutomaticDetectTemplate" xml:space="preserve">
+    <value>Automatically (not stable)</value>
+  </data>
+  <data name="AutomaticDetectTemplateError" xml:space="preserve">
+    <value>An error occurred while trying to automatically match the message template.
+Try selecting a template manually.</value>
+  </data>
 </root>

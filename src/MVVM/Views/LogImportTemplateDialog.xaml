@@ -7,7 +7,7 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="320" Width="700">
+        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="345" Width="700">
 
     <Window.DataContext>
         <viewModels:LogImportTemplateViewModel/>
@@ -34,15 +34,20 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <RadioButton Margin="10,0" Content="{localization:LocBinding SelectFromExistingTemplates}" IsChecked="{Binding Path=IsPopularTemplateSelected}"/>
+        <RadioButton Margin="10,10" Content="{localization:LocBinding AutomaticDetectTemplate}" IsChecked="{Binding Path=IsAutomaticDetectTemplateSelected}"/>
+        <RadioButton Grid.Row="1" Margin="10,0" Content="{localization:LocBinding SelectFromExistingTemplates}" IsChecked="{Binding Path=IsPopularTemplateSelected}"/>
 
-        <ComboBox Grid.Row="1" Margin="10" ItemsSource="{Binding Path=PopularTemplates}" SelectedValue="{Binding Path=SelectedPopularTemplate}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
+        <ComboBox Grid.Row="2" Margin="10" ItemsSource="{Binding Path=PopularTemplates}" SelectedValue="{Binding Path=SelectedPopularTemplate}" SelectedValuePath="Value" DisplayMemberPath="Key"/>
 
         <RadioButton Grid.Row="3" Margin="10,0" Content="{localization:LocBinding OrCreateYourOwnTemplate}" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
 
-        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10" Height="80">
+        <Button Grid.Row="4" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
+                Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
+        
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Margin="10,0,10,5" Height="80">
             <ItemsControl x:Name="TemplateLogItemsIC" ItemsSource="{Binding Path=TemplateLogItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -64,9 +69,6 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </StackPanel>
-
-        <Button Grid.Row="4" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
-                Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
 
         <WrapPanel Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
             <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>

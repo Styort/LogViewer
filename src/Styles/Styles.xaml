@@ -537,12 +537,14 @@
                     <StackPanel Orientation="Horizontal" Width="1200">
                         <TextBlock Margin="7,0,0,0" Text="{localization:LocBinding Message}" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Gray" x:Name="contentTB"/>
 
-                        <Border CornerRadius="2" BorderBrush="Gray" BorderThickness="1" Margin="10,0,0,0" Height="33" HorizontalAlignment="Right" Width="200">
+                        <Border CornerRadius="2" Margin="10,0,0,0" Height="33" HorizontalAlignment="Right" Width="200">
                             <Border.Style>
                                 <Style TargetType="{x:Type Border}">
+                                    <Setter Property="BorderBrush" Value="Gray"/>
+                                    <Setter Property="BorderThickness" Value="1"/>
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsFocused, ElementName=SearchTextBox}" Value="True">
-                                            <Setter Property="BorderBrush" Value="Red" />
+                                            <Setter Property="BorderBrush" Value="{Binding IconColor}" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>

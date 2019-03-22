@@ -105,7 +105,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="0.8*"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="320"/>
+            <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="60"/>
@@ -156,12 +156,14 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border CornerRadius="2" BorderBrush="Gray" BorderThickness="1" Margin="10,0,0,0" Height="33" HorizontalAlignment="Stretch">
+                <Border CornerRadius="2" Margin="10,0,0,0" Height="33" HorizontalAlignment="Stretch">
                     <Border.Style>
                         <Style TargetType="{x:Type Border}">
+                            <Setter Property="BorderBrush" Value="Gray"/>
+                            <Setter Property="BorderThickness" Value="1"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsFocused, ElementName=SearchTextBox}" Value="True">
-                                    <Setter Property="BorderBrush" Value="Red" />
+                                <DataTrigger Binding="{Binding IsFocused, ElementName=SearchLoggerTextBox}" Value="True">
+                                    <Setter Property="BorderBrush" Value="{Binding IconColor}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -180,7 +182,7 @@
                         </TextBox>
 
                         <Button Grid.Column="1" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearFindLoggersResultToolTip}"
-                                Command="{Binding Path=ClearSearchLoggerResultCommand}" 
+                                Command="{Binding Path=ClearSearchLoggerResultCommand}"
                                 Visibility="{Binding Path=IsEnableClearSearchLoggers, Converter={StaticResource BooleanToVisibility}}">
                             <Button.Template>
                                 <ControlTemplate TargetType="{x:Type Button}">

@@ -124,7 +124,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Автоматически (работает не стабильно).
+        ///   Looks up a localized string similar to Автоматически.
         /// </summary>
         internal static string AutomaticDetectTemplate {
             get {
@@ -139,6 +139,15 @@ namespace LogViewer.Localization {
         internal static string AutomaticDetectTemplateError {
             get {
                 return ResourceManager.GetString("AutomaticDetectTemplateError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Попытаться подобрать шаблон для чтения файла логов автоматически. 100% результат не гарантирован..
+        /// </summary>
+        internal static string AutomaticDetectTemplateToolTip {
+            get {
+                return ResourceManager.GetString("AutomaticDetectTemplateToolTip", resourceCulture);
             }
         }
         

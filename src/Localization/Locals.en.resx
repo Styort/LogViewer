@@ -489,4 +489,13 @@ Click "Settings" button to add new receivers.</value>
     <value>An error occurred while trying to automatically match the message template.
 Try selecting a template manually.</value>
   </data>
+  <data name="ClearSearchAndSearchResult" xml:space="preserve">
+    <value>Clear search text and search result (Ctrl+R)</value>
+  </data>
+  <data name="ShowThreadColumn" xml:space="preserve">
+    <value>Show thread № column</value>
+  </data>
+  <data name="ShowThreadColumnToolTip" xml:space="preserve">
+    <value>Show thread number column in log table</value>
+  </data>
 </root>

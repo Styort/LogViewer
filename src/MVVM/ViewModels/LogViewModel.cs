@@ -84,6 +84,17 @@ namespace LogViewer.MVVM.ViewModels
         private DateTime goToTimestampDateTime;
         private DateTime fromTimeInverval;
         private DateTime toTimeInverval;
+        private bool isSearchProcess = false;
+
+        public bool IsSearchProcess
+        {
+            get => isSearchProcess;
+            set
+            {
+                isSearchProcess = value;
+                ClearSearchResultIsEnabled = isSearchProcess;
+            }
+        }
 
         private List<LogMessage> nearbyLastLogMessages = new List<LogMessage>();
         private LogMessage lastLogMessage;
@@ -384,6 +395,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 searchText = value;
+                ClearSearchResultIsEnabled = IsSearchProcess || SearchText.Length > 0;
                 IsEnableFindPrevious = !string.IsNullOrEmpty(searchText) && SelectedLog != null;
                 OnPropertyChanged();
             }
@@ -418,7 +430,7 @@ namespace LogViewer.MVVM.ViewModels
         /// Ширина колонки с IP
         /// </summary>
         public double IpColumnWidth => IsIpVisible ? 115 : 0;
-        
+
         /// <summary>
         /// Ширина колонки Thread
         /// </summary>
@@ -489,6 +501,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 searchLoggerText = value;
+                IsEnableClearSearchLoggers = isSearchLoggersProcess || searchLoggerText.Any();
                 OnPropertyChanged();
             }
         }
@@ -755,7 +768,7 @@ namespace LogViewer.MVVM.ViewModels
 
                     bool isOpenInAnotherWinow = (bool)obj;
 
-                    ClearSearchResultIsEnabled = !isOpenInAnotherWinow;
+                    IsSearchProcess = !isOpenInAnotherWinow;
 
                     if (allLogs.Any())
                     {
@@ -1688,12 +1701,16 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void ClearSearchResult()
         {
-            ClearSearchResultIsEnabled = false;
-            isTimeIntervalProcess = false;
+            if (IsSearchProcess)
+            {
+                IsSearchProcess = false;
+                isTimeIntervalProcess = false;
+                Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
+                    .Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath)));
+                SelectedLog = GetLastSelecterOrNearbyMessage();
+            }
+
             SearchText = string.Empty;
-            Logs = new AsyncObservableCollection<LogMessage>(allLogs.ToList()
-                .Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath)));
-            SelectedLog = GetLastSelecterOrNearbyMessage();
         }
 
         /// <summary>
@@ -1701,6 +1718,11 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void SearchLoggers()
         {
+            if (string.IsNullOrEmpty(SearchLoggerText))
+            {
+                ClearSearchLoggersResult();
+                return;
+            }
             exceptParents.Clear();
             FindLastNodesAndUpdateVisibility(Loggers[0]);
             exceptParents.ForEach(x => x.IsVisible = true);
@@ -1711,10 +1733,14 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void ClearSearchLoggersResult()
         {
-            SetAllLoggersVisible(Loggers[0]);
-            IsEnableClearSearchLoggers = false;
+            if (isSearchLoggersProcess)
+            {
+                SetAllLoggersVisible(Loggers[0]);
+                SearchLoggerText = string.Empty;
+                isSearchLoggersProcess = false;
+                IsEnableClearSearchLoggers = false;
+            }
             SearchLoggerText = string.Empty;
-            isSearchLoggersProcess = false;
         }
 
         /// <summary>
@@ -1762,7 +1788,7 @@ namespace LogViewer.MVVM.ViewModels
                     Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(
                         x => x.Time >= fromTimeInverval &&
                              x.Time <= toTimeInverval));
-                    ClearSearchResultIsEnabled = true;
+                    IsSearchProcess = true;
                     isTimeIntervalProcess = true;
                 }
             }
@@ -2061,7 +2087,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 if (addLog)
                 {
-                    if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !ClearSearchResultIsEnabled
+                    if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !IsSearchProcess
                         && (!isTimeIntervalProcess || isTimeIntervalProcess && log.Time > fromTimeInverval && log.Time < toTimeInverval))
                     {
                         lock (logsLockObj) Logs.Add(log);
@@ -2089,7 +2115,7 @@ namespace LogViewer.MVVM.ViewModels
 
             if (addLog)
             {
-                if (SelectedMinLogLevel.HasFlag(log.Level) && !exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath) && !ClearSearchResultIsEnabled)
+                if (SelectedMinLogLevel.HasFlag(log.Level) && !exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath) && !IsSearchProcess)
                     lock (logsLockObj) Logs.Add(log);
 
                 if (!exceptLoggersWithBuffer.Contains(log.FullPath))
@@ -2316,7 +2342,7 @@ namespace LogViewer.MVVM.ViewModels
                         {
                             // если в конкретный момент идет процесс поиска, то добавляем в отображаемый список только то, что проходит условия поиска,
                             // а все кидаем в общий список
-                            if (ClearSearchResultIsEnabled)
+                            if (IsSearchProcess)
                             {
                                 lock (logsLockObj) allLogs.Add(log);
 

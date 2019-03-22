@@ -156,9 +156,55 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBox x:Name="SearchLoggerTextBox" Text="{Binding Path=SearchLoggerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" Height="30" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Style="{StaticResource TextBoxWithHint}"/>
+                <Border CornerRadius="2" BorderBrush="Gray" BorderThickness="1" Margin="10,0,0,0" Height="33" HorizontalAlignment="Stretch">
+                    <Border.Style>
+                        <Style TargetType="{x:Type Border}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsFocused, ElementName=SearchTextBox}" Value="True">
+                                    <Setter Property="BorderBrush" Value="Red" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Border.Style>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" x:Name="SearchLoggerTextBox"
+                                 materialDesign:HintAssist.Hint="{localization:LocBinding Search}"
+                                 BorderThickness="0" Text="{Binding Path=SearchLoggerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
+                            <TextBox.InputBindings>
+                                <KeyBinding  Command="{Binding Path=SearchLoggersCommand}" Key="Return" />
+                            </TextBox.InputBindings>
+                        </TextBox>
 
-                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindLoggersToolTip}" Command="{Binding Path=SearchLoggersCommand}">
+                        <Button Grid.Column="1" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearFindLoggersResultToolTip}"
+                                Command="{Binding Path=ClearSearchLoggerResultCommand}" 
+                                Visibility="{Binding Path=IsEnableClearSearchLoggers, Converter={StaticResource BooleanToVisibility}}">
+                            <Button.Template>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Grid x:Name="RootGrid">
+                                        <Image Source="{StaticResource CancelDrawingImage}" Cursor="Hand"/>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Grid>
+
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property ="IsPressed" Value ="True">
+                                            <Setter TargetName="RootGrid" Property="RenderTransform">
+                                                <Setter.Value>
+                                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0,0,0" Padding="2" ToolTip="{localization:LocBinding FindLoggersToolTip}" Command="{Binding Path=SearchLoggersCommand}">
                     <Image Source="{StaticResource SearchDrawingImage}"/>
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -169,10 +215,6 @@
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                </Button>
-
-                <Button Grid.Column="2" Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding ClearFindLoggersResultToolTip}" Command="{Binding Path=ClearSearchLoggerResultCommand}" IsEnabled="{Binding Path= IsEnableClearSearchLoggers}">
-                    <Image Source="{StaticResource CleanSearchResultImage}"/>
                 </Button>
             </Grid>
 

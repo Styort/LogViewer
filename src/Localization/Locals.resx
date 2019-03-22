@@ -495,4 +495,7 @@
   <data name="ShowThreadColumnToolTip" xml:space="preserve">
     <value>Показывать колонку с номером потока в списке считанных логов</value>
   </data>
+  <data name="ClearSearchAndSearchResult" xml:space="preserve">
+    <value>Очистить текст поиска и результат поиска (Ctrl+R)</value>
+  </data>
 </root>

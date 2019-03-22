@@ -529,7 +529,7 @@
         <Setter Property="CommandParameter" Value="{Binding}"/>
         <Setter Property="Icon" Value="{Binding IconImage}"/>
     </Style>
-    
+
     <Style x:Key="MessageHeaderTemplate" TargetType="{x:Type GridViewColumnHeader}" BasedOn="{StaticResource BaseGridViewColumnHeaderStyle}">
         <Setter Property="Template">
             <Setter.Value>
@@ -537,12 +537,55 @@
                     <StackPanel Orientation="Horizontal" Width="1200">
                         <TextBlock Margin="7,0,0,0" Text="{localization:LocBinding Message}" VerticalAlignment="Center" FontWeight="DemiBold" Foreground="Gray" x:Name="contentTB"/>
 
-                        <TextBox Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="10,0,0,0" Height="30" HorizontalAlignment="Right" VerticalContentAlignment="Center" Style="{StaticResource TextBoxWithHint}" x:Name="SearchTextBox" Width="200">
-                            <TextBox.InputBindings>
-                                <KeyBinding  Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" 
-                                             CommandParameter="{StaticResource False}" Key="Return" />
-                            </TextBox.InputBindings>
-                        </TextBox>
+                        <Border CornerRadius="2" BorderBrush="Gray" BorderThickness="1" Margin="10,0,0,0" Height="33" HorizontalAlignment="Right" Width="200">
+                            <Border.Style>
+                                <Style TargetType="{x:Type Border}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsFocused, ElementName=SearchTextBox}" Value="True">
+                                            <Setter Property="BorderBrush" Value="Red" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" x:Name="SearchTextBox"
+                                         materialDesign:HintAssist.Hint="{localization:LocBinding Search}"
+                                         BorderThickness="0" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
+                                    <TextBox.InputBindings>
+                                        <KeyBinding  Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" 
+                                                     CommandParameter="{StaticResource False}" Key="Return" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+
+                                <Button Grid.Column="1" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearSearchAndSearchResult}"
+                                        Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
+                                        Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
+                                        Visibility="{Binding ElementName=LogsListView, Path= DataContext.ClearSearchResultIsEnabled, Converter={StaticResource BooleanToVisibility}}">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="{x:Type Button}">
+                                            <Grid x:Name="RootGrid">
+                                                <Image Source="{StaticResource CancelDrawingImage}" Cursor="Hand"/>
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Grid>
+
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property ="IsPressed" Value ="True">
+                                                    <Setter TargetName="RootGrid" Property="RenderTransform">
+                                                        <Setter.Value>
+                                                            <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
+                        </Border>
 
                         <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindAllHotKeys}" Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
                             <Image Source="{StaticResource SearchDrawingImage}"/>
@@ -563,13 +606,8 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-
-                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding ClearSearchResultToolTip}" Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
-                                Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.ClearSearchResultIsEnabled}">
-                            <Image Source="{StaticResource CleanSearchResultImage}"/>
-                        </Button>
-
-                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="5,0,0,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
+                        
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
                             <Image Source="{StaticResource SearchPrevious}"/>
                         </Button>
 

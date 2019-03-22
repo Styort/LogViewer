@@ -42,7 +42,6 @@ namespace LogViewer.MVVM.Views
                     }
                 }
 
-                // TODO: Автоматический подбор шаблона
                 if (logImportTemplateViewModel.IsAutomaticDetectTemplateSelected)
                 {
                     //выбираем первое сообщение 

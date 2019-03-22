@@ -483,11 +483,14 @@
     <value>Версия: </value>
   </data>
   <data name="AutomaticDetectTemplate" xml:space="preserve">
-    <value>Автоматически (работает не стабильно)</value>
+    <value>Автоматически</value>
   </data>
   <data name="AutomaticDetectTemplateError" xml:space="preserve">
     <value>Произошла ошибка при попытке автоматически подобрать шаблон сообщения.
 Попробуйте выбрать шаблон вручную.</value>
+  </data>
+  <data name="AutomaticDetectTemplateToolTip" xml:space="preserve">
+    <value>Попытаться подобрать шаблон для чтения файла логов автоматически. 100% результат не гарантирован.</value>
   </data>
   <data name="ShowThreadColumn" xml:space="preserve">
     <value>Показывать колонку с № потока:</value>

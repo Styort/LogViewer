@@ -423,6 +423,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Файл.
+        /// </summary>
+        internal static string File {
+            get {
+                return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Найти все (Ctrl+F).
         /// </summary>
         internal static string FindAllHotKeys {
@@ -792,6 +801,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Название.
+        /// </summary>
+        internal static string Name {
+            get {
+                return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Network Receiver.
+        /// </summary>
+        internal static string NetworkReceiver {
+            get {
+                return ResourceManager.GetString("NetworkReceiver", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не добавлено ни одного сетевого приёмника.
         ///Добавьте хотя бы один сетевой приёмник в настройках..
         /// </summary>
@@ -924,6 +951,15 @@ namespace LogViewer.Localization {
         internal static string PortIsBusy {
             get {
                 return ResourceManager.GetString("PortIsBusy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Приёмник.
+        /// </summary>
+        internal static string Receiver {
+            get {
+                return ResourceManager.GetString("Receiver", resourceCulture);
             }
         }
         
@@ -1113,6 +1149,15 @@ namespace LogViewer.Localization {
         internal static string small_remove {
             get {
                 return ResourceManager.GetString("small_remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Источник.
+        /// </summary>
+        internal static string Source {
+            get {
+                return ResourceManager.GetString("Source", resourceCulture);
             }
         }
         

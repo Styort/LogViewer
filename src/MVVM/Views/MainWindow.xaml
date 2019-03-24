@@ -26,7 +26,25 @@
                     <CheckBox IsChecked="{Binding IsChecked}" Uid="{Binding Id}" Command="{Binding Path=DataContext.TreeViewElementCheckCommand, RelativeSource={RelativeSource AncestorType=Window}}" x:Name="TreeViewCheckBox"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" PreviewMouseLeftButtonDown="TreeViewCheckBox_OnPreviewMouseLeftButtonDown" PreviewKeyDown="TreeViewCheckBox_OnPreviewKeyDown">
                     </CheckBox>
-                    <TextBlock Text="{Binding Text}" Background="{Binding ToggleMark}"/>
+                    <TextBlock Text="{Binding Text}" Background="{Binding ToggleMark}">
+                        <TextBlock.ToolTip>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="65"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30"/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Text="{localization:LocBinding Name, StringFormat={}{0}:}" FontWeight="Bold" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Row="1" Text="{localization:LocBinding Source, StringFormat={}{0}:}" FontWeight="Bold"/>
+                                
+                                <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Text}" VerticalAlignment="Top"/>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Source}"/>
+                            </Grid>
+                        </TextBlock.ToolTip>
+                    </TextBlock>
                     <StackPanel.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}">
                             <MenuItem Header="{localization:LocBinding CollapseAll}" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">

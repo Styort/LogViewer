@@ -27,18 +27,21 @@ namespace LogViewer.MVVM.TreeView
 
                 // Формируем путь к классу из предыдущих веток дерева
                 Logger = Parent.Logger + "." + Text;
+
+                if(!string.IsNullOrEmpty(Parent.Source))
+                    Source = Parent.Source;
             }
             else
-            {
                 Logger = Text;
-            }
+            
         }
-
 
         private string text;
         private bool? isChecked = true;
         private bool isExpanded;
         private bool isSelected = false;
+        private string source = string.Empty;
+
 
         public ObservableCollection<Node> Children { get; } = new ObservableCollection<Node>();
 
@@ -101,6 +104,19 @@ namespace LogViewer.MVVM.TreeView
             set
             {
                 isVisible = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Источник сообщения (IP или название файла)
+        /// </summary>
+        public string Source
+        {
+            get => source;
+            set
+            {
+                source = value;
                 OnPropertyChanged();
             }
         }

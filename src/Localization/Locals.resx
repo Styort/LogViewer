@@ -501,4 +501,19 @@
   <data name="ClearSearchAndSearchResult" xml:space="preserve">
     <value>Очистить текст поиска и результат поиска (Ctrl+R)</value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Название</value>
+  </data>
+  <data name="NetworkReceiver" xml:space="preserve">
+    <value>Network Receiver</value>
+  </data>
+  <data name="Receiver" xml:space="preserve">
+    <value>Приёмник</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Источник</value>
+  </data>
 </root>

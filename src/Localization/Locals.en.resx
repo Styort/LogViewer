@@ -501,4 +501,19 @@ Try selecting a template manually.</value>
   <data name="ShowThreadColumnToolTip" xml:space="preserve">
     <value>Show thread number column in log table</value>
   </data>
+  <data name="File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="NetworkReceiver" xml:space="preserve">
+    <value>Network Receiver</value>
+  </data>
+  <data name="Receiver" xml:space="preserve">
+    <value>Receiver</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
 </root>

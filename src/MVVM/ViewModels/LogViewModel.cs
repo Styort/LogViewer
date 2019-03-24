@@ -531,54 +531,13 @@ namespace LogViewer.MVVM.ViewModels
                 Logger = "Root",
                 Text = "Root",
                 IsExpanded = true,
-                IsChecked = true
+                IsChecked = true,
+                Source = "-"
             });
 
             CreateParsers();
 
             ColorReceiverColumnWidth = receivers.Count == 1 || receivers.Where(r => r.IsActive).All(x => x.Color.Color == Colors.White) ? 0 : RECEIVER_COLUMN_WIDTH;
-
-            #region Test
-
-            //Loggers = new AsyncObservableCollection<Node>();
-            //for (int i = 0; i < 3; i++)
-            //{
-            //    Loggers.Add(new Node
-            //    {
-            //        Text = $"CheckBox {i}",
-            //        IsExpanded = true
-            //    });
-            //    for (int j = 0; j < 3; j++)
-            //    {
-            //        Loggers[i].Children.Add(new Node(Loggers[i].Parent, $"CheckBox {i} child {j}"));
-            //        for (int k = 0; k < 3; k++)
-            //        {
-            //            Loggers[i].Children[j].Children.Add(new Node(Loggers[i].Children[j].Parent, $"CheckBox {i} child {j} child {k}"));
-            //        }
-            //    }
-            //}
-
-            //Array values = Enum.GetValues(typeof(eLogLevel));
-            //Random random = new Random();
-            //for (int i = 0; i < 100000; i++)
-            //{
-            //    var log = new LogMessage
-            //    {
-            //        Address = "192.168.1.54",
-            //        Level = (eLogLevel)values.GetValue(random.Next(values.Length)),
-            //        Logger = "Engy.Terminal.ViewModel.BlaBla",
-            //        Message = $"{random.Next(10000)} keawda {random.Next(10000)}",
-            //        Thread = 5,
-            //        Time = DateTime.Now
-            //    };
-
-            //    //logsDictionary[log.Level].Add(log);
-
-            //    Logs.Add(log);
-            //}
-            //allLogs = new AsyncObservableCollection<LogMessage>(Logs.ToList());
-
-            #endregion
 
             if (Settings.Instance.AutoStartInStartup)
                 Start();
@@ -1221,7 +1180,8 @@ namespace LogViewer.MVVM.ViewModels
                 Logger = "Root",
                 Text = "Root",
                 IsExpanded = isExpandedRoot,
-                IsChecked = isCheckedRoot
+                IsChecked = isCheckedRoot,
+                Source = "-"
             });
         }
 
@@ -2065,13 +2025,16 @@ namespace LogViewer.MVVM.ViewModels
             var root = Loggers[0].Children.FirstOrDefault(x => x.Text == log.Address);
             if (root == null)
             {
+                var address = !log.Address.Contains("Import (") ? log.Address : log.Address.Substring(0, log.Address.Length - 1);
+                
                 var rootNode = new Node(Loggers[0], log.Address)
                 {
                     IsRoot = true,
                     IsExpanded = true,
                     Logger = log.Address,
-                    IsChecked = (Loggers[0].IsChecked.HasValue && Loggers[0].IsChecked.Value),
-                    IsVisible = !isSearchLoggersProcess || log.Address.ToUpper().Contains(SearchLoggerText.ToUpper())
+                    IsChecked = Loggers[0].IsChecked.HasValue && Loggers[0].IsChecked.Value,
+                    IsVisible = !isSearchLoggersProcess || log.Address.ToUpper().Contains(SearchLoggerText.ToUpper()),
+                    Source = address.Replace("Import (", ""),
                 };
                 Loggers[0].Children.Add(rootNode);
                 root = rootNode;
@@ -2152,7 +2115,7 @@ namespace LogViewer.MVVM.ViewModels
                 var newNode = new Node(prevParent, node)
                 {
                     IsChecked = prevParent.IsChecked.HasValue && prevParent.IsChecked.Value,
-                    IsVisible = !isSearchLoggersProcess || log.Address.ToUpper().Contains(SearchLoggerText.ToUpper())
+                    IsVisible = !isSearchLoggersProcess || log.Address.ToUpper().Contains(SearchLoggerText.ToUpper()),
                 };
                 prevParent.Children.Add(newNode);
                 parent = newNode;

@@ -55,6 +55,9 @@
   <PropertyGroup>
     <ApplicationIcon>log.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>LogViewer.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CustomColorPicker">
       <HintPath>.\CustomColorPicker.dll</HintPath>

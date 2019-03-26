@@ -113,6 +113,7 @@
     <Compile Include="Enums\eImportTemplateParameters.cs" />
     <Compile Include="Enums\eLogLevel.cs" />
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
+    <Compile Include="Helpers\DialogCloser.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
     <Compile Include="Localization\LanguageEventArgs.cs" />

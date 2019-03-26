@@ -92,7 +92,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isSearchProcess = value;
-                ClearSearchResultIsEnabled = isSearchProcess;
+                ClearSearchResultIsEnabled = isSearchProcess || SearchText.Length > 0;
             }
         }
 
@@ -770,7 +770,8 @@ namespace LogViewer.MVVM.ViewModels
                                 });
                             }
                             else
-                                MessageBox.Show(Locals.NothingFoundMessageBoxInfo);
+                                MessageBox.Show(Locals.NothingFoundMessageBoxInfo, Locals.Search,
+                                    MessageBoxButton.OK, MessageBoxImage.Information);
                         }
                         else
                         {
@@ -2021,20 +2022,20 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void BuildTreeByMessage(LogMessage log, bool addLog = true)
         {
+            bool isImportFile = File.Exists(log.Address);
+
             // Если с таким IP не найден корневой элемент - создаем новое дерево.
-            var root = Loggers[0].Children.FirstOrDefault(x => x.Text == log.Address);
+            var root = Loggers[0].Children.FirstOrDefault(x => x.Text == (isImportFile ? Path.GetFileName(log.Address) : log.Address));
             if (root == null)
             {
-                var address = !log.Address.Contains("Import (") ? log.Address : log.Address.Substring(0, log.Address.Length - 1);
-                
-                var rootNode = new Node(Loggers[0], log.Address)
+                var rootNode = new Node(Loggers[0], isImportFile ? Path.GetFileName(log.Address) : log.Address)
                 {
                     IsRoot = true,
                     IsExpanded = true,
                     Logger = log.Address,
                     IsChecked = Loggers[0].IsChecked.HasValue && Loggers[0].IsChecked.Value,
                     IsVisible = !isSearchLoggersProcess || log.Address.ToUpper().Contains(SearchLoggerText.ToUpper()),
-                    Source = address.Replace("Import (", ""),
+                    Source = log.Address,
                 };
                 Loggers[0].Children.Add(rootNode);
                 root = rootNode;
@@ -2401,7 +2402,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 var lm = new LogMessage
                 {
-                    Address = $"Import ({importFilePath})",
+                    Address = importFilePath,
                     Time = DateTime.Parse(log[template[eImportTemplateParameters.DateTime]].Replace("\0", "")),
                     Level = LogLevelMapping[log[template[eImportTemplateParameters.LogLevel]]],
                     Thread = template.ContainsKey(eImportTemplateParameters.ThreadNumber) ? int.Parse(log[template[eImportTemplateParameters.ThreadNumber]]) : -1,

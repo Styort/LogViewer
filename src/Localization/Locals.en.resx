@@ -420,7 +420,7 @@ Click "Settings" button to add new receivers.</value>
     <value>Nothing found</value>
   </data>
   <data name="OnlyOneInstanceCanBeStartedMessageBoxText" xml:space="preserve">
-    <value>Only one instance of Log Viewer can be started.</value>
+    <value>Only one instance of Log Viewer can be started at one time!</value>
   </data>
   <data name="OrCreateYourOwnTemplate" xml:space="preserve">
     <value>Or create your own template</value>
@@ -493,7 +493,7 @@ Try selecting a template manually.</value>
     <value>Try to detect a template for parsing the log file automatically. 100% result is not guaranteed.</value>
   </data>
   <data name="ClearSearchAndSearchResult" xml:space="preserve">
-    <value>Clear search text and search result (Ctrl+R)</value>
+    <value>Clear text and search result (Ctrl+R)</value>
   </data>
   <data name="ShowThreadColumn" xml:space="preserve">
     <value>Show thread № column</value>

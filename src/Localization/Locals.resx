@@ -360,7 +360,7 @@
     <value>Ничего не найдено</value>
   </data>
   <data name="OnlyOneInstanceCanBeStartedMessageBoxText" xml:space="preserve">
-    <value>Может быть запущен только один экземпляр приложения LogViewer.</value>
+    <value>Может быть запущен только один экземпляр приложения LogViewer!</value>
   </data>
   <data name="OnlyOneInstanceOfApp" xml:space="preserve">
     <value>Один экземпляр приложения:</value>
@@ -499,7 +499,7 @@
     <value>Показывать колонку с номером потока в списке считанных логов</value>
   </data>
   <data name="ClearSearchAndSearchResult" xml:space="preserve">
-    <value>Очистить текст поиска и результат поиска (Ctrl+R)</value>
+    <value>Очистить текст и результат поиска (Ctrl+R)</value>
   </data>
   <data name="File" xml:space="preserve">
     <value>Файл</value>

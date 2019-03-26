@@ -883,6 +883,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Произошла ошибка при считывании шаблона.
+        /// </summary>
+        internal static string ParseTemplateStringError {
+            get {
+                return ResourceManager.GetString("ParseTemplateStringError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Пауза.
         /// </summary>
         internal static string Pause {

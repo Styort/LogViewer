@@ -516,4 +516,7 @@
   <data name="Source" xml:space="preserve">
     <value>Источник</value>
   </data>
+  <data name="ParseTemplateStringError" xml:space="preserve">
+    <value>Произошла ошибка при считывании шаблона</value>
+  </data>
 </root>

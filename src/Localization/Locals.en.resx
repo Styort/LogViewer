@@ -516,4 +516,7 @@ Try selecting a template manually.</value>
   <data name="Source" xml:space="preserve">
     <value>Source</value>
   </data>
+  <data name="ParseTemplateStringError" xml:space="preserve">
+    <value>An error occurred while parse template string</value>
+  </data>
 </root>

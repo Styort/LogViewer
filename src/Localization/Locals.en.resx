@@ -522,4 +522,22 @@ Try selecting a template manually.</value>
   <data name="FromLayoutString" xml:space="preserve">
     <value>From layout string</value>
   </data>
+  <data name="CallsiteAndStacktraces" xml:space="preserve">
+    <value>Callsite and Stacktraces</value>
+  </data>
+  <data name="DateAndTime" xml:space="preserve">
+    <value>Date and Time</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Main</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="ProcessesThreadsAndAssemblies" xml:space="preserve">
+    <value>Processes, Threads and Assemblies</value>
+  </data>
+  <data name="Separator" xml:space="preserve">
+    <value>Separator</value>
+  </data>
 </root>

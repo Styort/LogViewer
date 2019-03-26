@@ -49,7 +49,6 @@ namespace LogViewer.MVVM.Models
             }
         }
 
-        public int? EventID { get; set; }
         public int? ProcessID { get; set; }
 
         public Receiver Receiver { get; set; } = new Receiver();

@@ -519,7 +519,25 @@
   <data name="ParseTemplateStringError" xml:space="preserve">
     <value>Произошла ошибка при считывании шаблона</value>
   </data>
+  <data name="CallsiteAndStacktraces" xml:space="preserve">
+    <value>Callsite и Stacktraces</value>
+  </data>
+  <data name="DateAndTime" xml:space="preserve">
+    <value>Дата и время</value>
+  </data>
   <data name="FromLayoutString" xml:space="preserve">
     <value>Из строки конфигурации</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Основное</value>
+  </data>
+  <data name="Other" xml:space="preserve">
+    <value>Другое</value>
+  </data>
+  <data name="ProcessesThreadsAndAssemblies" xml:space="preserve">
+    <value>Процессы, потоки и сборки</value>
+  </data>
+  <data name="Separator" xml:space="preserve">
+    <value>Разделитель</value>
   </data>
 </root>

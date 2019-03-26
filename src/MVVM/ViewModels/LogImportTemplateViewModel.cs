@@ -21,6 +21,7 @@ namespace LogViewer.MVVM.ViewModels
     {
         private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private string importFilePath = string.Empty;
+        private string templateSeparator = ";";
         private bool? dialogResult;
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
@@ -56,6 +57,16 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public string TemplateSeparator
+        {
+            get => templateSeparator;
+            set
+            {
+                templateSeparator = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Конструктор
@@ -64,57 +75,57 @@ namespace LogViewer.MVVM.ViewModels
         {
             importFilePath = path;
 
-            PopularTemplates.Add("DateTime;LogLevel;EventID;ProcessID;ThreadNumber;Callsite;Logger;Message",
+            PopularTemplates.Add("date;level;other;processid;threadid;сallsite;logger;message",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.DateTime,
-                    eImportTemplateParameters.LogLevel,
-                    eImportTemplateParameters.EventID,
-                    eImportTemplateParameters.ProcessID,
-                    eImportTemplateParameters.ThreadNumber,
-                    eImportTemplateParameters.Callsite,
-                    eImportTemplateParameters.Logger,
-                    eImportTemplateParameters.Message
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.other,
+                    eImportTemplateParameters.processid,
+                    eImportTemplateParameters.threadid,
+                    eImportTemplateParameters.сallsite,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("DateTime;LogLevel;ThreadNumber;Callsite;Logger;Message",
+            PopularTemplates.Add("date;level;threadid;сallsite;logger;message",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.DateTime,
-                    eImportTemplateParameters.LogLevel,
-                    eImportTemplateParameters.ThreadNumber,
-                    eImportTemplateParameters.Callsite,
-                    eImportTemplateParameters.Logger,
-                    eImportTemplateParameters.Message
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.threadid,
+                    eImportTemplateParameters.сallsite,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("DateTime;LogLevel;ThreadNumber;Logger;Message",
+            PopularTemplates.Add("date;level;threadid;logger;message",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.DateTime,
-                    eImportTemplateParameters.LogLevel,
-                    eImportTemplateParameters.ThreadNumber,
-                    eImportTemplateParameters.Logger,
-                    eImportTemplateParameters.Message
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.threadid,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("DateTime;LogLevel;Callsite;Logger;Message",
+            PopularTemplates.Add("date;level;сallsite;logger;message",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.DateTime,
-                    eImportTemplateParameters.LogLevel,
-                    eImportTemplateParameters.Callsite,
-                    eImportTemplateParameters.Logger,
-                    eImportTemplateParameters.Message
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.сallsite,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("DateTime;LogLevel;Logger;Message",
+            PopularTemplates.Add("date;level;logger;message",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.DateTime,
-                    eImportTemplateParameters.LogLevel,
-                    eImportTemplateParameters.Logger,
-                    eImportTemplateParameters.Message
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
                 });
 
             SelectedPopularTemplate = PopularTemplates.First().Value;
@@ -173,11 +184,12 @@ namespace LogViewer.MVVM.ViewModels
             // выбрана генерация шаблона пользователем
             if (IsUserTemplateSelected)
             {
+                LogTemplate.Separator = TemplateSeparator;
                 for (int i = 0; i < TemplateLogItems.Count; i++)
                 {
                     try
                     {
-                        LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter, i);
+                        LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter.Parameter, i);
                     }
                     catch (Exception exception)
                     {
@@ -231,20 +243,20 @@ namespace LogViewer.MVVM.ViewModels
             for (int i = 0; i < elements.Count; i++)
             {
                 if (elements[i] is LevelLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.LogLevel, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, i);
                 if (elements[i] is CallSiteLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Callsite, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.сallsite, i);
                 if (elements[i] is MessageLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Message, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, i);
                 if (elements[i] is ThreadIdLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ThreadNumber, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, i);
                 if (elements[i] is ProcessIdLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ProcessID, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.processid, i);
                 if (elements[i] is LoggerNameLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Logger, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, i);
                 if (elements[i] is TimeLayoutRenderer || elements[i] is DateLayoutRenderer ||
                     elements[i] is LongDateLayoutRenderer || elements[i] is ShortDateLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.DateTime, i);
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
             }
         }
 
@@ -305,14 +317,14 @@ namespace LogViewer.MVVM.ViewModels
 
             if (otherIndexes.Count < 2) return false;
 
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.DateTime, dateTimeIndex);
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.LogLevel, logLevelIndex);
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Message, otherIndexes.Last());
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Logger, otherIndexes[otherIndexes.Count - 2]);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, dateTimeIndex);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, logLevelIndex);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, otherIndexes.Last());
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, otherIndexes[otherIndexes.Count - 2]);
 
             if (intIndexes.Count > 0)
             {
-                LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ThreadNumber, intIndexes.Last());
+                LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, intIndexes.Last());
             }
 
             return true;

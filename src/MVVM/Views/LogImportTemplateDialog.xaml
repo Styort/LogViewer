@@ -44,13 +44,18 @@
         <RadioButton Grid.Row="3" Margin="10,0" Content="{localization:LocBinding FromLayoutString}" IsChecked="{Binding Path=IsLayoutStringTemplateSelected}" VerticalAlignment="Center" />
 
         <TextBox Grid.Row="4" Grid.ColumnSpan="2" Margin="10,0,10,5" HorizontalAlignment="Stretch" Text="{Binding TemplateString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        
+
         <RadioButton Grid.Row="5" Margin="10,0" Content="{localization:LocBinding OrCreateYourOwnTemplate}" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
 
         <Button Grid.Row="6" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
                 Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
-        
-        <StackPanel Grid.Row="7" Orientation="Horizontal" Margin="10,0,10,5" Height="80">
+
+        <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1">
+            <Label Content="{localization:LocBinding Separator, StringFormat={}{0}:}" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding Path=TemplateSeparator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Center" Width="30" VerticalContentAlignment="Center"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="7" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="10,0,10,5" Height="80">
             <ItemsControl x:Name="TemplateLogItemsIC" ItemsSource="{Binding Path=TemplateLogItems, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" >
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -61,8 +66,25 @@
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal">
-                                <ComboBox Margin="5,5" ItemsSource="{Binding Path=TemplateParameters}" SelectedItem="{Binding Path=SelectedTemplateParameter}" Height="30" VerticalContentAlignment="Center"/>
-                                <Label Padding="0" FontStyle="Normal" FontSize="18" VerticalContentAlignment="Center">;</Label>
+                                <Label Content="${" VerticalContentAlignment="Center" Padding="0"/>
+                                <ComboBox x:Name="ComboBox" Margin="5" ItemsSource="{Binding Path=TemplateItems}" SelectedItem="{Binding Path=SelectedTemplateParameter}" Height="30" VerticalContentAlignment="Center">
+                                    <ComboBox.GroupStyle>
+                                        <GroupStyle>
+                                            <GroupStyle.HeaderTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding Name}" Margin="10,0,0,0"/>
+                                                </DataTemplate>
+                                            </GroupStyle.HeaderTemplate>
+                                        </GroupStyle>
+                                    </ComboBox.GroupStyle>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Parameter}"/>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                                <Label Content="}" VerticalContentAlignment="Center" Padding="0"/>
+                                <Label Padding="0" FontStyle="Normal" FontSize="18" VerticalContentAlignment="Center" Content="{Binding ElementName=TemplateLogItemsIC,  Path=DataContext.TemplateSeparator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
 
                             <Button Padding="0" Width="60" Content="{localization:LocBinding small_remove}" Margin="1" Height="30" ToolTip="{localization:LocBinding RemoveTemplateItem}" Foreground="White"

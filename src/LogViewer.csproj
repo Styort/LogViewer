@@ -126,6 +126,7 @@
     <Compile Include="Localization\TranslationSource.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
     <Compile Include="MVVM\Models\LogTemplate.cs" />
+    <Compile Include="MVVM\Models\LogTemplateItemInfo.cs" />
     <Compile Include="MVVM\Views\LogImportTemplateDialog.xaml.cs">
       <DependentUpon>LogImportTemplateDialog.xaml</DependentUpon>
     </Compile>

@@ -170,6 +170,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Callsite и Stacktraces.
+        /// </summary>
+        internal static string CallsiteAndStacktraces {
+            get {
+                return ResourceManager.GetString("CallsiteAndStacktraces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Отмена.
         /// </summary>
         internal static string Cancel {
@@ -283,6 +292,15 @@ namespace LogViewer.Localization {
         internal static string CountOfDeletedMessagesToolTip {
             get {
                 return ResourceManager.GetString("CountOfDeletedMessagesToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Дата и время.
+        /// </summary>
+        internal static string DateAndTime {
+            get {
+                return ResourceManager.GetString("DateAndTime", resourceCulture);
             }
         }
         
@@ -729,6 +747,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Основное.
+        /// </summary>
+        internal static string Main {
+            get {
+                return ResourceManager.GetString("Main", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Учитывать регистр.
         /// </summary>
         internal static string MatchCase {
@@ -892,6 +919,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Другое.
+        /// </summary>
+        internal static string Other {
+            get {
+                return ResourceManager.GetString("Other", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Произошла ошибка при считывании шаблона.
         /// </summary>
         internal static string ParseTemplateStringError {
@@ -969,6 +1005,15 @@ namespace LogViewer.Localization {
         internal static string PortIsBusy {
             get {
                 return ResourceManager.GetString("PortIsBusy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Процессы, потоки и сборки.
+        /// </summary>
+        internal static string ProcessesThreadsAndAssemblies {
+            get {
+                return ResourceManager.GetString("ProcessesThreadsAndAssemblies", resourceCulture);
             }
         }
         
@@ -1068,6 +1113,15 @@ namespace LogViewer.Localization {
         internal static string SelectTimeInterval {
             get {
                 return ResourceManager.GetString("SelectTimeInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Разделитель.
+        /// </summary>
+        internal static string Separator {
+            get {
+                return ResourceManager.GetString("Separator", resourceCulture);
             }
         }
         

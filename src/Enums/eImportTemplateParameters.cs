@@ -4,23 +4,38 @@ namespace LogViewer.Enums
 {
     public enum eImportTemplateParameters
     {
-        [Description("Date Time")]
-        DateTime,
-        [Description("Log Level")]
-        LogLevel,
-        [Description("Thread Number")]
-        ThreadNumber,
-        [Description("Process ID")]
-        ProcessID,
-        [Description("Callsite")]
-        Callsite,
-        [Description("Event ID")]
-        EventID,
-        [Description("Logger")]
-        Logger,
-        [Description("Message")]
-        Message,
-        [Description("Other")]
-        Other,
+        // main
+        level,
+        logger,
+        message,
+        exception,
+        newline,
+        oneexception,
+        var,
+
+        // date and time
+        date,
+        longdate,
+        shortdate,
+        ticks,
+        time,
+
+        //Callsite and stacktraces
+        сallsite,
+        callsitelinenumber,
+        stacktrace,
+
+        //Processes, threads and assemblies
+        threadid,
+        threadname,
+        processid,
+        processinfo,
+        processname,
+        processtime,
+        appdomain,
+        hostname,
+        machinename,
+
+        other,
     }
 }

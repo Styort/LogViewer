@@ -7,11 +7,9 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="345" Width="700">
-
-    <Window.DataContext>
-        <viewModels:LogImportTemplateViewModel/>
-    </Window.DataContext>
+        xmlns:xc="clr-namespace:LogViewer.Helpers"
+        xc:DialogCloser.DialogResult="{Binding DialogResult}"
+        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="345" Width="700" Closing="LogImportTemplateDialog_OnClosing">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -71,7 +69,7 @@
         </StackPanel>
 
         <WrapPanel Grid.Row="6" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
-            <Button Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
+            <Button Command="{Binding OkCommand}" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
             <Button IsCancel="True" MinWidth="100" Content="{localization:LocBinding Cancel}"/>
         </WrapPanel>
     </Grid>

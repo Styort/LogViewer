@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -253,14 +254,14 @@ namespace LogViewer.MVVM.Views
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var file in files)
+                if (files != null && files.Any())
                 {
-                    // проверяем каждый закинутый файл и если подходит по расширению, то пробуем распарсить
-                    var ext = Path.GetExtension(file);
-                    if (ext != ".txt" && ext != ".log")
-                        continue;
-                    
-                    ((LogViewModel)this.DataContext).ImportLogs(file);
+                    var file = files.FirstOrDefault(x => Path.GetExtension(x) == ".txt" ||
+                                                         Path.GetExtension(x) == ".log");
+                    if (file != null)
+                    {
+                        ((LogViewModel)this.DataContext).ImportLogs(file);
+                    }
                 }
             }
         }

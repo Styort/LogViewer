@@ -519,4 +519,7 @@ Try selecting a template manually.</value>
   <data name="ParseTemplateStringError" xml:space="preserve">
     <value>An error occurred while parse template string</value>
   </data>
+  <data name="FromLayoutString" xml:space="preserve">
+    <value>From layout string</value>
+  </data>
 </root>

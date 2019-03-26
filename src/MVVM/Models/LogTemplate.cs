@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using LogViewer.Enums;
 
 namespace LogViewer.MVVM.Models
@@ -17,6 +13,6 @@ namespace LogViewer.MVVM.Models
         /// <summary>
         /// Разделитель
         /// </summary>
-        public char Separator { get; set; } = ';';
+        public string Separator { get; set; } = ";";
     }
 }

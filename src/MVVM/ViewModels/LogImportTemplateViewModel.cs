@@ -10,6 +10,10 @@ using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
 using LogViewer.MVVM.Models;
+using NLog;
+using NLog.Fluent;
+using NLog.LayoutRenderers;
+using NLog.Layouts;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -18,9 +22,9 @@ namespace LogViewer.MVVM.ViewModels
         private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private string importFilePath = string.Empty;
         private bool? dialogResult;
+        private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
         #region Свойства
-        public Dictionary<eImportTemplateParameters, int> TemplateParameterses { get; } = new Dictionary<eImportTemplateParameters, int>();
         public Dictionary<string, List<eImportTemplateParameters>> PopularTemplates { get; set; } = new Dictionary<string, List<eImportTemplateParameters>>();
         public List<eImportTemplateParameters> SelectedPopularTemplate { get; set; }
 
@@ -29,12 +33,25 @@ namespace LogViewer.MVVM.ViewModels
         public bool IsAutomaticDetectTemplateSelected { get; set; } = true;
         public bool IsPopularTemplateSelected { get; set; }
         public bool IsUserTemplateSelected { get; set; }
+        public bool IsLayoutStringTemplateSelected { get; set; }
         public bool? DialogResult
         {
             get => dialogResult;
             set
             {
                 dialogResult = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public LogTemplate LogTemplate { get; private set; } = new LogTemplate();
+
+        public string TemplateString
+        {
+            get => templateString;
+            set
+            {
+                templateString = value;
                 OnPropertyChanged();
             }
         }
@@ -129,7 +146,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 for (int i = 0; i < SelectedPopularTemplate.Count; i++)
                 {
-                    TemplateParameterses.Add(SelectedPopularTemplate[i], i);
+                    LogTemplate.TemplateParameterses.Add(SelectedPopularTemplate[i], i);
                 }
             }
 
@@ -138,6 +155,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 //выбираем первое сообщение 
                 string firstMessage = GetFirstMessage();
+
                 if (string.IsNullOrWhiteSpace(firstMessage))
                 {
                     MessageBox.Show(Locals.AutomaticDetectTemplateError);
@@ -159,15 +177,20 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     try
                     {
-                        TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter, i);
+                        LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter, i);
                     }
                     catch (Exception exception)
                     {
-                        TemplateParameterses.Clear();
+                        LogTemplate.TemplateParameterses.Clear();
                         MessageBox.Show(Locals.MessageTemplateErrorSameParameters);
                         return;
                     }
                 }
+            }
+
+            if (IsLayoutStringTemplateSelected)
+            {
+                ParseTemplateString();
             }
 
             DialogResult = true;
@@ -188,7 +211,43 @@ namespace LogViewer.MVVM.ViewModels
         #endregion
 
         #region Работа с подбором шаблона
-        
+
+        private void ParseTemplateString()
+        {
+            SimpleLayout layout = new SimpleLayout(TemplateString);
+            var elements = layout.Renderers.Where(x => !(x is LiteralLayoutRenderer)).ToList();
+
+            // минимальное количество элементов - 4 (дата, уровень лога, логгер и сообщение)
+            if (elements.Count < 4)
+            {
+                MessageBox.Show(Locals.ParseTemplateStringError);
+                return;
+            }
+
+            var separator = layout.Renderers.FirstOrDefault(x => x is LiteralLayoutRenderer);
+
+            LogTemplate.Separator = separator != null ? separator.Render(LogEventInfo.CreateNullEvent()) : ";";
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                if (elements[i] is LevelLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.LogLevel, i);
+                if (elements[i] is CallSiteLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Callsite, i);
+                if (elements[i] is MessageLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Message, i);
+                if (elements[i] is ThreadIdLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ThreadNumber, i);
+                if (elements[i] is ProcessIdLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ProcessID, i);
+                if (elements[i] is LoggerNameLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Logger, i);
+                if (elements[i] is TimeLayoutRenderer || elements[i] is DateLayoutRenderer ||
+                    elements[i] is LongDateLayoutRenderer || elements[i] is ShortDateLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.DateTime, i);
+            }
+        }
+
         private string GetFirstMessage()
         {
             var sb = new StringBuilder();
@@ -215,7 +274,13 @@ namespace LogViewer.MVVM.ViewModels
 
         private bool TryDetectTemplate(string log)
         {
+            // пробуем разные разделители
             var logSplit = log.Split(';');
+            if (logSplit.Length < 4)
+                logSplit = log.Split('|');
+            if (logSplit.Length < 4)
+                logSplit = log.Split('$');
+
             var dateTimeIndex = GetDateTimeIndex(logSplit);
             if (dateTimeIndex == -1) return false;
 
@@ -240,14 +305,14 @@ namespace LogViewer.MVVM.ViewModels
 
             if (otherIndexes.Count < 2) return false;
 
-            TemplateParameterses.Add(eImportTemplateParameters.DateTime, dateTimeIndex);
-            TemplateParameterses.Add(eImportTemplateParameters.LogLevel, logLevelIndex);
-            TemplateParameterses.Add(eImportTemplateParameters.Message, otherIndexes.Last());
-            TemplateParameterses.Add(eImportTemplateParameters.Logger, otherIndexes[otherIndexes.Count - 2]);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.DateTime, dateTimeIndex);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.LogLevel, logLevelIndex);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Message, otherIndexes.Last());
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.Logger, otherIndexes[otherIndexes.Count - 2]);
 
             if (intIndexes.Count > 0)
             {
-                TemplateParameterses.Add(eImportTemplateParameters.ThreadNumber, intIndexes.Last());
+                LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ThreadNumber, intIndexes.Last());
             }
 
             return true;

@@ -519,4 +519,7 @@
   <data name="ParseTemplateStringError" xml:space="preserve">
     <value>Произошла ошибка при считывании шаблона</value>
   </data>
+  <data name="FromLayoutString" xml:space="preserve">
+    <value>Из строки конфигурации</value>
+  </data>
 </root>

@@ -8,6 +8,7 @@ using System.Windows;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
+using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
 using NLog;
 
@@ -18,7 +19,7 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class LogImportTemplateDialog : Window
     {
-        public Dictionary<eImportTemplateParameters, int> TemplateParameterses { get; private set; } = new Dictionary<eImportTemplateParameters, int>();
+        public LogTemplate LogTemplate { get; private set; }
 
         public LogImportTemplateDialog(string path)
         {
@@ -30,7 +31,7 @@ namespace LogViewer.MVVM.Views
         {
             var logImportTemplateViewModel = this.DataContext as LogImportTemplateViewModel;
             if (logImportTemplateViewModel != null)
-                TemplateParameterses = logImportTemplateViewModel.TemplateParameterses;
+                LogTemplate = logImportTemplateViewModel.LogTemplate;
         }
     }
 }

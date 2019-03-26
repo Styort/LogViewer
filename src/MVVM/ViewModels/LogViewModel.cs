@@ -19,6 +19,7 @@ using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.Views;
 using NLog;
+using NLog.Layouts;
 using Application = System.Windows.Application;
 using CheckBox = System.Windows.Controls.CheckBox;
 using Clipboard = System.Windows.Clipboard;
@@ -1541,7 +1542,7 @@ namespace LogViewer.MVVM.ViewModels
             logImportTemplateDialogDialog.ShowDialog();
             if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
             {
-                var template = logImportTemplateDialogDialog.TemplateParameterses;
+                var template = logImportTemplateDialogDialog.LogTemplate;
 
                 Pause();
 
@@ -2384,15 +2385,15 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Считываем в конечный массив инфу из пришедших строк
         /// </summary>
-        private void LogParse(String line, Dictionary<eImportTemplateParameters, int> template)
+        private void LogParse(String line, LogTemplate template)
         {
             if (string.IsNullOrEmpty(line))
                 return;
 
-            var log = line.Split(';');
+            var log = line.Split(new string[] { template.Separator }, StringSplitOptions.None);
             // собираем сообщение лога
             StringBuilder message = new StringBuilder();
-            for (int i = template[eImportTemplateParameters.Message]; i < log.Length; i++)
+            for (int i = template.TemplateParameterses[eImportTemplateParameters.Message]; i < log.Length; i++)
             {
                 if (!string.IsNullOrEmpty(log[i]))
                     message.Append(log[i] + "");
@@ -2403,13 +2404,13 @@ namespace LogViewer.MVVM.ViewModels
                 var lm = new LogMessage
                 {
                     Address = importFilePath,
-                    Time = DateTime.Parse(log[template[eImportTemplateParameters.DateTime]].Replace("\0", "")),
-                    Level = LogLevelMapping[log[template[eImportTemplateParameters.LogLevel]]],
-                    Thread = template.ContainsKey(eImportTemplateParameters.ThreadNumber) ? int.Parse(log[template[eImportTemplateParameters.ThreadNumber]]) : -1,
+                    Time = DateTime.Parse(log[template.TemplateParameterses[eImportTemplateParameters.DateTime]].Replace("\0", "")),
+                    Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.LogLevel]]],
+                    Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.ThreadNumber) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.ThreadNumber]]) : -1,
                     Message = message.ToString(),
-                    Logger = log[template[eImportTemplateParameters.Logger]],
-                    ProcessID = template.ContainsKey(eImportTemplateParameters.ProcessID) ? int.Parse(log[template[eImportTemplateParameters.ProcessID]]) : (int?)null,
-                    EventID = template.ContainsKey(eImportTemplateParameters.EventID) ? int.Parse(log[template[eImportTemplateParameters.EventID]]) : (int?)null,
+                    Logger = log[template.TemplateParameterses[eImportTemplateParameters.Logger]],
+                    ProcessID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.ProcessID) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.ProcessID]]) : (int?)null,
+                    EventID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.EventID) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.EventID]]) : (int?)null,
                 };
                 BuildTreeByMessage(lm, false);
                 importData.Add(lm);

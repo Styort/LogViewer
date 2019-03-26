@@ -20,8 +20,6 @@ namespace LogViewer.Enums
         Logger,
         [Description("Message")]
         Message,
-        [Description("Long date")]
-        longdate,
         [Description("Other")]
         Other,
     }

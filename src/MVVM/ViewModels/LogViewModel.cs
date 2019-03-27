@@ -123,7 +123,7 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
+        private string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private readonly Dictionary<string, eLogLevel> LogLevelMapping = new Dictionary<string, eLogLevel>
         {
             { "Trace", eLogLevel.Trace },
@@ -1544,6 +1544,8 @@ namespace LogViewer.MVVM.ViewModels
             {
                 var template = logImportTemplateDialogDialog.LogTemplate;
 
+                UpdateLogTypeArray(template);
+                
                 Pause();
 
                 Task.Run(() =>
@@ -2401,10 +2403,25 @@ namespace LogViewer.MVVM.ViewModels
 
             Application.Current.Dispatcher.Invoke(() =>
             {
+                eImportTemplateParameters dataFormat = eImportTemplateParameters.date;
+                
+                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.longdate))
+                    dataFormat = eImportTemplateParameters.longdate;
+                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.shortdate))
+                    dataFormat = eImportTemplateParameters.shortdate;
+                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.time))
+                    dataFormat = eImportTemplateParameters.time;
+                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.ticks))
+                    dataFormat = eImportTemplateParameters.ticks;
+
+                var date = dataFormat != eImportTemplateParameters.ticks
+                    ? DateTime.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""))
+                    : new DateTime(long.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", "")));
+
                 var lm = new LogMessage
                 {
                     Address = importFilePath,
-                    Time = DateTime.Parse(log[template.TemplateParameterses[eImportTemplateParameters.date]].Replace("\0", "")),
+                    Time = date,
                     Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.level]]],
                     Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.threadid) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.threadid]]) : -1,
                     Message = message.ToString(),
@@ -2451,6 +2468,31 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Обновляет массив с уровнем логгирования в зависимости от разделителя и от места, где пишется уровень лога
+        /// </summary>
+        private void UpdateLogTypeArray(LogTemplate template)
+        {
+            List<string> logTypeList = new List<string>();
+            foreach (var logLevel in LogLevelMapping)
+            {
+                if (template.TemplateParameterses[eImportTemplateParameters.level] == 0)
+                {
+                    logTypeList.Add($"{template.Separator}{logLevel.Key}");
+                }
+                else if (template.TemplateParameterses[eImportTemplateParameters.level] ==
+                         template.TemplateParameterses.Max(x => x.Value))
+                {
+                    logTypeList.Add($"{logLevel.Key}{template.Separator}");
+                }
+                else
+                {
+                    logTypeList.Add($"{template.Separator}{logLevel.Key}{template.Separator}");
+                }
+            }
+            LogTypeArray = logTypeList.ToArray();
         }
 
         #endregion

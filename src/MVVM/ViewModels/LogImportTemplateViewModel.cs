@@ -155,7 +155,7 @@ namespace LogViewer.MVVM.ViewModels
             PopularTemplates.Add("${longdate}|${level:uppercase=true}|${logger}|${message}",
                 new List<eImportTemplateParameters>
                 {
-                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.longdate,
                     eImportTemplateParameters.level,
                     eImportTemplateParameters.logger,
                     eImportTemplateParameters.message
@@ -367,8 +367,9 @@ namespace LogViewer.MVVM.ViewModels
                 if (elements[j] is TimeLayoutRenderer || elements[j] is DateLayoutRenderer ||
                     elements[j] is LongDateLayoutRenderer || elements[j] is ShortDateLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
-
-                j++;
+                if(elements[j] is TicksLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ticks, i);
+                    j++;
             }
         }
 

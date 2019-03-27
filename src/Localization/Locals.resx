@@ -369,7 +369,7 @@
     <value>Возмжность запуска только одного экземпляра приложения</value>
   </data>
   <data name="OrCreateYourOwnTemplate" xml:space="preserve">
-    <value>Создать свой собственный шаблон</value>
+    <value>По созданному шаблону</value>
   </data>
   <data name="Pause" xml:space="preserve">
     <value>Пауза</value>

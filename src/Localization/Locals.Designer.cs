@@ -910,7 +910,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Создать свой собственный шаблон.
+        ///   Looks up a localized string similar to По созданному шаблону.
         /// </summary>
         internal static string OrCreateYourOwnTemplate {
             get {

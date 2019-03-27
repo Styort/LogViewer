@@ -99,7 +99,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             importFilePath = path;
 
-            PopularTemplates.Add("date;level;other;processid;threadid;сallsite;logger;message",
+            PopularTemplates.Add("${date};${level};${other};${processid};${threadid};${сallsite};${logger};${message}",
                 new List<eImportTemplateParameters>
                 {
                     eImportTemplateParameters.date,
@@ -112,7 +112,7 @@ namespace LogViewer.MVVM.ViewModels
                     eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("date;level;threadid;сallsite;logger;message",
+            PopularTemplates.Add("${date};${level};${threadid};${сallsite};${logger};${message}",
                 new List<eImportTemplateParameters>
                 {
                     eImportTemplateParameters.date,
@@ -123,7 +123,7 @@ namespace LogViewer.MVVM.ViewModels
                     eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("date;level;threadid;logger;message",
+            PopularTemplates.Add("${date};${level};${threadid};${logger};${message}",
                 new List<eImportTemplateParameters>
                 {
                     eImportTemplateParameters.date,
@@ -133,7 +133,7 @@ namespace LogViewer.MVVM.ViewModels
                     eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("date;level;сallsite;logger;message",
+            PopularTemplates.Add("${date};${level};${сallsite};${logger};${message}",
                 new List<eImportTemplateParameters>
                 {
                     eImportTemplateParameters.date,
@@ -143,7 +143,16 @@ namespace LogViewer.MVVM.ViewModels
                     eImportTemplateParameters.message
                 });
 
-            PopularTemplates.Add("date;level;logger;message",
+            PopularTemplates.Add("${date};${level};${logger};${message}",
+                new List<eImportTemplateParameters>
+                {
+                    eImportTemplateParameters.date,
+                    eImportTemplateParameters.level,
+                    eImportTemplateParameters.logger,
+                    eImportTemplateParameters.message
+                });
+
+            PopularTemplates.Add("${longdate}|${level:uppercase=true}|${logger}|${message}",
                 new List<eImportTemplateParameters>
                 {
                     eImportTemplateParameters.date,

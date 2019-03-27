@@ -537,7 +537,16 @@
   <data name="ProcessesThreadsAndAssemblies" xml:space="preserve">
     <value>Процессы, потоки и сборки</value>
   </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Сохранить настройки</value>
+  </data>
   <data name="Separator" xml:space="preserve">
     <value>Разделитель</value>
+  </data>
+  <data name="TemplateSettingsSaveError" xml:space="preserve">
+    <value>Произошла ошибка при сохранении настроек шаблонов</value>
+  </data>
+  <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
+    <value>Настройки шаблонов успешно сохранены</value>
   </data>
 </root>

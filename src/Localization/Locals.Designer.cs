@@ -1072,6 +1072,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Сохранить настройки.
+        /// </summary>
+        internal static string SaveSettings {
+            get {
+                return ResourceManager.GetString("SaveSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Перейти к первому сообщению.
         /// </summary>
         internal static string ScrollToFirstLogMessage {
@@ -1239,6 +1248,24 @@ namespace LogViewer.Localization {
         internal static string Start {
             get {
                 return ResourceManager.GetString("Start", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Произошла ошибка при сохранении настроек шаблонов.
+        /// </summary>
+        internal static string TemplateSettingsSaveError {
+            get {
+                return ResourceManager.GetString("TemplateSettingsSaveError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Настройки шаблонов успешно сохранены.
+        /// </summary>
+        internal static string TemplateSettingsSuccessfullySaved {
+            get {
+                return ResourceManager.GetString("TemplateSettingsSuccessfullySaved", resourceCulture);
             }
         }
         

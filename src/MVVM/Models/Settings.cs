@@ -35,7 +35,7 @@ namespace LogViewer.MVVM.Models
         public string DataFormat { get; set; } = "dd/MM/yyyy HH:mm:ss.fff";
         public string FontColor { get; set; } = "#FFFFFFFF";
         public string Language { get; set; } = "en";
-        public Theme CurrentTheme { get; set; } =  new Theme
+        public Theme CurrentTheme { get; set; } = new Theme
         {
             Name = "Indigo",
             Color = (SolidColorBrush)new BrushConverter().ConvertFrom("#3F51B5"),

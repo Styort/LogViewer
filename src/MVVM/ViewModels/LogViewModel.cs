@@ -2390,7 +2390,7 @@ namespace LogViewer.MVVM.ViewModels
             if (string.IsNullOrEmpty(line))
                 return;
 
-            var log = line.Split(new string[] { template.Separator }, StringSplitOptions.None);
+            var log = line.Split(new[] { template.Separator }, StringSplitOptions.None);
             // собираем сообщение лога
             StringBuilder message = new StringBuilder();
             for (int i = template.TemplateParameterses[eImportTemplateParameters.message]; i < log.Length; i++)

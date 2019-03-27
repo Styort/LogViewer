@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Windows.Data;
+using System.Xml.Serialization;
 using LogViewer.Enums;
 using LogViewer.Localization;
+using LogViewer.MVVM.ViewModels;
 
 namespace LogViewer.MVVM.Models
 {
     /// <summary>
     /// Хранит в себе выбранный параметр шаблона и список возможных параметров для показа в комбо-боксе
     /// </summary>
-    public class LogTemplateItem
+    [Serializable]
+    [DataContract]
+    public class LogTemplateItem 
     {
         public LogTemplateItemInfo SelectedTemplateParameter { get; set; }
 
@@ -53,6 +58,7 @@ namespace LogViewer.MVVM.Models
             TemplateItems.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
         }
 
+        [XmlIgnore]
         public ListCollectionView TemplateItems { get; set; }
     }
 }

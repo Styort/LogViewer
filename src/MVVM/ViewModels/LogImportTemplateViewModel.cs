@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Xml.Serialization;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -14,11 +15,16 @@ using NLog;
 using NLog.Fluent;
 using NLog.LayoutRenderers;
 using NLog.Layouts;
+using System.Runtime.Serialization;
 
 namespace LogViewer.MVVM.ViewModels
 {
+    [Serializable]
+    [DataContract]
     public class LogImportTemplateViewModel : BaseViewModel
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private const string SETTINGS_NAME = "template_import_settings.xml";
         private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
@@ -26,15 +32,25 @@ namespace LogViewer.MVVM.ViewModels
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
         #region Свойства
+        [XmlIgnore]
         public Dictionary<string, List<eImportTemplateParameters>> PopularTemplates { get; set; } = new Dictionary<string, List<eImportTemplateParameters>>();
+
+        [XmlElement(Order = 7)]
         public List<eImportTemplateParameters> SelectedPopularTemplate { get; set; }
 
+        [XmlElement(Order = 8)]
         public ObservableCollection<LogTemplateItem> TemplateLogItems { get; set; } = new ObservableCollection<LogTemplateItem>();
 
+        [XmlElement(Order = 1)]
         public bool IsAutomaticDetectTemplateSelected { get; set; } = true;
+        [XmlElement(Order = 2)]
         public bool IsPopularTemplateSelected { get; set; }
+        [XmlElement(Order = 3)]
         public bool IsUserTemplateSelected { get; set; }
+        [XmlElement(Order = 4)]
         public bool IsLayoutStringTemplateSelected { get; set; }
+
+        [XmlIgnore]
         public bool? DialogResult
         {
             get => dialogResult;
@@ -45,8 +61,10 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        [XmlIgnore]
         public LogTemplate LogTemplate { get; private set; } = new LogTemplate();
 
+        [XmlElement(Order = 5)]
         public string TemplateString
         {
             get => templateString;
@@ -57,6 +75,7 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        [XmlElement(Order = 6)]
         public string TemplateSeparator
         {
             get => templateSeparator;
@@ -70,6 +89,11 @@ namespace LogViewer.MVVM.ViewModels
         #endregion
 
         #region Конструктор
+
+        public LogImportTemplateViewModel()
+        {
+
+        }
 
         public LogImportTemplateViewModel(string path)
         {
@@ -129,6 +153,38 @@ namespace LogViewer.MVVM.ViewModels
                 });
 
             SelectedPopularTemplate = PopularTemplates.First().Value;
+
+            if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}"))
+            {
+                var ser = new XmlSerializer(this.GetType());
+                try
+                {
+                    using (var fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Open))
+                    {
+                        LogImportTemplateViewModel litvm = (LogImportTemplateViewModel)ser.Deserialize(fs);
+                        this.IsAutomaticDetectTemplateSelected = litvm.IsAutomaticDetectTemplateSelected;
+                        this.IsLayoutStringTemplateSelected = litvm.IsLayoutStringTemplateSelected;
+                        this.IsPopularTemplateSelected = litvm.IsPopularTemplateSelected;
+                        this.IsUserTemplateSelected = litvm.IsUserTemplateSelected;
+                        this.TemplateSeparator = litvm.TemplateSeparator;
+                        this.TemplateString = litvm.TemplateString;
+                        this.SelectedPopularTemplate = PopularTemplates.FirstOrDefault(x => x.Value.SequenceEqual(litvm.SelectedPopularTemplate)).Value;
+                        this.TemplateLogItems = new ObservableCollection<LogTemplateItem>(litvm.TemplateLogItems);
+
+                        foreach (var templateLogItem in TemplateLogItems)
+                        {
+                            var ltii = templateLogItem.TemplateItems
+                                .Cast<LogTemplateItemInfo>()
+                                .FirstOrDefault(x => x.Parameter == templateLogItem.SelectedTemplateParameter.Parameter);
+                            templateLogItem.SelectedTemplateParameter = ltii;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Warn(ex, "An error occurred while read template settings");
+                }
+            }
         }
 
         #endregion
@@ -138,10 +194,12 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand addTemplateItemCommand;
         private RelayCommand removeTemplateItemCommand;
         private RelayCommand okCommand;
+        private RelayCommand saveTemplateSettingsCommand;
 
         public RelayCommand AddTemplateItemCommand => addTemplateItemCommand ?? (addTemplateItemCommand = new RelayCommand(AddTemplateItem));
         public RelayCommand RemoveTemplateItemCommand => removeTemplateItemCommand ?? (removeTemplateItemCommand = new RelayCommand(RemoveTemplateItem));
         public RelayCommand OkCommand => okCommand ?? (okCommand = new RelayCommand(Confirm));
+        public RelayCommand SaveTemplateSettingsCommand => saveTemplateSettingsCommand ?? (saveTemplateSettingsCommand = new RelayCommand(SaveTemplateSettings));
 
         #endregion
 
@@ -220,10 +278,35 @@ namespace LogViewer.MVVM.ViewModels
                 TemplateLogItems.Remove(item);
         }
 
+        /// <summary>
+        /// Сохраняет настройки конфигурации шаблонов в файл
+        /// </summary>
+        private void SaveTemplateSettings()
+        {
+            try
+            {
+                XmlSerializer ser = new XmlSerializer(this.GetType());
+                using (FileStream fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Create))
+                {
+                    ser.Serialize(fs, this);
+                }
+
+                MessageBox.Show(Locals.TemplateSettingsSuccessfullySaved);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(Locals.TemplateSettingsSaveError);
+                logger.Warn(e, "An error occurred while Save settings.");
+            }
+        }
+
         #endregion
 
         #region Работа с подбором шаблона
 
+        /// <summary>
+        /// Разбираем строку лейаута
+        /// </summary>
         private void ParseTemplateString()
         {
             SimpleLayout layout = new SimpleLayout(TemplateString);
@@ -240,23 +323,43 @@ namespace LogViewer.MVVM.ViewModels
 
             LogTemplate.Separator = separator != null ? separator.Render(LogEventInfo.CreateNullEvent()) : ";";
 
-            for (int i = 0; i < elements.Count; i++)
+            // в строке могут быть кастомные лейауты и SimpleLayout их не добавляет, надо распарсить самому и сверить
+            var tElements = TemplateString.Split(new[] { LogTemplate.Separator }, StringSplitOptions.None)
+                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+            // индекс в массиве elements
+            int j = 0;
+            for (int i = 0; i < tElements.Count; i++)
             {
-                if (elements[i] is LevelLayoutRenderer)
+                var modifyIndex = tElements[i].IndexOf(":");
+                if (modifyIndex > 0)
+                    tElements[i] = tElements[i].Substring(0, modifyIndex);
+                tElements[i] = tElements[i].Replace("}", "");
+
+                if (j <= elements.Count)
+                {
+                    var layoutRender = elements[j].ToString();
+                    if (!layoutRender.Contains(tElements[i]))
+                        continue;
+                }
+
+                if (elements[j] is LevelLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, i);
-                if (elements[i] is CallSiteLayoutRenderer)
+                if (elements[j] is CallSiteLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.сallsite, i);
-                if (elements[i] is MessageLayoutRenderer)
+                if (elements[j] is MessageLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, i);
-                if (elements[i] is ThreadIdLayoutRenderer)
+                if (elements[j] is ThreadIdLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, i);
-                if (elements[i] is ProcessIdLayoutRenderer)
+                if (elements[j] is ProcessIdLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.processid, i);
-                if (elements[i] is LoggerNameLayoutRenderer)
+                if (elements[j] is LoggerNameLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, i);
-                if (elements[i] is TimeLayoutRenderer || elements[i] is DateLayoutRenderer ||
-                    elements[i] is LongDateLayoutRenderer || elements[i] is ShortDateLayoutRenderer)
+                if (elements[j] is TimeLayoutRenderer || elements[j] is DateLayoutRenderer ||
+                    elements[j] is LongDateLayoutRenderer || elements[j] is ShortDateLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
+
+                j++;
             }
         }
 

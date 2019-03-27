@@ -537,7 +537,16 @@ Try selecting a template manually.</value>
   <data name="ProcessesThreadsAndAssemblies" xml:space="preserve">
     <value>Processes, Threads and Assemblies</value>
   </data>
+  <data name="SaveSettings" xml:space="preserve">
+    <value>Save Settings</value>
+  </data>
   <data name="Separator" xml:space="preserve">
     <value>Separator</value>
+  </data>
+  <data name="TemplateSettingsSaveError" xml:space="preserve">
+    <value>An error occurred while save template settings</value>
+  </data>
+  <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
+    <value>Template settings save successfully</value>
   </data>
 </root>

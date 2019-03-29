@@ -270,11 +270,11 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="ShowIPColumn" xml:space="preserve">
-    <value>Show IP column:</value>
+  <data name="ShowSourceColumn" xml:space="preserve">
+    <value>Show data source column:</value>
   </data>
-  <data name="ShowIPColumnToolTip" xml:space="preserve">
-    <value>Show IP column in log table</value>
+  <data name="ShowSourceColumnToolTip" xml:space="preserve">
+    <value>Show data source column in log table. Displays where this message came from (file or IP)</value>
   </data>
   <data name="Theme" xml:space="preserve">
     <value>Theme:</value>
@@ -496,7 +496,7 @@ Try selecting a template manually.</value>
     <value>Clear text and search result (Ctrl+R)</value>
   </data>
   <data name="ShowThreadColumn" xml:space="preserve">
-    <value>Show thread № column</value>
+    <value>Show thread № column:</value>
   </data>
   <data name="ShowThreadColumnToolTip" xml:space="preserve">
     <value>Show thread number column in log table</value>
@@ -551,5 +551,11 @@ Try selecting a template manually.</value>
   </data>
   <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
     <value>Template settings save successfully</value>
+  </data>
+  <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
+    <value>Show UDP progress on taskbar icon:</value>
+  </data>
+  <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
+    <value>Show progressbar on taskbar icon while reading logs via UDP</value>
   </data>
 </root>

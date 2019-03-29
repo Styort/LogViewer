@@ -15,22 +15,27 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>\\FILES\Developers\Utils\LogViewerClickOnce\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
+    <UpdateRequired>true</UpdateRequired>
+    <MapFileExtensions>false</MapFileExtensions>
+    <InstallUrl>\\FILES\Developers\Utils\LogViewerClickOnce\</InstallUrl>
     <SupportUrl>https://github.com/Styort</SupportUrl>
-    <ProductName>LogViewer</ProductName>
+    <ProductName>Log Viewer</ProductName>
     <PublisherName>Sinev Viktor</PublisherName>
+    <SuiteName>Log Viewer</SuiteName>
+    <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.2.0.%2a</ApplicationVersion>
+    <ApplicationVersion>1.2.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <CreateDesktopShortcut>true</CreateDesktopShortcut>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -57,6 +62,24 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>LogViewer.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>86B9BBE4CD9E32C2E7E37F8C86BD028F7421E8EC</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>LogViewer_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CustomColorPicker">
@@ -107,6 +130,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converters\DataConverter.cs" />
+    <Compile Include="Converters\ProgressStateConverter.cs" />
     <Compile Include="Converters\TreeViewLineConverter.cs" />
     <Compile Include="Converters\LoggerDisplayConverter.cs" />
     <Compile Include="Converters\MaxLengthConverter.cs" />
@@ -225,7 +249,9 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="LogViewer_TemporaryKey.pfx" />
     <None Include="packages.config" />
+    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -235,7 +261,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="log.ico" />
+    <Content Include="log.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
@@ -259,6 +287,19 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <FileAssociation Include=".log">
+      <Visible>False</Visible>
+      <Description>Log File</Description>
+      <Progid>LogViewer</Progid>
+      <DefaultIcon>log.ico</DefaultIcon>
+    </FileAssociation>
+    <FileAssociation Include=".txt">
+      <Visible>False</Visible>
+      <Description>Text Log File</Description>
+      <Progid>LogViewer</Progid>
+      <DefaultIcon>log.ico</DefaultIcon>
+    </FileAssociation>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -53,8 +53,9 @@ namespace LogViewer
                         Settings.Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
                         Settings.Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
                         Settings.Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
-                        Settings.Instance.IsShowIpColumn = settings.IsShowIpColumn;
+                        Settings.Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
                         Settings.Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
+                        Settings.Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
                         Settings.Instance.Language = settings.Language;
                     }
 

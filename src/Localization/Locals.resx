@@ -437,11 +437,11 @@
   <data name="SettingsSaveErrorSamePortNumber" xml:space="preserve">
     <value>В сетевых приёмниках есть приёмники с одинаковыми портами.</value>
   </data>
-  <data name="ShowIPColumn" xml:space="preserve">
-    <value>Показывать колонку IP:</value>
+  <data name="ShowSourceColumn" xml:space="preserve">
+    <value>Показывать колонку источника:</value>
   </data>
-  <data name="ShowIPColumnToolTip" xml:space="preserve">
-    <value>Показывать колонку IP-Адреса в списке считанных логов</value>
+  <data name="ShowSourceColumnToolTip" xml:space="preserve">
+    <value>Показывать колонку источника данных - то, откуда пришло данное сообщение (файл или ip)</value>
   </data>
   <data name="ShowOnlyThisLogger" xml:space="preserve">
     <value>Показывать сообщения только от выбранного логгера</value>
@@ -551,5 +551,11 @@
   </data>
   <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
     <value>Настройки шаблонов успешно сохранены</value>
+  </data>
+  <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
+    <value>Отображать прогресс в таскбаре:</value>
+  </data>
+  <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
+    <value>Показывать прогресс-бар в иконке приложения на панели задач при чтении логов с UDP.</value>
   </data>
 </root>

@@ -108,11 +108,11 @@
     </Window.Resources>
 
     <Window.TaskbarItemInfo>
-        <TaskbarItemInfo Description="Log Viewer">
+        <TaskbarItemInfo Description="Log Viewer" ProgressState="{Binding Path=IsShowTaskbarProgress, Converter={StaticResource ProgressStateConverter}}">
             <TaskbarItemInfo.ThumbButtonInfos>
                 <ThumbButtonInfo Command="{Binding StartCommand}" IsEnabled="{Binding StartIsEnabled}" Description="{localization:LocBinding Start}" ImageSource="{StaticResource PlayWhiteImage}"/>
                 <ThumbButtonInfo Command="{Binding PauseCommand}" IsEnabled="{Binding PauseIsEnabled}" Description="{localization:LocBinding Pause}" ImageSource="{StaticResource PauseWhiteImage}"/>
-                <ThumbButtonInfo Command="{Binding CleanCommand}" IsEnabled="{Binding CleanIsEnabled}" Description="{localization:LocBinding ClearAllLogs}" ImageSource="{StaticResource CleanWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding CleanCommand}" IsEnabled="{Binding CleanIsEnabled}" Description="{localization:LocBinding ClearAllLogs}" ImageSource="{StaticResource CleanWhiteTaskBarImage}"/>
                 <ThumbButtonInfo Command="{Binding ImportCommand}" Description="{localization:LocBinding ImportLogsToolTip}" ImageSource="{StaticResource ImportWhiteDrawingImage}"/>
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
@@ -284,7 +284,7 @@
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
                     <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Width="{Binding Path=ThreadColumnWidth}" Header="{localization:LocBinding Thread}" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
-                    <GridViewColumn Header="IP" Width="{Binding IpColumnWidth}" DisplayMemberBinding="{Binding Address}" HeaderContainerStyle="{StaticResource IpGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Source}" Width="{Binding SourceColumnWidth}" DisplayMemberBinding="{Binding Address}" HeaderContainerStyle="{StaticResource IpGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="{localization:LocBinding Logger}" Width="180" DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Header="{localization:LocBinding Message}" Width="Auto" CellTemplate="{StaticResource LogMessageDataTemplate}" HeaderContainerStyle="{StaticResource MessageHeaderTemplate}"/>
                 </GridView>

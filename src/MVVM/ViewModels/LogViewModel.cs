@@ -38,7 +38,7 @@ namespace LogViewer.MVVM.ViewModels
         private readonly object logsLockObj = new object();
         private const int RECEIVER_COLUMN_WIDTH = 15;
         private const string TRANSPARENT_COLOR = "#00FFFFFF";
-
+        
         private readonly List<UDPPacketsParser> parsers;
 
         // весь список классов, который имеется за текущий сеанс
@@ -78,7 +78,7 @@ namespace LogViewer.MVVM.ViewModels
         private string searchText = string.Empty;
         private SolidColorBrush iconColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#3F51B5");
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
-        private bool isIpVisible = false;
+        private bool isSourceVisible = false;
         private bool isThreadVisible = true;
         private bool isEnableClearSearchLoggers;
         private string searchLoggerText = string.Empty;
@@ -86,17 +86,7 @@ namespace LogViewer.MVVM.ViewModels
         private DateTime fromTimeInverval;
         private DateTime toTimeInverval;
         private bool isSearchProcess = false;
-
-        public bool IsSearchProcess
-        {
-            get => isSearchProcess;
-            set
-            {
-                isSearchProcess = value;
-                ClearSearchResultIsEnabled = isSearchProcess || SearchText.Length > 0;
-            }
-        }
-
+        private bool isShowTaskbarProgress = false;
         private List<LogMessage> nearbyLastLogMessages = new List<LogMessage>();
         private LogMessage lastLogMessage;
         private LogMessage LastLogMessage
@@ -138,6 +128,16 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Свойства
 
+        public bool IsSearchProcess
+        {
+            get => isSearchProcess;
+            set
+            {
+                isSearchProcess = value;
+                ClearSearchResultIsEnabled = isSearchProcess || SearchText.Length > 0;
+            }
+        }
+
         /// <summary>
         /// Активность кнопки запуска считывания логов
         /// </summary>
@@ -164,6 +164,24 @@ namespace LogViewer.MVVM.ViewModels
                 pauseIsEnabled = value;
                 if (pauseIsEnabled)
                     StartIsEnabled = false;
+                IsShowTaskbarProgress = pauseIsEnabled;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Показывать или нет прогрессбар на иконке в таскбаре
+        /// </summary>
+        public bool IsShowTaskbarProgress
+        {
+            get => isShowTaskbarProgress;
+            set
+            {
+                if (value && Settings.Instance.IsShowTaskbarProgress)
+                    isShowTaskbarProgress = true;
+                else
+                    isShowTaskbarProgress = false;
+                
                 OnPropertyChanged();
             }
         }
@@ -405,13 +423,13 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Видимость колонки с IP
         /// </summary>
-        public bool IsIpVisible
+        public bool IsSourceVisible
         {
-            get => isIpVisible;
+            get => isSourceVisible;
             set
             {
-                isIpVisible = value;
-                OnPropertyChanged(nameof(IpColumnWidth));
+                isSourceVisible = value;
+                OnPropertyChanged(nameof(SourceColumnWidth));
                 OnPropertyChanged();
             }
         }
@@ -430,7 +448,7 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Ширина колонки с IP
         /// </summary>
-        public double IpColumnWidth => IsIpVisible ? 115 : 0;
+        public double SourceColumnWidth => IsSourceVisible ? 115 : 0;
 
         /// <summary>
         /// Ширина колонки Thread
@@ -522,7 +540,7 @@ namespace LogViewer.MVVM.ViewModels
             allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
             maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
             deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
-            IsIpVisible = Settings.Instance.IsShowIpColumn;
+            IsSourceVisible = Settings.Instance.IsShowSourceColumn;
             IsThreadVisible = Settings.Instance.IsShowThreadColumn;
 
             receivers = Settings.Instance.Receivers;
@@ -624,7 +642,7 @@ namespace LogViewer.MVVM.ViewModels
                 return;
             }
             cancellationToken = new CancellationTokenSource();
-
+            
             Task.Run(() =>
             {
                 try
@@ -635,6 +653,7 @@ namespace LogViewer.MVVM.ViewModels
                     }
                     if (parsers.All(x => !x.IsInitialized))
                         return;
+
                     PauseIsEnabled = true;
 
                     Parallel.ForEach(parsers, parser =>
@@ -1049,7 +1068,7 @@ namespace LogViewer.MVVM.ViewModels
                         allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
                         maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
                         deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
-                        IsIpVisible = Settings.Instance.IsShowIpColumn;
+                        IsSourceVisible = Settings.Instance.IsShowSourceColumn;
                         IsThreadVisible = Settings.Instance.IsShowThreadColumn;
 
                         Application.Current.Dispatcher.Invoke(() =>

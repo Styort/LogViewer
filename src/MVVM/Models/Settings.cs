@@ -42,8 +42,9 @@ namespace LogViewer.MVVM.Models
         };
         public List<Receiver> Receivers { get; set; } = new List<Receiver>();
         public List<IgnoredIPAddress> IgnoredIPs { get; set; } = new List<IgnoredIPAddress>();
-        public bool IsShowIpColumn { get; set; } = false;
+        public bool IsShowSourceColumn { get; set; } = false;
         public bool IsShowThreadColumn { get; set; } = true;
+        public bool IsShowTaskbarProgress { get; set; } = true;
 
         private Settings()
         {

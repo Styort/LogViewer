@@ -14,6 +14,7 @@
     <converters:MaxLengthConverter x:Key="LengthConverter" />
     <converters:LoggerDisplayConverter x:Key="LoggerDisplayConverter"/>
     <converters:DataConverter x:Key="DataConverter"/>
+    <converters:ProgressStateConverter x:Key="ProgressStateConverter"/>
     <sys:Boolean x:Key="True">True</sys:Boolean>
     <sys:Boolean x:Key="False">False</sys:Boolean>
 

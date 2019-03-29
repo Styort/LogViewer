@@ -34,8 +34,9 @@ namespace LogViewer.MVVM.ViewModels
         private int maxMessageBufferSize;
         private int deletedMessagesCount;
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
-        private bool isShowIPColumn;
+        private bool isShowSourceColumn;
         private bool isShowThreadColumn;
+        private bool isShowTaskbarProgress;
 
         #region Свойства
 
@@ -375,12 +376,12 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        public bool IsShowIpColumn
+        public bool IsShowSourceColumn
         {
-            get => isShowIPColumn;
+            get => isShowSourceColumn;
             set
             {
-                isShowIPColumn = value;
+                isShowSourceColumn = value;
                 OnPropertyChanged();
             }
         }
@@ -391,6 +392,15 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isShowThreadColumn = value;
+                OnPropertyChanged();
+            }
+        }
+        public bool IsShowTaskbarProgress
+        {
+            get => isShowTaskbarProgress;
+            set
+            {
+                isShowTaskbarProgress = value;
                 OnPropertyChanged();
             }
         }
@@ -418,8 +428,9 @@ namespace LogViewer.MVVM.ViewModels
                 ExampleDateTime = DateTime.Now.ToString(DisplayedDataFormat);
                 FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
                 SelectedFontColor = SelectedFontColor.FromARGB(Settings.Instance.FontColor);
-                IsShowIpColumn = Settings.Instance.IsShowIpColumn;
+                IsShowSourceColumn = Settings.Instance.IsShowSourceColumn;
                 IsShowThreadColumn = Settings.Instance.IsShowThreadColumn;
+                IsShowTaskbarProgress = Settings.Instance.IsShowTaskbarProgress;
                 SelectedLanguage = TranslationSource.Instance.CurrentCulture;
 
                 var theme = Themes.FirstOrDefault(x => x.Name == Settings.Instance.CurrentTheme.Name);
@@ -508,8 +519,9 @@ namespace LogViewer.MVVM.ViewModels
 
             Settings.Instance.MinimizeToTray = MinimizeToTray;
             Settings.Instance.AutoStartInStartup = IsAutoStartReadAtStartup;
-            Settings.Instance.IsShowIpColumn = IsShowIpColumn;
+            Settings.Instance.IsShowSourceColumn = IsShowSourceColumn;
             Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;
+            Settings.Instance.IsShowTaskbarProgress = IsShowTaskbarProgress;
             Settings.Instance.CurrentTheme = SelectedTheme;
             Settings.Instance.DataFormat = SelectedDataFormat;
             Settings.Instance.IgnoredIPs = IgnoredIpAdresses.ToList();

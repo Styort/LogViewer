@@ -10,6 +10,7 @@ using System.Windows.Input;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.ViewModels;
+using NLog;
 using Binding = System.Windows.Data.Binding;
 using CheckBox = System.Windows.Controls.CheckBox;
 using DataFormats = System.Windows.DataFormats;
@@ -26,6 +27,8 @@ namespace LogViewer.MVVM.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         private NotifyIcon trayIcon;
 
         public MainWindow()
@@ -268,24 +271,6 @@ namespace LogViewer.MVVM.Views
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments != null)
-            {
-                string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
-                if (activationData.Any())
-                {
-                    foreach (var arg in activationData)
-                    {
-                        Uri uriPath = new Uri(arg);
-                        if (uriPath.LocalPath.EndsWith(".txt") || uriPath.LocalPath.EndsWith(".log"))
-                        {
-                            ((LogViewModel)DataContext).ImportLogs(uriPath.LocalPath);
-                        }
-                    }
-                    return;
-                }
-
-            }
-
             string[] args = Environment.GetCommandLineArgs();
             foreach (var arg in args)
             {

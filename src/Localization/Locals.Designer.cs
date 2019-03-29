@@ -19,7 +19,7 @@ namespace LogViewer.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Locals {
@@ -1180,29 +1180,47 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Показывать колонку IP:.
-        /// </summary>
-        internal static string ShowIPColumn {
-            get {
-                return ResourceManager.GetString("ShowIPColumn", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Показывать колонку IP-Адреса в списке считанных логов.
-        /// </summary>
-        internal static string ShowIPColumnToolTip {
-            get {
-                return ResourceManager.GetString("ShowIPColumnToolTip", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Показывать сообщения только от выбранного логгера.
         /// </summary>
         internal static string ShowOnlyThisLogger {
             get {
                 return ResourceManager.GetString("ShowOnlyThisLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Отображать прогресс в таскбаре:.
+        /// </summary>
+        internal static string ShowProgressOnTaskbarIcon {
+            get {
+                return ResourceManager.GetString("ShowProgressOnTaskbarIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать прогресс-бар в иконке приложения на панели задач при чтении логов с UDP..
+        /// </summary>
+        internal static string ShowProgressOnTaskbarIconToolTip {
+            get {
+                return ResourceManager.GetString("ShowProgressOnTaskbarIconToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку источника:.
+        /// </summary>
+        internal static string ShowSourceColumn {
+            get {
+                return ResourceManager.GetString("ShowSourceColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать колонку источника данных - то, откуда пришло данное сообщение (файл или ip).
+        /// </summary>
+        internal static string ShowSourceColumnToolTip {
+            get {
+                return ResourceManager.GetString("ShowSourceColumnToolTip", resourceCulture);
             }
         }
         

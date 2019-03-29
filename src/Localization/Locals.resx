@@ -522,6 +522,9 @@
   <data name="CallsiteAndStacktraces" xml:space="preserve">
     <value>Callsite и Stacktraces</value>
   </data>
+  <data name="ClearAllLogs" xml:space="preserve">
+    <value>Очистить все сообщения</value>
+  </data>
   <data name="DateAndTime" xml:space="preserve">
     <value>Дата и время</value>
   </data>

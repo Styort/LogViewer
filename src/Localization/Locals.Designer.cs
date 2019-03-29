@@ -206,6 +206,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Очистить все сообщения.
+        /// </summary>
+        internal static string ClearAllLogs {
+            get {
+                return ResourceManager.GetString("ClearAllLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Очистить все сообщения (Ctr+R).
         /// </summary>
         internal static string ClearAllLogsToolTip {

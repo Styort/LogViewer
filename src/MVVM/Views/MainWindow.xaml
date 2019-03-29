@@ -10,7 +10,7 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized">
+        Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized" Loaded="MainWindow_OnLoaded">
     <Window.DataContext>
         <viewModels:LogViewModel/>
     </Window.DataContext>
@@ -39,7 +39,7 @@
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Text="{localization:LocBinding Name, StringFormat={}{0}:}" FontWeight="Bold" VerticalAlignment="Top"/>
                                 <TextBlock Grid.Row="1" Text="{localization:LocBinding Source, StringFormat={}{0}:}" FontWeight="Bold"/>
-                                
+
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Text}" VerticalAlignment="Top"/>
                                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Source}"/>
                             </Grid>
@@ -106,6 +106,17 @@
             </HierarchicalDataTemplate>
         </ResourceDictionary>
     </Window.Resources>
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo Description="Log Viewer">
+            <TaskbarItemInfo.ThumbButtonInfos>
+                <ThumbButtonInfo Command="{Binding StartCommand}" IsEnabled="{Binding StartIsEnabled}" Description="{localization:LocBinding Start}" ImageSource="{StaticResource PlayWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding PauseCommand}" IsEnabled="{Binding PauseIsEnabled}" Description="{localization:LocBinding Pause}" ImageSource="{StaticResource PauseWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding CleanCommand}" IsEnabled="{Binding CleanIsEnabled}" Description="{localization:LocBinding ClearAllLogs}" ImageSource="{StaticResource CleanWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding ImportCommand}" Description="{localization:LocBinding ImportLogsToolTip}" ImageSource="{StaticResource ImportWhiteDrawingImage}"/>
+            </TaskbarItemInfo.ThumbButtonInfos>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
 
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=SearchLogCommand}" CommandParameter="{StaticResource False}" Modifiers="Control" Key="F"/>

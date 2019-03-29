@@ -525,6 +525,9 @@ Try selecting a template manually.</value>
   <data name="CallsiteAndStacktraces" xml:space="preserve">
     <value>Callsite and Stacktraces</value>
   </data>
+  <data name="ClearAllLogs" xml:space="preserve">
+    <value>Clear All Logs</value>
+  </data>
   <data name="DateAndTime" xml:space="preserve">
     <value>Date and Time</value>
   </data>

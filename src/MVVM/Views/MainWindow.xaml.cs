@@ -265,5 +265,35 @@ namespace LogViewer.MVVM.Views
                 }
             }
         }
+
+        private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments != null)
+            {
+                string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
+                if (activationData.Any())
+                {
+                    foreach (var arg in activationData)
+                    {
+                        Uri uriPath = new Uri(arg);
+                        if (uriPath.LocalPath.EndsWith(".txt") || uriPath.LocalPath.EndsWith(".log"))
+                        {
+                            ((LogViewModel)DataContext).ImportLogs(uriPath.LocalPath);
+                        }
+                    }
+                    return;
+                }
+
+            }
+
+            string[] args = Environment.GetCommandLineArgs();
+            foreach (var arg in args)
+            {
+                if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
+                {
+                    ((LogViewModel)DataContext).ImportLogs(arg);
+                }
+            }
+        }
     }
 }

@@ -1,0 +1,43 @@
+﻿<Window x:Class="LogViewer.MVVM.Views.NewUpdateAvailableDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
+        xmlns:local="clr-namespace:LogViewer.MVVM.Views"
+        mc:Ignorable="d"
+        Title="{localization:LocBinding UpdateAvailable}" Height="200" Width="600">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.ColumnSpan="2">
+            <TextBlock Text="{localization:LocBinding NewVersionOfLogViewerAvailable}" VerticalAlignment="Center" FontSize="20" Margin="10,0" />
+            <TextBlock x:Name="VersionTextBlock" FontSize="20" VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Top">
+            <TextBlock Text="{localization:LocBinding UpdateSize}" VerticalAlignment="Center" FontSize="20" Margin="10,0" />
+            <TextBlock x:Name="SizeTextBlock" FontSize="20" VerticalAlignment="Center"/>
+        </StackPanel>
+        
+        <Button Grid.Row="2" Grid.Column="0" Margin="10,0,10,10" Height="40" Click="ButtonBase_OnClick" Content="{localization:LocBinding Update}"/>
+        <Button Grid.Row="2" Grid.Column="1" Margin="10,0,10,10" Height="40" IsCancel="True" Content="{localization:LocBinding UpdateAtNextLaunch}"/>
+    </Grid>
+</Window>

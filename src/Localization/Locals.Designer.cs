@@ -864,6 +864,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Доступна новая версия LogViewer:.
+        /// </summary>
+        internal static string NewVersionOfLogViewerAvailable {
+            get {
+                return ResourceManager.GetString("NewVersionOfLogViewerAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не добавлено ни одного сетевого приёмника.
         ///Добавьте хотя бы один сетевой приёмник в настройках..
         /// </summary>
@@ -1279,6 +1288,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Успешно установлено.
+        /// </summary>
+        internal static string SuccessfullyInstalled {
+            get {
+                return ResourceManager.GetString("SuccessfullyInstalled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Произошла ошибка при сохранении настроек шаблонов.
         /// </summary>
         internal static string TemplateSettingsSaveError {
@@ -1365,6 +1383,52 @@ namespace LogViewer.Localization {
         internal static string UDPPortNumber {
             get {
                 return ResourceManager.GetString("UDPPortNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить.
+        /// </summary>
+        internal static string Update {
+            get {
+                return ResourceManager.GetString("Update", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить при следующем запуске.
+        /// </summary>
+        internal static string UpdateAtNextLaunch {
+            get {
+                return ResourceManager.GetString("UpdateAtNextLaunch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Доступно обновление.
+        /// </summary>
+        internal static string UpdateAvailable {
+            get {
+                return ResourceManager.GetString("UpdateAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновление успешно установлено.
+        ///Для вступления изменений в силу необходимо перезагрузить приложение..
+        /// </summary>
+        internal static string UpdateInstalledSuccessfully {
+            get {
+                return ResourceManager.GetString("UpdateInstalledSuccessfully", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Размер обновления:.
+        /// </summary>
+        internal static string UpdateSize {
+            get {
+                return ResourceManager.GetString("UpdateSize", resourceCulture);
             }
         }
         

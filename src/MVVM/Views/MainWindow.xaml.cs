@@ -1,12 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Deployment.Application;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.ViewModels;
@@ -18,22 +21,26 @@ using DragDropEffects = System.Windows.DragDropEffects;
 using DragEventArgs = System.Windows.DragEventArgs;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MenuItem = System.Windows.Controls.MenuItem;
+using MessageBox = System.Windows.MessageBox;
 using Path = System.IO.Path;
+using Timer = System.Threading.Timer;
 
 namespace LogViewer.MVVM.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IDisposable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private Timer updateTimer;
 
         private NotifyIcon trayIcon;
 
         public MainWindow()
         {
             InitializeComponent();
+            updateTimer = new Timer(CheckUpdate, null, 0, 600000);
         }
 
         protected override void OnStateChanged(EventArgs e)
@@ -279,6 +286,61 @@ namespace LogViewer.MVVM.Views
                     ((LogViewModel)DataContext).ImportLogs(arg);
                 }
             }
+        }
+
+        #region Проверка обновлений
+
+
+        private void CheckUpdate(object state)
+        {
+            try
+            {
+                if (ApplicationDeployment.IsNetworkDeployed)
+                {
+                    logger.Debug("Network deployed");
+                    ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
+                    ad.UpdateCompleted += OnUpdateCompleted;
+                    UpdateCheckInfo info = ad.CheckForDetailedUpdate();
+                    if (info.UpdateAvailable)
+                    {
+                        logger.Debug($"New update available: {info.AvailableVersion}");
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            NewUpdateAvailableDialog newUpdateAvailableDialog = new NewUpdateAvailableDialog(info);
+                            newUpdateAvailableDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            newUpdateAvailableDialog.ShowDialog();
+                            if (newUpdateAvailableDialog.DialogResult.HasValue &&
+                                newUpdateAvailableDialog.DialogResult.Value)
+                            {
+                                logger.Debug("Start update async");
+                                ad.UpdateAsync();
+                            }
+                            else
+                                updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                        });
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                logger.Debug(ex, "An error occurred while check for new updates");
+            }
+        }
+
+        private void OnUpdateCompleted(object sender, AsyncCompletedEventArgs asyncCompletedEventArgs)
+        {
+            logger.Debug("Update successfully intalled. Restart application.");
+            MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        #endregion
+
+        public void Dispose()
+        {
+            updateTimer?.Dispose();
+            trayIcon?.Dispose();
         }
     }
 }

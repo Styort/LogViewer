@@ -23,8 +23,7 @@ namespace LogViewer.MVVM.Models
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly Settings instance = new Settings();
-
-        private const string SETTINGS_NAME = "settings.xml";
+        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "settings.xml");
 
         public bool AutoStartInStartup { get; set; } = false;
         public bool MinimizeToTray { get; set; } = false;
@@ -98,7 +97,8 @@ namespace LogViewer.MVVM.Models
             try
             {
                 XmlSerializer ser = new XmlSerializer(Instance.GetType());
-                using (FileStream fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Create))
+                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
+                using (FileStream fs = new FileStream(settingsPath, FileMode.Create))
                 {
                     ser.Serialize(fs, Instance);
                 }

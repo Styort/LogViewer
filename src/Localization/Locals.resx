@@ -552,10 +552,32 @@
   <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
     <value>Настройки шаблонов успешно сохранены</value>
   </data>
+  <data name="NewVersionOfLogViewerAvailable" xml:space="preserve">
+    <value>Доступна новая версия LogViewer:</value>
+  </data>
   <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
     <value>Отображать прогресс в таскбаре:</value>
   </data>
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
     <value>Показывать прогресс-бар в иконке приложения на панели задач при чтении логов с UDP.</value>
+  </data>
+  <data name="SuccessfullyInstalled" xml:space="preserve">
+    <value>Успешно установлено</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="UpdateAtNextLaunch" xml:space="preserve">
+    <value>Обновить при следующем запуске</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>Доступно обновление</value>
+  </data>
+  <data name="UpdateInstalledSuccessfully" xml:space="preserve">
+    <value>Обновление успешно установлено.
+Для вступления изменений в силу необходимо перезагрузить приложение.</value>
+  </data>
+  <data name="UpdateSize" xml:space="preserve">
+    <value>Размер обновления:</value>
   </data>
 </root>

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Deployment.Application;
 using System.Globalization;
 using System.IO;
 using System.Threading;
@@ -6,6 +8,7 @@ using System.Windows;
 using System.Xml.Serialization;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
+using LogViewer.MVVM.Views;
 using NLog;
 
 namespace LogViewer
@@ -16,13 +19,13 @@ namespace LogViewer
     public partial class App : Application
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private const string SETTINGS_NAME = "settings.xml";
+        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "settings.xml");
 
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
 
         public void ChangeTheme(Uri uri)
         {
-            ThemeDictionary.MergedDictionaries[1] = new ResourceDictionary{Source =  uri};
+            ThemeDictionary.MergedDictionaries[1] = new ResourceDictionary { Source = uri };
         }
 
         static Mutex mutex = new Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
@@ -35,11 +38,11 @@ namespace LogViewer
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
             var ser = new XmlSerializer(Settings.Instance.GetType());
-            if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}"))
+            if (File.Exists(settingsPath))
             {
                 try
                 {
-                    using (var fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Open))
+                    using (var fs = new FileStream(settingsPath, FileMode.Open))
                     {
                         Settings settings = (Settings)ser.Deserialize(fs);
                         Settings.Instance.AutoStartInStartup = settings.AutoStartInStartup;
@@ -70,15 +73,22 @@ namespace LogViewer
 
             if (Settings.Instance.OnlyOneAppInstance)
             {
-                if (mutex.WaitOne(TimeSpan.Zero, true))
+                try
                 {
-                    mutex.ReleaseMutex();
+                    if (mutex.WaitOne(TimeSpan.Zero, true))
+                    {
+                        mutex.ReleaseMutex();
+                    }
+                    else
+                    {
+                        logger.Trace("OnStartup: one instance of Log Viewer already started");
+                        MessageBox.Show(Locals.OnlyOneInstanceCanBeStartedMessageBoxText);
+                        Environment.Exit(0);
+                    }
                 }
-                else
+                catch (Exception exception)
                 {
-                    logger.Trace("OnStartup: one instance of Log Viewer already started");
-                    MessageBox.Show(Locals.OnlyOneInstanceCanBeStartedMessageBoxText);
-                    Environment.Exit(0);
+                    logger.Warn(exception, "OnStartup check mutext exception");
                 }
             }
 

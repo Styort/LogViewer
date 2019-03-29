@@ -552,10 +552,32 @@ Try selecting a template manually.</value>
   <data name="TemplateSettingsSuccessfullySaved" xml:space="preserve">
     <value>Template settings save successfully</value>
   </data>
+  <data name="NewVersionOfLogViewerAvailable" xml:space="preserve">
+    <value>New version of Log Viewer available:</value>
+  </data>
   <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
     <value>Show UDP progress on taskbar icon:</value>
   </data>
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
     <value>Show progressbar on taskbar icon while reading logs via UDP</value>
+  </data>
+  <data name="SuccessfullyInstalled" xml:space="preserve">
+    <value>Successfully installed</value>
+  </data>
+  <data name="Update" xml:space="preserve">
+    <value>Update</value>
+  </data>
+  <data name="UpdateAtNextLaunch" xml:space="preserve">
+    <value>Update at next launch</value>
+  </data>
+  <data name="UpdateAvailable" xml:space="preserve">
+    <value>New Update Available</value>
+  </data>
+  <data name="UpdateInstalledSuccessfully" xml:space="preserve">
+    <value>Update successfully installed.
+ Changes will take effect after the application is restarted.</value>
+  </data>
+  <data name="UpdateSize" xml:space="preserve">
+    <value>Update size:</value>
   </data>
 </root>

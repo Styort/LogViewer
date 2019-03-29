@@ -31,7 +31,7 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationRevision>3</ApplicationRevision>
     <ApplicationVersion>1.2.1.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -101,6 +101,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
@@ -161,6 +162,9 @@
     <Compile Include="MVVM\Models\Theme.cs" />
     <Compile Include="MVVM\Models\Settings.cs" />
     <Compile Include="MVVM\ViewModels\LogImportTemplateViewModel.cs" />
+    <Compile Include="MVVM\Views\NewUpdateAvailableDialog.xaml.cs">
+      <DependentUpon>NewUpdateAvailableDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\Views\SelectTimeIntervalDialog.xaml.cs">
       <DependentUpon>SelectTimeIntervalDialog.xaml</DependentUpon>
     </Compile>
@@ -181,6 +185,10 @@
     <Compile Include="MVVM\TreeView\CheckBoxId.cs" />
     <Compile Include="MVVM\TreeView\Node.cs" />
     <Compile Include="UDPPacketsParser.cs" />
+    <Page Include="MVVM\Views\NewUpdateAvailableDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\Views\SelectTimeIntervalDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

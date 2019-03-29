@@ -24,7 +24,8 @@ namespace LogViewer.MVVM.ViewModels
     public class LogImportTemplateViewModel : BaseViewModel
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private const string SETTINGS_NAME = "template_import_settings.xml";
+        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "template_import_settings.xml");
+
         private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
@@ -163,12 +164,12 @@ namespace LogViewer.MVVM.ViewModels
 
             SelectedPopularTemplate = PopularTemplates.First().Value;
 
-            if (File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}"))
+            if (File.Exists(settingsPath))
             {
                 var ser = new XmlSerializer(this.GetType());
                 try
                 {
-                    using (var fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Open))
+                    using (var fs = new FileStream(settingsPath, FileMode.Open))
                     {
                         LogImportTemplateViewModel litvm = (LogImportTemplateViewModel)ser.Deserialize(fs);
                         this.IsAutomaticDetectTemplateSelected = litvm.IsAutomaticDetectTemplateSelected;
@@ -295,7 +296,8 @@ namespace LogViewer.MVVM.ViewModels
             try
             {
                 XmlSerializer ser = new XmlSerializer(this.GetType());
-                using (FileStream fs = new FileStream($"{AppDomain.CurrentDomain.BaseDirectory}{SETTINGS_NAME}", FileMode.Create))
+                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
+                using (FileStream fs = new FileStream(settingsPath, FileMode.Create))
                 {
                     ser.Serialize(fs, this);
                 }

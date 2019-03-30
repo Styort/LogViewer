@@ -297,7 +297,6 @@ namespace LogViewer.MVVM.Views
             {
                 if (ApplicationDeployment.IsNetworkDeployed)
                 {
-                    logger.Debug("Network deployed");
                     ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
                     ad.UpdateCompleted += OnUpdateCompleted;
                     UpdateCheckInfo info = ad.CheckForDetailedUpdate();

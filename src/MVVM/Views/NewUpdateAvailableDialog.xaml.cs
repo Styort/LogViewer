@@ -28,11 +28,6 @@ namespace LogViewer.MVVM.Views
             VersionTextBlock.Text = updateInfo.AvailableVersion.ToString();
         }
 
-        public NewUpdateAvailableDialog()
-        {
-            InitializeComponent();
-        }
-
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;

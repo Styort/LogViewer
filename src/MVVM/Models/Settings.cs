@@ -110,6 +110,46 @@ namespace LogViewer.MVVM.Models
                 return false;
             }
         }
+
+        public void Load()
+        {
+            var ser = new XmlSerializer(Settings.Instance.GetType());
+            if (File.Exists(settingsPath))
+            {
+                try
+                {
+                    using (var fs = new FileStream(settingsPath, FileMode.Open))
+                    {
+                        Settings settings = (Settings)ser.Deserialize(fs);
+                        Instance.AutoStartInStartup = settings.AutoStartInStartup;
+                        Instance.MinimizeToTray = settings.MinimizeToTray;
+                        Instance.CurrentTheme = settings.CurrentTheme;
+                        Instance.DataFormat = settings.DataFormat;
+                        Instance.IgnoredIPs = settings.IgnoredIPs;
+                        Instance.Receivers = settings.Receivers;
+                        Instance.FontColor = settings.FontColor;
+                        Instance.OnlyOneAppInstance = settings.OnlyOneAppInstance;
+                        Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
+                        Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
+                        Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
+                        Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
+                        Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
+                        Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
+                        Instance.Language = settings.Language;
+                    }
+
+                    Instance.ApplyTheme();
+                    Instance.ApplyLanguage(Instance.Language);
+                }
+                catch (Exception ex)
+                {
+                    logger.Warn(ex, "An error occurred while read and apply settings.");
+                }
+            }
+            else
+                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
+
+        }
     }
 
     [Serializable]

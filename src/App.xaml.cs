@@ -19,7 +19,6 @@ namespace LogViewer
     public partial class App : Application
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "settings.xml");
 
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
 
@@ -37,39 +36,7 @@ namespace LogViewer
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
-            var ser = new XmlSerializer(Settings.Instance.GetType());
-            if (File.Exists(settingsPath))
-            {
-                try
-                {
-                    using (var fs = new FileStream(settingsPath, FileMode.Open))
-                    {
-                        Settings settings = (Settings)ser.Deserialize(fs);
-                        Settings.Instance.AutoStartInStartup = settings.AutoStartInStartup;
-                        Settings.Instance.MinimizeToTray = settings.MinimizeToTray;
-                        Settings.Instance.CurrentTheme = settings.CurrentTheme;
-                        Settings.Instance.DataFormat = settings.DataFormat;
-                        Settings.Instance.IgnoredIPs = settings.IgnoredIPs;
-                        Settings.Instance.Receivers = settings.Receivers;
-                        Settings.Instance.FontColor = settings.FontColor;
-                        Settings.Instance.OnlyOneAppInstance = settings.OnlyOneAppInstance;
-                        Settings.Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
-                        Settings.Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
-                        Settings.Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
-                        Settings.Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
-                        Settings.Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
-                        Settings.Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
-                        Settings.Instance.Language = settings.Language;
-                    }
-
-                    Settings.Instance.ApplyTheme();
-                    Settings.Instance.ApplyLanguage(Settings.Instance.Language);
-                }
-                catch (Exception ex)
-                {
-                    logger.Warn(ex, "An error occurred while read and apply settings.");
-                }
-            }
+            Settings.Instance.Load();
 
             if (Settings.Instance.OnlyOneAppInstance)
             {

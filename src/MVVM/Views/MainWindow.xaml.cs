@@ -258,6 +258,23 @@ namespace LogViewer.MVVM.Views
             dataView.Refresh();
         }
 
+        #region Drag and Drop
+
+        private void LogsListView_OnDragOver(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            if (files != null && files.Any())
+            {
+                var file = files.FirstOrDefault(x => Path.GetExtension(x) == ".txt" ||
+                                                     Path.GetExtension(x) == ".log");
+                e.Effects = file != null ? DragDropEffects.Copy : DragDropEffects.None;
+            }
+            else
+                e.Effects = DragDropEffects.None;
+
+            e.Handled = true;
+        }
+
         private void LogsListView_OnDrop(object sender, DragEventArgs e)
         {
             e.Effects = DragDropEffects.Copy;
@@ -275,6 +292,8 @@ namespace LogViewer.MVVM.Views
                 }
             }
         }
+
+        #endregion
 
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -315,7 +334,10 @@ namespace LogViewer.MVVM.Views
                                 ad.UpdateAsync();
                             }
                             else
+                            {
+                                logger.Debug("Update scheduled at next launch");
                                 updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                            }
                         });
 
                     }

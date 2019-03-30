@@ -268,7 +268,7 @@
                       HorizontalAlignment="Stretch"/>
 
         <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Path=Logs, IsAsync=True}" SelectedValue="{Binding Path=SelectedLog}" x:Name="LogsListView" 
-                  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Drop="LogsListView_OnDrop" AllowDrop="True"
+                  ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" DragOver="LogsListView_OnDragOver" Drop="LogsListView_OnDrop" AllowDrop="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.ScrollChanged="LogsListView_OnScrollChanged" 
                   ItemContainerStyle="{StaticResource LogItemStyle}" SelectionChanged="OnSelectionChanged" 
                   VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"

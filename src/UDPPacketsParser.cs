@@ -14,6 +14,9 @@ using LogViewer.MVVM.Models;
 
 namespace LogViewer
 {
+    /// <summary>
+    /// Класс-парсер логов по UDP
+    /// </summary>
     public class UDPPacketsParser : IDisposable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
@@ -30,7 +33,6 @@ namespace LogViewer
         {
             this.Port = port;
             xmlContext = CreateContext();
-
             IgnoredIPs = Settings.Instance.IgnoredIPs;
         }
 
@@ -106,7 +108,7 @@ namespace LogViewer
             using (XmlReader reader = new XmlTextReader(xmlFragment, XmlNodeType.Element, xmlContext))
             {
                 reader.Read();
-                if ((reader.MoveToContent() != XmlNodeType.Element) || (reader.Name != "log4j:event"))
+                if (reader.MoveToContent() != XmlNodeType.Element || reader.Name != "log4j:event")
                     throw new Exception("The Log Event is not a valid log4j Xml block.");
 
                 log.Logger = reader.GetAttribute("logger");
@@ -115,7 +117,7 @@ namespace LogViewer
 
                 long timeStamp;
                 if (long.TryParse(reader.GetAttribute("timestamp"), out timeStamp))
-                    log.Time = unixTimeStampToDateTime(timeStamp).AddHours(3);
+                    log.Time = UnixTimeStampToDateTime(timeStamp).ToLocalTime();
 
                 int eventDepth = reader.Depth;
                 reader.Read();
@@ -165,11 +167,9 @@ namespace LogViewer
             return new XmlParserContext(nt, nsmanager, "elem", XmlSpace.None, Encoding.UTF8);
         }
 
-        private DateTime unixTimeStampToDateTime(long unixTimeStamp)
+        private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
         {
-            DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Local);
-            dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp);
-            return dtDateTime;
+            return new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc).AddMilliseconds(unixTimeStamp);
         }
 
         public void Dispose()

@@ -25,6 +25,8 @@ namespace LogViewer.MVVM.Views
             ((SearchResultViewModel)DataContext).SearchResult = new ObservableCollection<LogMessage>(searchResult);
         }
 
+        #region Сортировка по нажатию на заголовок таблицы
+
         GridViewColumnHeader lastHeaderClicked = null;
         ListSortDirection lastDirection = ListSortDirection.Ascending;
 
@@ -83,6 +85,9 @@ namespace LogViewer.MVVM.Views
             dataView.SortDescriptions.Add(sd);
             dataView.Refresh();
         }
+
+        #endregion
+
 
         protected virtual void OnShowLogEvent(LogMessage e)
         {

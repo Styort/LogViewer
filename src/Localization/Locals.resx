@@ -195,9 +195,6 @@
   <data name="DontShowThisLogger" xml:space="preserve">
     <value>Скрыть сообщения от выбранного логгера</value>
   </data>
-  <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
-    <value>Включить автоматический переход к последнему сообщению</value>
-  </data>
   <data name="Error" xml:space="preserve">
     <value>Ошибка</value>
   </data>
@@ -579,5 +576,11 @@
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Размер обновления:</value>
+  </data>
+  <data name="DisableAutoScroll" xml:space="preserve">
+    <value>Выключить автоматический переход к последнему сообщению</value>
+  </data>
+  <data name="EnableAutoScroll" xml:space="preserve">
+    <value>Включить автоматический переход к последнему сообщению</value>
   </data>
 </root>

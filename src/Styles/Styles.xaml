@@ -222,8 +222,6 @@
     </Style>
 
     <Style x:Key="AutoScrollToBottom" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTip" Value="{localization:LocBinding EnableAutoScrollToLastLogMessage}"/>
-
         <Style.Triggers>
             <Trigger Property="IsEnabled" Value="True">
                 <Setter Property="Template">

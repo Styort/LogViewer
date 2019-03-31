@@ -318,9 +318,6 @@
   <data name="DontShowThisLogger" xml:space="preserve">
     <value>Hide Messages from this Logger</value>
   </data>
-  <data name="EnableAutoScrollToLastLogMessage" xml:space="preserve">
-    <value>Enable Auto Scroll to Last Log Message</value>
-  </data>
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
@@ -579,5 +576,11 @@ Try selecting a template manually.</value>
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Update size:</value>
+  </data>
+  <data name="DisableAutoScroll" xml:space="preserve">
+    <value>Disable Auto Scroll to Last Log Message</value>
+  </data>
+  <data name="EnableAutoScroll" xml:space="preserve">
+    <value>Enable Auto Scroll to Last Log Message</value>
   </data>
 </root>

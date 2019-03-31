@@ -19,7 +19,7 @@ namespace LogViewer.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Locals {
@@ -314,6 +314,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Выключить автоматический переход к последнему сообщению.
+        /// </summary>
+        internal static string DisableAutoScroll {
+            get {
+                return ResourceManager.GetString("DisableAutoScroll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Отображаемый формат даты:.
         /// </summary>
         internal static string DisplayedDataFormat {
@@ -361,9 +370,9 @@ namespace LogViewer.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Включить автоматический переход к последнему сообщению.
         /// </summary>
-        internal static string EnableAutoScrollToLastLogMessage {
+        internal static string EnableAutoScroll {
             get {
-                return ResourceManager.GetString("EnableAutoScrollToLastLogMessage", resourceCulture);
+                return ResourceManager.GetString("EnableAutoScroll", resourceCulture);
             }
         }
         

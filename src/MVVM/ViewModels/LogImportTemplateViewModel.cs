@@ -26,7 +26,6 @@ namespace LogViewer.MVVM.ViewModels
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "template_import_settings.xml");
 
-        private readonly string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
         private bool? dialogResult;
@@ -276,11 +275,17 @@ namespace LogViewer.MVVM.ViewModels
             DialogResult = true;
         }
 
-        private void AddTemplateItem(object obj)
+        /// <summary>
+        /// Добавление параметра шаблона
+        /// </summary>
+        private void AddTemplateItem()
         {
             TemplateLogItems.Add(new LogTemplateItem());
         }
 
+        /// <summary>
+        /// Удаление параметра шаблона
+        /// </summary>
         private void RemoveTemplateItem(object obj)
         {
             LogTemplateItem item = obj as LogTemplateItem;
@@ -369,14 +374,31 @@ namespace LogViewer.MVVM.ViewModels
                 if (elements[j] is TimeLayoutRenderer || elements[j] is DateLayoutRenderer ||
                     elements[j] is LongDateLayoutRenderer || elements[j] is ShortDateLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
-                if(elements[j] is TicksLayoutRenderer)
+                if (elements[j] is TicksLayoutRenderer)
                     LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ticks, i);
-                    j++;
+                j++;
             }
         }
 
+        /// <summary>
+        /// Получаем первое сообщение лога из выбранного файла
+        /// </summary>
         private string GetFirstMessage()
         {
+            string[] LogTypeArraySeparator1 =
+            {
+                ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;",
+                ";Fatal", ";Error", ";Warn", ";Trace", ";Debug", ";Info",
+                "Fatal;", "Error;", "Warn;", "Trace;", "Debug;", "Info;"
+            };
+
+            string[] LogTypeArraySeparator2 =
+            {
+                "|Fatal|", "|Error|", "|Warn|", "|Trace|", "|Debug|", "|Info|",
+                "|Fatal", "|Error", "|Warn", "|Trace", "|Debug", "|Info",
+                "Fatal|", "Error|", "Warn|", "Trace|", "Debug|", "Info|"
+            };
+
             var sb = new StringBuilder();
             using (StreamReader sr = new StreamReader(importFilePath, Encoding.GetEncoding("Windows-1251")))
             {
@@ -384,7 +406,7 @@ namespace LogViewer.MVVM.ViewModels
                 while ((line = sr.ReadLine()) != null)
                 {
                     //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                    if (line.ContainsAnyOf(LogTypeArray))
+                    if (line.ContainsAnyOf(LogTypeArraySeparator1) || line.ContainsAnyOf(LogTypeArraySeparator2))
                     {
                         if (sb.Length != 0) break;
                         sb.Append(line);
@@ -399,16 +421,22 @@ namespace LogViewer.MVVM.ViewModels
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Пытаемся автоматически подобрать шаблон сообщения
+        /// </summary>
         private bool TryDetectTemplate(string log)
         {
             // пробуем разные разделители
             var logSplit = log.Split(';');
             if (logSplit.Length < 4)
+            {
                 logSplit = log.Split('|');
-            if (logSplit.Length < 4)
-                logSplit = log.Split('$');
+                LogTemplate.Separator = "|";
+            }
 
-            var dateTimeIndex = GetDateTimeIndex(logSplit);
+            eImportTemplateParameters dataParameter = eImportTemplateParameters.date;
+
+            var dateTimeIndex = GetDateTimeIndex(logSplit, ref dataParameter);
             if (dateTimeIndex == -1) return false;
 
             var intIndexes = GetIntIndexes(logSplit);
@@ -432,7 +460,7 @@ namespace LogViewer.MVVM.ViewModels
 
             if (otherIndexes.Count < 2) return false;
 
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, dateTimeIndex);
+            LogTemplate.TemplateParameterses.Add(dataParameter, dateTimeIndex);
             LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, logLevelIndex);
             LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, otherIndexes.Last());
             LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, otherIndexes[otherIndexes.Count - 2]);
@@ -448,13 +476,26 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Получаем индекс даты
         /// </summary>
-        private int GetDateTimeIndex(string[] logSplit)
+        private int GetDateTimeIndex(string[] logSplit, ref eImportTemplateParameters dateTemplateParameter)
         {
             var index = -1;
             for (int i = 0; i < logSplit.Length; i++)
             {
                 if (DateTime.TryParse(logSplit[i], out DateTime date))
                     return i;
+
+                if (long.TryParse(logSplit[i], out long tickDateTime))
+                {
+                    try
+                    {
+                        var dateFromTicks = new DateTime(tickDateTime);
+                        dateTemplateParameter = eImportTemplateParameters.ticks;
+                        return i;
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
             }
             return index;
         }
@@ -489,6 +530,5 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         #endregion
-
     }
 }

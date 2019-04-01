@@ -11,7 +11,6 @@ namespace LogViewer.Converters
         {
             if (value != null && value is DateTime dateValue)
             {
-
                 var dataFormat = Settings.Instance.DataFormat;
                 if (string.IsNullOrEmpty(dataFormat))
                     return dateValue;

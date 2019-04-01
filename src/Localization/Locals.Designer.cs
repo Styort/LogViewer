@@ -792,6 +792,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Только слово целиком.
+        /// </summary>
+        internal static string MatchWholeWord {
+            get {
+                return ResourceManager.GetString("MatchWholeWord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Максимальный размер буфера:.
         /// </summary>
         internal static string MaxMessageBufferSize {

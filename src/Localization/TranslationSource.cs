@@ -20,7 +20,6 @@ namespace LogViewer.Localization
     public class TranslationSource : INotifyPropertyChanged
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static TranslationSource instance = new TranslationSource();
 
         private readonly ResourceManager resManager;
         private CultureInfo currentCulture;
@@ -30,13 +29,7 @@ namespace LogViewer.Localization
         /// <summary>
         /// Экземпляр синглтона
         /// </summary>
-        public static TranslationSource Instance
-        {
-            get
-            {
-                return instance;
-            }
-        }
+        public static TranslationSource Instance { get; } = new TranslationSource();
 
         /// <summary>
         /// Возвращает экземпляр источника данных с путём подключения 
@@ -56,7 +49,7 @@ namespace LogViewer.Localization
         /// </summary>
         public CultureInfo CurrentCulture
         {
-            get { return this.currentCulture; }
+            get => this.currentCulture;
             set
             {
                 if (this.currentCulture != value)
@@ -84,7 +77,7 @@ namespace LogViewer.Localization
                     return key;
 
                 var result = this.resManager.GetObject(key, this.CurrentCulture);
-                return result != null ? result : key;
+                return result ?? key;
             }
         }
 
@@ -112,7 +105,8 @@ namespace LogViewer.Localization
             var cultureInfo = CultureInfo.CreateSpecificCulture(culture);
             if (!AvaiableCultures.Any(x => x.Equals(cultureInfo)))
             {
-                logger.Warn("Provided culture was not found in avaible cultures collection. Returning value for current culture");
+                logger.Warn(
+                    "Provided culture was not found in avaible cultures collection. Returning value for current culture");
                 return this[key];
             }
 
@@ -148,18 +142,20 @@ namespace LogViewer.Localization
             {
                 try
                 {
-                    if (culture.Equals(CultureInfo.InvariantCulture)) continue;  //Пропускаем InvariantCulture
+                    if (culture.Equals(CultureInfo.InvariantCulture)) continue; //Пропускаем InvariantCulture
 
                     ResourceSet resourceSet = resManager.GetResourceSet(culture, true, false);
                     if (resourceSet != null) // Нашли ресурсы для языка
                     {
                         //Делаем копию, чтобы поменять паттерн для вывода времени
-                        CultureInfo cultureClone = (CultureInfo)culture.Clone();
+                        CultureInfo cultureClone = (CultureInfo) culture.Clone();
 
-                        string uiCultureDateTimePattern = resManager.GetObject("UICultureDateTimePattern", culture)?.ToString();
+                        string uiCultureDateTimePattern = resManager.GetObject("UICultureDateTimePattern", culture)
+                            ?.ToString();
                         if (!string.IsNullOrEmpty(uiCultureDateTimePattern))
                         {
-                            cultureClone.DateTimeFormat.FullDateTimePattern = uiCultureDateTimePattern; //Применяем паттерн времени
+                            cultureClone.DateTimeFormat.FullDateTimePattern =
+                                uiCultureDateTimePattern; //Применяем паттерн времени
                         }
 
                         avaiableCultures.Add(cultureClone); // Добавляем в поддерживаемые языки
@@ -173,7 +169,7 @@ namespace LogViewer.Localization
 
             //Сортировка для отображения в порядке приоритета. Задается в ресурсах. 
             //Сортировка по имени будет автоматически (CultureInfo.GetCultures(CultureTypes.AllCultures) - вывод список отсортированный по алфавиту)
-            avaiableCultures.Sort((x, y) => { return GetUICulturePriority(x).CompareTo(GetUICulturePriority(y)); });
+            avaiableCultures.Sort((x, y) => GetUICulturePriority(x).CompareTo(GetUICulturePriority(y)));
 
             return avaiableCultures;
         }
@@ -189,24 +185,22 @@ namespace LogViewer.Localization
 
             var uiCulturePriorityString = resManager.GetObject("UICulturePriority", сultureInfo)?.ToString();
 
-            if (int.TryParse(uiCulturePriorityString, out uiCulturePriority))
-                return uiCulturePriority;
-            else
-                return int.MaxValue;
+            return int.TryParse(uiCulturePriorityString, out uiCulturePriority) ? uiCulturePriority : int.MaxValue;
         }
 
         /// <summary>
         /// Событие смены языка
         /// </summary>
         public event EventHandler<LanguageEventArgs> LanguageChanged;
+
         private void RaiseLanguageChanged(CultureInfo cultureInfo)
         {
             EventHandler<LanguageEventArgs> handler = LanguageChanged;
             handler?.Invoke(this, new LanguageEventArgs(cultureInfo));
         }
 
-
         #region Реализация INotifyPropertyChanged
+
         /// <summary>
         /// Возникает, когда изменяется какой-нибудь свойство.
         /// </summary>
@@ -231,6 +225,7 @@ namespace LogViewer.Localization
             PropertyChangedEventHandler handler = this.PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
         #endregion Реализация INotifyPropertyChanged
     }
 }

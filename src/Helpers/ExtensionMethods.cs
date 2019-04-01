@@ -93,33 +93,11 @@ namespace LogViewer.Helpers
             return search.Any(line.Contains);
         }
 
-        public static async void FireAndForgetSafeAsync(this Task task, IErrorHandler handler = null)
-        {
-            try
-            {
-                await task;
-            }
-            catch (Exception ex)
-            {
-                handler?.HandleError(ex);
-            }
-        }
-
         public static DateTime Truncate(this DateTime dateTime, TimeSpan timeSpan)
         {
             if (timeSpan == TimeSpan.Zero) return dateTime; // Or could throw an ArgumentException
             if (dateTime == DateTime.MinValue || dateTime == DateTime.MaxValue) return dateTime; // do not modify "guard" values
             return dateTime.AddTicks(-(dateTime.Ticks % timeSpan.Ticks));
-        }
-
-        public static string ReplaceManyToEmpty(this string value, params string[] replaceList)
-        {
-            StringBuilder str = new StringBuilder(value);
-            foreach (var s in replaceList)
-            {
-                str.Replace(s, "");
-            }
-            return str.ToString();
         }
 
         //public static T DeepClone<T>(T obj)

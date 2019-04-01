@@ -583,4 +583,7 @@ Try selecting a template manually.</value>
   <data name="EnableAutoScroll" xml:space="preserve">
     <value>Enable Auto Scroll to Last Log Message</value>
   </data>
+  <data name="MatchWholeWord" xml:space="preserve">
+    <value>Match Whole Word</value>
+  </data>
 </root>

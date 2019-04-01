@@ -607,7 +607,7 @@
                                 </Style>
                             </Button.Style>
                         </Button>
-                        
+
                         <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
                             <Image Source="{StaticResource SearchPrevious}"/>
                         </Button>
@@ -645,7 +645,22 @@
                             </ToggleButton.Template>
                         </ToggleButton>
 
-                        <ToggleButton Margin="0" ToolTip="{localization:LocBinding MatchLogLevel}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchLogLevel}">
+                        <ToggleButton Margin="0" ToolTip="{localization:LocBinding MatchWholeWord}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchWholeWord}">
+                            <ToggleButton.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
+                                        <Image Source="{StaticResource MatchWordDrawingImage}" Margin="2"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                            <Setter Property="BorderThickness" TargetName="toggleBorder" Value="2"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchLogLevel}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchLogLevel}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
@@ -659,7 +674,6 @@
                                 </ControlTemplate>
                             </ToggleButton.Template>
                         </ToggleButton>
-
                     </StackPanel>
 
                     <ControlTemplate.Triggers>

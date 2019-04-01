@@ -6,7 +6,7 @@ namespace LogViewer.Helpers
 {
     public class TVIExtender
     {
-        private TreeViewItem _item;
+        private TreeViewItem item;
 
         public static DependencyProperty UseExtenderProperty =
             DependencyProperty.RegisterAttached("UseExtender", typeof(bool), typeof(TVIExtender),
@@ -65,33 +65,33 @@ namespace LogViewer.Helpers
 
         public TVIExtender(TreeViewItem item)
         {
-            _item = item;
+            this.item = item;
 
-            ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(_item);
+            ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(this.item);
             ic.ItemContainerGenerator.ItemsChanged += OnItemsChangedItemContainerGenerator;
 
-            _item.SetValue(IsLastOneProperty,
-                ic.ItemContainerGenerator.IndexFromContainer(_item) == ic.Items.Count - 1);
+            this.item.SetValue(IsLastOneProperty,
+                ic.ItemContainerGenerator.IndexFromContainer(this.item) == ic.Items.Count - 1);
         }
 
         private void OnItemsChangedItemContainerGenerator(object sender, ItemsChangedEventArgs e)
         {
-            ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(_item);
+            ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(item);
 
             if (null != ic)
-                _item.SetValue(IsLastOneProperty,
-                    ic.ItemContainerGenerator.IndexFromContainer(_item) == ic.Items.Count - 1);
+                item.SetValue(IsLastOneProperty,
+                    ic.ItemContainerGenerator.IndexFromContainer(item) == ic.Items.Count - 1);
         }
 
         private void Detach()
         {
-            if (_item != null)
+            if (item != null)
             {
-                ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(_item);
+                ItemsControl ic = ItemsControl.ItemsControlFromItemContainer(item);
                 if(ic==null) return;
                 ic.ItemContainerGenerator.ItemsChanged -= OnItemsChangedItemContainerGenerator;
 
-                _item = null;
+                item = null;
             }
         }
     }

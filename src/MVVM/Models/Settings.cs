@@ -23,7 +23,7 @@ namespace LogViewer.MVVM.Models
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly Settings instance = new Settings();
-        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "settings.xml");
+        private string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "settings.xml");
 
         public bool AutoStartInStartup { get; set; } = false;
         public bool MinimizeToTray { get; set; } = false;
@@ -114,7 +114,17 @@ namespace LogViewer.MVVM.Models
         public void Load()
         {
             var ser = new XmlSerializer(Settings.Instance.GetType());
-            if (File.Exists(settingsPath))
+
+            bool settingsFileExists = File.Exists(settingsPath);
+
+            // если в корневой папке лежит файл настроек - читаем оттуда
+            if (!settingsFileExists && File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}settings.xml"))
+            {
+                settingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}settings.xml";
+                settingsFileExists = true;
+            }
+            
+            if (settingsFileExists)
             {
                 try
                 {
@@ -146,9 +156,6 @@ namespace LogViewer.MVVM.Models
                     logger.Warn(ex, "An error occurred while read and apply settings.");
                 }
             }
-            else
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
-
         }
     }
 

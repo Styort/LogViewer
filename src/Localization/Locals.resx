@@ -586,4 +586,7 @@
   <data name="MatchWholeWord" xml:space="preserve">
     <value>Только слово целиком</value>
   </data>
+  <data name="ReleaseNotes" xml:space="preserve">
+    <value>Примечания к новой версии</value>
+  </data>
 </root>

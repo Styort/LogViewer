@@ -55,9 +55,11 @@ namespace LogViewer.MVVM.Views
             {
                 if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
                 {
-                    ((LogViewModel) DataContext).ImportLogs(arg);
+                    ((LogViewModel)DataContext).ImportLogs(arg);
                 }
             }
+
+            DisplayChangeLog();
         }
 
         #region Переход в tray
@@ -88,7 +90,7 @@ namespace LogViewer.MVVM.Views
                     ToolStripMenuItem openAppMenuItem = new ToolStripMenuItem("Open");
                     ToolStripMenuItem exitAppMenuItem = new ToolStripMenuItem("Exit");
                     // добавляем элементы в меню
-                    trayIcon.ContextMenuStrip.Items.AddRange(new ToolStripItem[] {openAppMenuItem, exitAppMenuItem});
+                    trayIcon.ContextMenuStrip.Items.AddRange(new ToolStripItem[] { openAppMenuItem, exitAppMenuItem });
                     trayIcon.ContextMenuStrip.ItemClicked += TrayIconContextMenuClick;
                 }
                 this.Hide();
@@ -210,7 +212,7 @@ namespace LogViewer.MVVM.Views
 
         private void TreeViewCheckBox_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            CheckBox currentCheckBox = (CheckBox) sender;
+            CheckBox currentCheckBox = (CheckBox)sender;
             CheckBoxId.CurrentСheckBoxId = currentCheckBox.Uid;
         }
 
@@ -218,7 +220,7 @@ namespace LogViewer.MVVM.Views
         {
             if (e.Key == Key.Space)
             {
-                CheckBox currentCheckBox = (CheckBox) sender;
+                CheckBox currentCheckBox = (CheckBox)sender;
                 CheckBoxId.CurrentСheckBoxId = currentCheckBox.Uid;
             }
         }
@@ -234,7 +236,7 @@ namespace LogViewer.MVVM.Views
         {
             var headerClicked = e.OriginalSource as GridViewColumnHeader;
 
-            if (headerClicked != null && (string) headerClicked.Content == "Message")
+            if (headerClicked != null && (string)headerClicked.Content == "Message")
                 return;
 
             if (headerClicked != null)
@@ -298,7 +300,7 @@ namespace LogViewer.MVVM.Views
 
         private void LogsListView_OnDragOver(object sender, DragEventArgs e)
         {
-            var file = ((string[]) e.Data.GetData(DataFormats.FileDrop))?.FirstOrDefault(
+            var file = ((string[])e.Data.GetData(DataFormats.FileDrop))?.FirstOrDefault(
                 x => Path.GetExtension(x) == ".txt" ||
                      Path.GetExtension(x) == ".log");
 
@@ -312,14 +314,14 @@ namespace LogViewer.MVVM.Views
             e.Effects = DragDropEffects.Copy;
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
-                string[] files = (string[]) e.Data.GetData(DataFormats.FileDrop);
+                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files != null && files.Any())
                 {
                     var file = files.FirstOrDefault(x => Path.GetExtension(x) == ".txt" ||
                                                          Path.GetExtension(x) == ".log");
                     if (file != null)
                     {
-                        ((LogViewModel) this.DataContext).ImportLogs(file);
+                        ((LogViewModel)this.DataContext).ImportLogs(file);
                     }
                 }
             }
@@ -341,11 +343,13 @@ namespace LogViewer.MVVM.Views
                     if (info.UpdateAvailable)
                     {
                         logger.Debug($"New update available: {info.AvailableVersion}");
-                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
                             NewUpdateAvailableDialog newUpdateAvailableDialog = new NewUpdateAvailableDialog(info);
                             newUpdateAvailableDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            newUpdateAvailableDialog.Owner = this;
                             newUpdateAvailableDialog.ShowDialog();
+
                             if (newUpdateAvailableDialog.DialogResult.HasValue &&
                                 newUpdateAvailableDialog.DialogResult.Value)
                             {
@@ -367,11 +371,44 @@ namespace LogViewer.MVVM.Views
             }
         }
 
-        private void OnUpdateCompleted(object sender, AsyncCompletedEventArgs asyncCompletedEventArgs)
+        private bool isUpdated = false;
+
+        private void OnUpdateCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            logger.Debug("Update successfully intalled.");
-            MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            logger.Debug($"Update successfully intalled with cancelled - {e.Cancelled}, error - {e.Error}, state - {e.UserState}");
+
+            updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+            if (e.Error != null)
+            {
+                logger.Warn($"Update completed with error: {e.Error.Message}");
+                MessageBox.Show("ERROR: Could not install the latest version of the application. Reason: \n" + e.Error.Message + "\nPlease report this error to the system administrator.");
+                return;
+            }
+
+            if (e.Cancelled)
+            {
+                MessageBox.Show("The update of the application's latest version was cancelled.");
+                return;
+            }
+
+            if (!isUpdated)
+                MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK, MessageBoxImage.Information);
+            else
+                isUpdated = true;
+        }
+
+        private void DisplayChangeLog()
+        {
+            if (!ApplicationDeployment.IsNetworkDeployed)
+                return;
+
+            if (!ApplicationDeployment.CurrentDeployment.IsFirstRun)
+                return;
+
+            ReleaseNotesDialog releaseNotesDialog = new ReleaseNotesDialog();
+            releaseNotesDialog.Owner = this;
+            releaseNotesDialog.ShowDialog();
         }
 
         #endregion

@@ -24,7 +24,7 @@ namespace LogViewer.MVVM.ViewModels
     public class LogImportTemplateViewModel : BaseViewModel
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private readonly string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "template_import_settings.xml");
+        private string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "LogViewer", "template_import_settings.xml");
 
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
@@ -162,6 +162,10 @@ namespace LogViewer.MVVM.ViewModels
                 });
 
             SelectedPopularTemplate = PopularTemplates.First().Value;
+
+            // если в корневой папке лежит файл настроек - читаем оттуда
+            if (!File.Exists(settingsPath) && File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}template_import_settings.xml"))
+                settingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}template_import_settings.xml";
 
             if (File.Exists(settingsPath))
             {

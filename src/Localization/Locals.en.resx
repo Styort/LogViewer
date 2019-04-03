@@ -151,7 +151,7 @@
     <value>- Sorting and filtering received logs;</value>
   </data>
   <data name="FeaturesStr4" xml:space="preserve">
-    <value>- and many other features (for details see ReleaseNotes file).</value>
+    <value>- and many other features (for details see ReleaseNotes).</value>
   </data>
   <data name="IgnoredIPAddresses" xml:space="preserve">
     <value>Ignored IP Addresses</value>
@@ -572,7 +572,8 @@ Try selecting a template manually.</value>
   </data>
   <data name="UpdateInstalledSuccessfully" xml:space="preserve">
     <value>Update successfully installed.
- Changes will take effect after the application is restarted.</value>
+Changes will take effect after the application is restarted.
+Restart application?</value>
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Update size:</value>
@@ -588,5 +589,14 @@ Try selecting a template manually.</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Release Notes</value>
+  </data>
+  <data name="ShowReleaseNotes" xml:space="preserve">
+    <value>Show Release Notes</value>
+  </data>
+  <data name="UpdateInstalledErrorMessage" xml:space="preserve">
+    <value>An error occurred while installing the update.</value>
+  </data>
+  <data name="UpdateWasCancelled" xml:space="preserve">
+    <value>Update was cancelled</value>
   </data>
 </root>

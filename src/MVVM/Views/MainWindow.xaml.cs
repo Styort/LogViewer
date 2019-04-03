@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Deployment.Application;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -375,27 +377,35 @@ namespace LogViewer.MVVM.Views
 
         private void OnUpdateCompleted(object sender, AsyncCompletedEventArgs e)
         {
-            logger.Debug($"Update successfully intalled with cancelled - {e.Cancelled}, error - {e.Error}, state - {e.UserState}");
+            if (isUpdated) return;
 
+            logger.Debug($"Update successfully intalled with cancelled - {e.Cancelled}, error - {e.Error}, state - {e.UserState}");
             updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            isUpdated = true;
 
             if (e.Error != null)
             {
                 logger.Warn($"Update completed with error: {e.Error.Message}");
-                MessageBox.Show("ERROR: Could not install the latest version of the application. Reason: \n" + e.Error.Message + "\nPlease report this error to the system administrator.");
+                MessageBox.Show(Locals.Error, $"{Locals.UpdateInstalledErrorMessage}{Environment.NewLine}{e.Error.Message}",
+                                MessageBoxButton.OK,
+                                MessageBoxImage.Error);
                 return;
             }
 
             if (e.Cancelled)
             {
-                MessageBox.Show("The update of the application's latest version was cancelled.");
+                logger.Debug("Update was cancelled");
+                MessageBox.Show(Locals.UpdateWasCancelled);
                 return;
             }
 
-            if (!isUpdated)
-                MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK, MessageBoxImage.Information);
-            else
-                isUpdated = true;
+            MessageBoxResult dialogResult = MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (dialogResult != MessageBoxResult.Yes) return;
+            var applicationEntryPoint = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
+            if (!File.Exists(applicationEntryPoint)) return;
+            logger.Debug("Restart application after update");
+            Process.Start(applicationEntryPoint);
+            Application.Current.Shutdown(0);
         }
 
         private void DisplayChangeLog()

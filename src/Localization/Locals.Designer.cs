@@ -19,7 +19,7 @@ namespace LogViewer.Localization {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Locals {
@@ -450,7 +450,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - и много других возможностей. (подробности см. в файле ReleaseNotes).
+        ///   Looks up a localized string similar to - и много других возможностей. (подробности см. в ReleaseNotes).
         /// </summary>
         internal static string FeaturesStr4 {
             get {
@@ -1081,7 +1081,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Примечания к новой версии.
+        ///   Looks up a localized string similar to Release Notes.
         /// </summary>
         internal static string ReleaseNotes {
             get {
@@ -1239,6 +1239,15 @@ namespace LogViewer.Localization {
         internal static string ShowProgressOnTaskbarIconToolTip {
             get {
                 return ResourceManager.GetString("ShowProgressOnTaskbarIconToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показать Release Notes.
+        /// </summary>
+        internal static string ShowReleaseNotes {
+            get {
+                return ResourceManager.GetString("ShowReleaseNotes", resourceCulture);
             }
         }
         
@@ -1441,8 +1450,18 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to s.
+        /// </summary>
+        internal static string UpdateInstalledErrorMessage {
+            get {
+                return ResourceManager.GetString("UpdateInstalledErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Обновление успешно установлено.
-        ///Для вступления изменений в силу необходимо перезагрузить приложение..
+        ///Для вступления изменений в силу необходимо перезагрузить приложение.
+        ///Перезагрузить?.
         /// </summary>
         internal static string UpdateInstalledSuccessfully {
             get {
@@ -1456,6 +1475,15 @@ namespace LogViewer.Localization {
         internal static string UpdateSize {
             get {
                 return ResourceManager.GetString("UpdateSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновление было отменено.
+        /// </summary>
+        internal static string UpdateWasCancelled {
+            get {
+                return ResourceManager.GetString("UpdateWasCancelled", resourceCulture);
             }
         }
         

@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.2.1 (04.03.2019)</Version>
+    <NewFeatures>
+      <string>Добавлена возможность просмотра ReleaseNotes в настройках приложения (вкладка About).</string>
+    </NewFeatures>
+    <ChangedFeatures>
+      <string>Изменена логика поведения приложения после установки обновления. Появилась возможность перезапустить приложение сразу после успешной установки.</string>
+    </ChangedFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.2.0 (04.02.2019)</Version>
     <NewFeatures>
       <string>Добавлено окно с изменениями в версиях при первой загрузке программы;</string>

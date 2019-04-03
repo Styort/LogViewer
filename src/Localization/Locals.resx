@@ -221,7 +221,7 @@
     <value>- Сортировка и фильтрация считанных логов;</value>
   </data>
   <data name="FeaturesStr4" xml:space="preserve">
-    <value>- и много других возможностей. (подробности см. в файле ReleaseNotes)</value>
+    <value>- и много других возможностей. (подробности см. в ReleaseNotes)</value>
   </data>
   <data name="FindAllHotKeys" xml:space="preserve">
     <value>Найти все (Ctrl+F)</value>
@@ -572,7 +572,8 @@
   </data>
   <data name="UpdateInstalledSuccessfully" xml:space="preserve">
     <value>Обновление успешно установлено.
-Для вступления изменений в силу необходимо перезагрузить приложение.</value>
+Для вступления изменений в силу необходимо перезагрузить приложение.
+Перезагрузить?</value>
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Размер обновления:</value>
@@ -587,6 +588,15 @@
     <value>Только слово целиком</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
-    <value>Примечания к новой версии</value>
+    <value>Release Notes</value>
+  </data>
+  <data name="ShowReleaseNotes" xml:space="preserve">
+    <value>Показать Release Notes</value>
+  </data>
+  <data name="UpdateInstalledErrorMessage" xml:space="preserve">
+    <value>s</value>
+  </data>
+  <data name="UpdateWasCancelled" xml:space="preserve">
+    <value>Обновление было отменено</value>
   </data>
 </root>

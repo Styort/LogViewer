@@ -11,6 +11,7 @@ using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
 using NLog;
 using LogViewer.MVVM.Models;
+using LogViewer.MVVM.Views;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -452,6 +453,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand saveCommand;
         private RelayCommand сancelCommand;
         private RelayCommand setDefaultColorCommand;
+        private RelayCommand showReleaseNotesCommand;
 
         public RelayCommand AddReceiverCommand => addReceiverCommand ?? (addReceiverCommand = new RelayCommand(AddReceiver));
         public RelayCommand RemoveReceiverCommand => removeReceiverCommand ?? (removeReceiverCommand = new RelayCommand(RemoveReceiver));
@@ -460,6 +462,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand SaveCommand => saveCommand ?? (saveCommand = new RelayCommand(Save));
         public RelayCommand CancelCommand => сancelCommand ?? (сancelCommand = new RelayCommand(Cancel));
         public RelayCommand SetDefaultColorCommand => setDefaultColorCommand ?? (setDefaultColorCommand = new RelayCommand(SetDefaultColor));
+        public RelayCommand ShowReleaseNotesCommand => showReleaseNotesCommand ?? (showReleaseNotesCommand = new RelayCommand(ShowReleaseNotes));
 
         #endregion
 
@@ -574,6 +577,13 @@ namespace LogViewer.MVVM.ViewModels
             }
             window.DialogResult = false;
         }
+
+        private void ShowReleaseNotes()
+        {
+            ReleaseNotesDialog releaseNotesDialog = new ReleaseNotesDialog();
+            releaseNotesDialog.ShowDialog();
+        }
+
 
         private string currentThemeName = string.Empty;
         private void ParseTheme()

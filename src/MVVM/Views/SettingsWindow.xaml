@@ -288,6 +288,7 @@
                                 <TextBlock Text="{localization:LocBinding FeaturesStr4}"/>
                             </StackPanel>
                         </Border>
+                        <Button Content="{localization:LocBinding ShowReleaseNotes}" Command="{Binding Path=ShowReleaseNotesCommand}" Height="35" Width="200"/>
                     </StackPanel>
                 </GroupBox>
             </TabItem>

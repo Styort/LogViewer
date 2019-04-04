@@ -599,4 +599,7 @@ Restart application?</value>
   <data name="UpdateWasCancelled" xml:space="preserve">
     <value>Update was cancelled</value>
   </data>
+  <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
+    <value>Add new logs when changing file</value>
+  </data>
 </root>

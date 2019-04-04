@@ -599,4 +599,7 @@
   <data name="UpdateWasCancelled" xml:space="preserve">
     <value>Обновление было отменено</value>
   </data>
+  <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
+    <value>Добавлять новые логи при изменении файла</value>
+  </data>
 </root>

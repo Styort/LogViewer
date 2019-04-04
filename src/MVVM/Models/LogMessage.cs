@@ -61,6 +61,7 @@ namespace LogViewer.MVVM.Models
             set
             {
                 toggleMark = value;
+                toggleMark.Freeze();
                 OnPropertyChanged();
             }
         }

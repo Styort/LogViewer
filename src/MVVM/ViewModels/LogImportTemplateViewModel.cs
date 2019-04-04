@@ -29,6 +29,7 @@ namespace LogViewer.MVVM.ViewModels
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
         private bool? dialogResult;
+        private bool needUpdateFile;
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
         #region Свойства
@@ -82,6 +83,17 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 templateSeparator = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlElement(Order = 7)]
+        public bool NeedUpdateFile
+        {
+            get => needUpdateFile;
+            set
+            {
+                needUpdateFile = value;
                 OnPropertyChanged();
             }
         }
@@ -404,24 +416,28 @@ namespace LogViewer.MVVM.ViewModels
             };
 
             var sb = new StringBuilder();
-            using (StreamReader sr = new StreamReader(importFilePath, Encoding.GetEncoding("Windows-1251")))
+            using (FileStream stream = File.Open(importFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
             {
-                string line;
-                while ((line = sr.ReadLine()) != null)
+                using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("Windows-1251")))
                 {
-                    //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                    if (line.ContainsAnyOf(LogTypeArraySeparator1) || line.ContainsAnyOf(LogTypeArraySeparator2))
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
                     {
-                        if (sb.Length != 0) break;
-                        sb.Append(line);
-                    }
-                    else
-                    {
-                        sb.Append(Environment.NewLine);
-                        sb.Append(line);
+                        //проверяем, текущая запись - это новая запись или продолжение предыдущей.
+                        if (line.ContainsAnyOf(LogTypeArraySeparator1) || line.ContainsAnyOf(LogTypeArraySeparator2))
+                        {
+                            if (sb.Length != 0) break;
+                            sb.Append(line);
+                        }
+                        else
+                        {
+                            sb.Append(Environment.NewLine);
+                            sb.Append(line);
+                        }
                     }
                 }
             }
+            
             return sb.ToString();
         }
 

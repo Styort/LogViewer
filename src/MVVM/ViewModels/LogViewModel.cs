@@ -703,7 +703,7 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Clean()
         {
-            Logs.Clear();
+            if (Logs.Any()) Logs.Clear();
 
             nextMessages.Clear();
             previousMessages.Clear();
@@ -728,6 +728,8 @@ namespace LogViewer.MVVM.ViewModels
             currentSearchLogger = null;
             prevSelectedWarnLog = null;
             prevSelectedErrorLog = null;
+
+            RemoveAllFileWatchers();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -1020,7 +1022,7 @@ namespace LogViewer.MVVM.ViewModels
                             if (node.IsRoot)
                             {
                                 lock (logsLockObj)
-                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Address != node.Text));
+                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Address != node.Source));
                                 return;
                             }
 
@@ -1266,6 +1268,14 @@ namespace LogViewer.MVVM.ViewModels
 
                     if (node != null)
                     {
+                        var currentFileWatcher = fileWatchers.FirstOrDefault(x => x.FilePath.EndsWith(node.Text));
+                        if (currentFileWatcher != null)
+                        {
+                            currentFileWatcher.StopWatch();
+                            currentFileWatcher.FileChanged -= FileWatcherOnFileChanged;
+                            fileWatchers.Remove(currentFileWatcher);
+                        }
+
                         if (node.Parent != null)
                         {
                             UpdateLoggersAfterClear(node);
@@ -1289,7 +1299,7 @@ namespace LogViewer.MVVM.ViewModels
                         {
                             ClearLoggers();
                             Clean();
-                        }
+                        }   
                     }
                 }
                 catch (Exception ex)
@@ -1528,6 +1538,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private List<LogMessage> importData = new List<LogMessage>();
         private string importFilePath = string.Empty;
+        private List<FileWatcher> fileWatchers = new List<FileWatcher>();
 
         /// <summary>
         /// Загружает логи из файла
@@ -1562,7 +1573,7 @@ namespace LogViewer.MVVM.ViewModels
                 UpdateLogTypeArray(template);
 
                 Pause();
-
+                FileWatcher fileWatcher = new FileWatcher();
                 Task.Run(() =>
                 {
                     IsVisibleProcessBar = true;
@@ -1570,45 +1581,56 @@ namespace LogViewer.MVVM.ViewModels
                     // считываем весь файл
                     try
                     {
-                        var sb = new StringBuilder();
-                        using (StreamReader sr = new StreamReader(importFilePath, Encoding.GetEncoding("Windows-1251")))
+                        using (FileStream stream = File.Open(importFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         {
-                            string line;
-                            while ((line = sr.ReadLine()) != null)
+                            if (logImportTemplateDialogDialog.NeedUpdateFile)
                             {
-                                //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                                if (line.ContainsAnyOf(LogTypeArray))
-                                {
-                                    if (line.Length != 0)
-                                    {
-                                        try
-                                        {
-                                            // парсим лог и добавляем в список
-                                            LogParse(sb.ToString(), template);
-                                            ProcessBarValue = (int)((double)sr.BaseStream.Position / sr.BaseStream.Length * 100);
-                                        }
-                                        catch (OutOfMemoryException ex)
-                                        {
-                                            logger.Error(ex, "An error occured while LogParse");
-                                            throw;
-                                        }
-                                        catch (Exception e)
-                                        {
-                                            logger.Error(e, "An error occured while LogParse");
-                                            MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
-                                            throw;
-                                        }
-                                        sb = new StringBuilder();
-                                    }
-                                    sb.Append(line);
-                                }
-                                else
-                                {
-                                    sb.Append(Environment.NewLine);
-                                    sb.Append(line);
-                                }
+                                fileWatcher.FilePath = importFilePath;
+                                fileWatcher.Position = stream.Length;
+                                fileWatcher.Template = template;
+                                fileWatchers.Add(fileWatcher);
                             }
-                            LogParse(sb.ToString(), template);
+
+                            var sb = new StringBuilder();
+                            using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("Windows-1251")))
+                            {
+                                string line;
+                                while ((line = sr.ReadLine()) != null)
+                                {
+                                    //проверяем, текущая запись - это новая запись или продолжение предыдущей.
+                                    if (line.ContainsAnyOf(LogTypeArray))
+                                    {
+                                        if (line.Length != 0)
+                                        {
+                                            try
+                                            {
+                                                // парсим лог и добавляем в список
+                                                LogParse(sb.ToString(), template);
+                                                ProcessBarValue = (int)((double)sr.BaseStream.Position / sr.BaseStream.Length * 100);
+                                            }
+                                            catch (OutOfMemoryException ex)
+                                            {
+                                                logger.Error(ex, "An error occured while LogParse");
+                                                throw;
+                                            }
+                                            catch (Exception e)
+                                            {
+                                                logger.Error(e, "An error occured while LogParse");
+                                                MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
+                                                throw;
+                                            }
+                                            sb = new StringBuilder();
+                                        }
+                                        sb.Append(line);
+                                    }
+                                    else
+                                    {
+                                        sb.Append(Environment.NewLine);
+                                        sb.Append(line);
+                                    }
+                                }
+                                LogParse(sb.ToString(), template);
+                            }
                         }
 
                         var allLogsTemp = allLogs.ToList();
@@ -1632,6 +1654,13 @@ namespace LogViewer.MVVM.ViewModels
                         GC.Collect();
                         GC.WaitForFullGCComplete();
                         IsVisibleProcessBar = false;
+                    }
+                }).ContinueWith(x =>
+                {
+                    if (logImportTemplateDialogDialog.NeedUpdateFile)
+                    {
+                        fileWatcher.FileChanged += FileWatcherOnFileChanged;
+                        fileWatcher.StartWatch();
                     }
                 });
             }
@@ -2555,10 +2584,109 @@ namespace LogViewer.MVVM.ViewModels
             return searchResult;
         }
 
+        /// <summary>
+        /// Добавляем новые логи из файла
+        /// </summary>
+        private void UpdateLogsFromFile(FileWatcher watcher)
+        {
+            // TODO: Объединить данный метод с методом ImportLogs (часть чтения логов данного метода)
+            try
+            {
+                using (FileStream stream = File.Open(watcher.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    stream.Position = watcher.Position;
+                    var sb = new StringBuilder();
+                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("Windows-1251")))
+                    {
+                        string line;
+                        while ((line = sr.ReadLine()) != null)
+                        {
+                            //проверяем, текущая запись - это новая запись или продолжение предыдущей.
+                            if (line.ContainsAnyOf(LogTypeArray))
+                            {
+                                if (line.Length != 0)
+                                {
+                                    try
+                                    {
+                                        // парсим лог и добавляем в список
+                                        LogParse(sb.ToString(), watcher.Template);
+                                    }
+                                    catch (OutOfMemoryException ex)
+                                    {
+                                        logger.Error(ex, "An error occured while LogParse");
+                                        throw;
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        logger.Error(e, "An error occured while LogParse");
+                                        MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
+                                        throw;
+                                    }
+                                    sb = new StringBuilder();
+                                }
+                                sb.Append(line);
+                            }
+                            else
+                            {
+                                sb.Append(Environment.NewLine);
+                                sb.Append(line);
+                            }
+                        }
+                        LogParse(sb.ToString(), watcher.Template);
+                    }
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        foreach (var logMessage in importData)
+                        {
+                            allLogs.Add(logMessage);
+                            if (SelectedMinLogLevel.HasFlag(logMessage.Level) && !exceptLoggers.Contains(logMessage.FullPath))
+                                Logs.Add(logMessage);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Warn(ex, $"An error occurred while UpdateLogsFromFile file - {watcher.FilePath}, position - {watcher.Position}");
+            }
+            finally
+            {
+                importData.Clear();
+                CleanIsEnabled = Logs.Any();
+                GC.Collect();
+                GC.WaitForFullGCComplete();
+            }
+        }
+
+        #endregion
+
+        #region Обработчики событий
+
+        private void FileWatcherOnFileChanged(object sender, FileWatcher e)
+        {
+            UpdateLogsFromFile(e);
+        }
+
+        /// <summary>
+        /// Очищает список наблюдателей за файлами и отписывается от событий
+        /// </summary>
+        private void RemoveAllFileWatchers()
+        {
+            foreach (var fileWatcher in fileWatchers)
+            {
+                fileWatcher.StopWatch();
+                fileWatcher.FileChanged -= FileWatcherOnFileChanged;
+            }
+            fileWatchers.Clear();
+        }
+
         #endregion
 
         public void Dispose()
         {
+            RemoveAllFileWatchers();
+
             foreach (var udpPacketsParser in parsers)
             {
                 udpPacketsParser?.Dispose();

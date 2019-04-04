@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         xmlns:xc="clr-namespace:LogViewer.Helpers"
         xc:DialogCloser.DialogResult="{Binding DialogResult}"
-        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="390" Width="700" Closing="LogImportTemplateDialog_OnClosing">
+        Title="{localization:LocBinding LogImportTemplate}" Topmost="True" Height="410" Width="700" Closing="LogImportTemplateDialog_OnClosing">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -25,6 +25,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -95,10 +96,12 @@
             </ItemsControl>
         </StackPanel>
 
-        <Button Grid.Row="8" Grid.Column="0" HorizontalAlignment="Left" Margin="10,0" Width="180"
+        <CheckBox Grid.Row="8" Grid.ColumnSpan="2" Margin="10,0,10,10" Content="{localization:LocBinding AddNewLogsWhenChangingFile}" IsChecked="{Binding Path=NeedUpdateFile}"/>
+        
+        <Button Grid.Row="9" Grid.Column="0" HorizontalAlignment="Left" Margin="10,0" Width="180"
                 Content="{localization:LocBinding SaveSettings}" Command="{Binding Path=SaveTemplateSettingsCommand}"/>
         
-        <WrapPanel Grid.Row="8" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
+        <WrapPanel Grid.Row="9" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="10,0">
             <Button Command="{Binding OkCommand}" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
             <Button IsCancel="True" MinWidth="100" Content="{localization:LocBinding Cancel}"/>
         </WrapPanel>

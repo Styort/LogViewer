@@ -12,6 +12,7 @@ namespace LogViewer.MVVM.TreeView
         public Node()
         {
             this.Id = Guid.NewGuid().ToString();
+            toggleMark.Freeze();
         }
 
         public Node(Node parent, string txt)
@@ -33,7 +34,6 @@ namespace LogViewer.MVVM.TreeView
             }
             else
                 Logger = Text;
-            
         }
 
         private string text;
@@ -129,6 +129,7 @@ namespace LogViewer.MVVM.TreeView
             set
             {
                 toggleMark = value;
+                toggleMark.Freeze();
                 OnPropertyChanged();
             }
         }

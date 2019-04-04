@@ -20,7 +20,8 @@ namespace LogViewer.MVVM.Views
     public partial class LogImportTemplateDialog : Window
     {
         public LogTemplate LogTemplate { get; private set; }
-
+        public bool NeedUpdateFile { get; private set; } = false;
+ 
         public LogImportTemplateDialog(string path)
         {
             InitializeComponent();
@@ -31,7 +32,10 @@ namespace LogViewer.MVVM.Views
         {
             var logImportTemplateViewModel = this.DataContext as LogImportTemplateViewModel;
             if (logImportTemplateViewModel != null)
+            {
                 LogTemplate = logImportTemplateViewModel.LogTemplate;
+                NeedUpdateFile = logImportTemplateViewModel.NeedUpdateFile;
+            }
         }
     }
 }

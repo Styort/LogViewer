@@ -1,6 +1,16 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.2.2 (04.04.2019)</Version>
+    <NewFeatures>
+      <string>Добавлена возможность автоматического добавления логов при изменении импортируемого файла (необходимо проставить соответствующую галочку на окне выборе шаблона для лога).</string>
+    </NewFeatures>
+    <FixedBugs>
+      <string>Исправлен баг с вылетанием приложения при очистки корневого логгера;</string>
+      <string>Исправлен баг при нажатии на логгер с именем файла (снятии галочки) - не скрывались сообщения.</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.2.1 (04.03.2019)</Version>
     <NewFeatures>
       <string>Добавлена возможность просмотра ReleaseNotes в настройках приложения (вкладка About).</string>

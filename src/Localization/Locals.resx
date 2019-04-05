@@ -602,4 +602,16 @@
   <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
     <value>Добавлять новые логи при изменении файла</value>
   </data>
+  <data name="StartReadingLogsFromFile" xml:space="preserve">
+    <value>Запустить считывание логов из файла</value>
+  </data>
+  <data name="StartReadingLogsFromUDP" xml:space="preserve">
+    <value>Запустить считывание логов по UDP</value>
+  </data>
+  <data name="StopReadingLogsFromFile" xml:space="preserve">
+    <value>Остановить считывание логов из файла</value>
+  </data>
+  <data name="StopReadingLogsFromUDP" xml:space="preserve">
+    <value>Остановить считывание логов по UDP</value>
+  </data>
 </root>

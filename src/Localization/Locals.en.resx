@@ -602,4 +602,16 @@ Restart application?</value>
   <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
     <value>Add new logs when changing file</value>
   </data>
+  <data name="StartReadingLogsFromFile" xml:space="preserve">
+    <value>Start Reading Logs from File</value>
+  </data>
+  <data name="StartReadingLogsFromUDP" xml:space="preserve">
+    <value>Start Reading Logs from UDP</value>
+  </data>
+  <data name="StopReadingLogsFromFile" xml:space="preserve">
+    <value>Stop Reading Logs from File</value>
+  </data>
+  <data name="StopReadingLogsFromUDP" xml:space="preserve">
+    <value>Stop Reading Logs from UDP</value>
+  </data>
 </root>

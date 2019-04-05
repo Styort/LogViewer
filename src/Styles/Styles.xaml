@@ -15,7 +15,7 @@
     <converters:LoggerDisplayConverter x:Key="LoggerDisplayConverter"/>
     <converters:DataConverter x:Key="DataConverter"/>
     <converters:ProgressStateConverter x:Key="ProgressStateConverter"/>
-    <converters:StringListAnyVisibilityConverter x:Key="StringListAnyVisibilityConverter"/>
+    <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
     <sys:Boolean x:Key="True">True</sys:Boolean>
     <sys:Boolean x:Key="False">False</sys:Boolean>
 
@@ -89,12 +89,13 @@
         <Setter Property="Margin" Value="5,0"/>
     </Style>
 
-    <Style x:Key="StartButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
+    <Style x:Key="StartPauseNetworkReceiverButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-        <Setter Property="ToolTip" Value="{localization:LocBinding Start}"/>
 
         <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="True">
+            <DataTrigger Binding="{Binding Path=StartIsEnabled}" Value="True">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromUDP}"/>
+                <Setter Property="Command" Value="{Binding Path=StartCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -115,25 +116,11 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type Button}">
-                            <Image Source="{StaticResource PlayDisabledImage}" Cursor="Hand"/>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Trigger>
-        </Style.Triggers>
-    </Style>
+            </DataTrigger>
 
-    <Style x:Key="PauseButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
-        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
-        <Setter Property="ToolTip" Value="{localization:LocBinding Pause}"/>
-
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="True">
+            <DataTrigger Binding="{Binding Path=StartIsEnabled}" Value="False">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromUDP}"/>
+                <Setter Property="Command" Value="{Binding Path=PauseCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -154,23 +141,70 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StartPauseFileReceiverButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=StartReadFromFileIsEnabled}" Value="True">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromFile}"/>
+                <Setter Property="Command" Value="{Binding Path=StartFileReadingCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
-                            <Image Source="{StaticResource PauseDisabledImage}" Cursor="Hand"/>
+                            <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                                <Image Source="{StaticResource StartReadFromFileImage}" Cursor="Hand"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property ="IsPressed" Value ="True">
+                                    <Setter TargetName="RootGrid" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-            </Trigger>
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Path=StartReadFromFileIsEnabled}" Value="False">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromFile}"/>
+                <Setter Property="Command" Value="{Binding Path=PauseFileReadingCommand}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                                <Image Source="{StaticResource PauseReadingFromFileImage}" Cursor="Hand"/>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <ControlTemplate.Triggers>
+                                <Trigger Property ="IsPressed" Value ="True">
+                                    <Setter TargetName="RootGrid" Property="RenderTransform">
+                                        <Setter.Value>
+                                            <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="SettingsButtonStyle" TargetType="Button" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTip" Value="{localization:LocBinding Settings}"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
-
+        
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">

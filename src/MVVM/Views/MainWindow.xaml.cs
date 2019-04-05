@@ -52,13 +52,27 @@ namespace LogViewer.MVVM.Views
         /// </summary>
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            string[] args = Environment.GetCommandLineArgs();
-            foreach (var arg in args)
+            if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData != null)
             {
-                if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
+                string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
+                foreach (var arg in activationData.Where(x => x.EndsWith(".txt") || x.EndsWith(".log")))
                 {
                     ((LogViewModel)DataContext).ImportLogs(arg);
                 }
+                return;
+            }
+
+            var args = Environment.GetCommandLineArgs().Where(x => x.EndsWith(".txt") || x.EndsWith(".log")).ToList();
+            if (args.Any())
+            {
+                foreach (var arg in args)
+                {
+                    if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
+                    {
+                        ((LogViewModel)DataContext).ImportLogs(arg);
+                    }
+                }
+                return;
             }
 
             DisplayChangeLog();

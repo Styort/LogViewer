@@ -42,7 +42,7 @@
                                     </DataTemplate>
                                 </Expander.HeaderTemplate>
                                 <StackPanel Orientation="Vertical" Margin="14,-5,10,10">
-                                    <TextBlock Visibility="{Binding Path=NewFeatures, Converter={StaticResource StringListAnyVisibilityConverter}}" FontWeight="Bold" Text="Новые возможности:"/>
+                                    <TextBlock Visibility="{Binding Path=NewFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Новые возможности:"/>
                                     <ItemsControl ItemsSource="{Binding NewFeatures}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -50,7 +50,7 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <TextBlock Visibility="{Binding Path=ChangedFeatures, Converter={StaticResource StringListAnyVisibilityConverter}}" FontWeight="Bold" Text="Измененный функционал:"/>
+                                    <TextBlock Visibility="{Binding Path=ChangedFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Измененный функционал:"/>
                                     <ItemsControl ItemsSource="{Binding ChangedFeatures}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
@@ -58,7 +58,7 @@
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                    <TextBlock Visibility="{Binding Path=FixedBugs, Converter={StaticResource StringListAnyVisibilityConverter}}" FontWeight="Bold" Text="Исправления:"/>
+                                    <TextBlock Visibility="{Binding Path=FixedBugs.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Исправления:"/>
                                     <ItemsControl ItemsSource="{Binding FixedBugs}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>

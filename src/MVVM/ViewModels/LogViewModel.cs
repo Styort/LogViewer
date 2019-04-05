@@ -58,6 +58,7 @@ namespace LogViewer.MVVM.ViewModels
         private AsyncObservableCollection<LogMessage> logs = new AsyncObservableCollection<LogMessage>();
         private CancellationTokenSource cancellationToken;
         private bool startIsEnabled = true;
+        private bool startReadFromFileIsEnabled = false;
         private bool pauseIsEnabled = false;
         private bool cleanIsEnabled = false;
         private bool clearSearchResultIsEnabled = false;
@@ -129,6 +130,8 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Свойства
 
+        public List<FileWatcher> FileWatchers { get; set; } = new List<FileWatcher>();
+
         public bool IsSearchProcess
         {
             get => isSearchProcess;
@@ -140,7 +143,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Активность кнопки запуска считывания логов
+        /// Отвечает за показ изображения на кнопки запуска/паузы считывания логов по UDP
         /// </summary>
         public bool StartIsEnabled
         {
@@ -150,6 +153,19 @@ namespace LogViewer.MVVM.ViewModels
                 startIsEnabled = value;
                 if (startIsEnabled)
                     PauseIsEnabled = false;
+                OnPropertyChanged();
+            }
+        }
+        
+        /// <summary>
+        /// Отвечает за показ изображения на кнопки запуска/паузы считывания логов из файла
+        /// </summary>
+        public bool StartReadFromFileIsEnabled
+        {
+            get => startReadFromFileIsEnabled;
+            set
+            {
+                startReadFromFileIsEnabled = value;
                 OnPropertyChanged();
             }
         }
@@ -583,6 +599,8 @@ namespace LogViewer.MVVM.ViewModels
 
         private RelayCommand startCommand;
         private RelayCommand pauseCommand;
+        private RelayCommand pauseFileReadingCommand;
+        private RelayCommand startFileReadingCommand;
         private RelayCommand cleanCommand;
         private RelayCommand searchLogCommand;
         private RelayCommand findNextCommand;
@@ -613,6 +631,8 @@ namespace LogViewer.MVVM.ViewModels
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
+        public RelayCommand StartFileReadingCommand => startFileReadingCommand ?? (startFileReadingCommand = new RelayCommand(StartFileReading));
+        public RelayCommand PauseFileReadingCommand => pauseFileReadingCommand ?? (pauseFileReadingCommand = new RelayCommand(StopFileReading));
         public RelayCommand CleanCommand => cleanCommand ?? (cleanCommand = new RelayCommand(Clean));
         public RelayCommand SearchLogCommand => searchLogCommand ?? (searchLogCommand = new RelayCommand(Search));
         public RelayCommand FindNextCommand => findNextCommand ?? (findNextCommand = new RelayCommand(FindNext));
@@ -696,6 +716,32 @@ namespace LogViewer.MVVM.ViewModels
                     udpPacketsParser.Dispose();
             }
             StartIsEnabled = true;
+        }
+
+        /// <summary>
+        /// Запустить считывание логов из файла
+        /// </summary>
+        private void StartFileReading()
+        {
+            StartReadFromFileIsEnabled = false;
+            foreach (var fileWatcher in FileWatchers)
+            {
+                fileWatcher.StartWatch();
+                fileWatcher.FileChanged += FileWatcherOnFileChanged;
+            }
+        }
+
+        /// <summary>
+        /// Остановить считывание логов из файла
+        /// </summary>
+        private void StopFileReading()
+        {
+            StartReadFromFileIsEnabled = true;
+            foreach (var fileWatcher in FileWatchers)
+            {
+                fileWatcher.StopWatch();
+                fileWatcher.FileChanged -= FileWatcherOnFileChanged;
+            }
         }
 
         /// <summary>
@@ -1268,12 +1314,13 @@ namespace LogViewer.MVVM.ViewModels
 
                     if (node != null)
                     {
-                        var currentFileWatcher = fileWatchers.FirstOrDefault(x => x.FilePath.EndsWith(node.Text));
+                        var currentFileWatcher = FileWatchers.FirstOrDefault(x => x.FilePath.EndsWith(node.Text));
                         if (currentFileWatcher != null)
                         {
                             currentFileWatcher.StopWatch();
                             currentFileWatcher.FileChanged -= FileWatcherOnFileChanged;
-                            fileWatchers.Remove(currentFileWatcher);
+                            FileWatchers.Remove(currentFileWatcher);
+                            OnPropertyChanged(nameof(FileWatchers));
                         }
 
                         if (node.Parent != null)
@@ -1299,7 +1346,7 @@ namespace LogViewer.MVVM.ViewModels
                         {
                             ClearLoggers();
                             Clean();
-                        }   
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -1538,7 +1585,6 @@ namespace LogViewer.MVVM.ViewModels
 
         private List<LogMessage> importData = new List<LogMessage>();
         private string importFilePath = string.Empty;
-        private List<FileWatcher> fileWatchers = new List<FileWatcher>();
 
         /// <summary>
         /// Загружает логи из файла
@@ -1583,12 +1629,13 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         using (FileStream stream = File.Open(importFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                         {
-                            if (logImportTemplateDialogDialog.NeedUpdateFile)
+                            if (logImportTemplateDialogDialog.NeedUpdateFile && FileWatchers.All(x => x.FilePath != importFilePath))
                             {
                                 fileWatcher.FilePath = importFilePath;
                                 fileWatcher.Position = stream.Length;
                                 fileWatcher.Template = template;
-                                fileWatchers.Add(fileWatcher);
+                                FileWatchers.Add(fileWatcher);
+                                OnPropertyChanged(nameof(FileWatchers));
                             }
 
                             var sb = new StringBuilder();
@@ -2673,12 +2720,13 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void RemoveAllFileWatchers()
         {
-            foreach (var fileWatcher in fileWatchers)
+            foreach (var fileWatcher in FileWatchers)
             {
                 fileWatcher.StopWatch();
                 fileWatcher.FileChanged -= FileWatcherOnFileChanged;
             }
-            fileWatchers.Clear();
+            FileWatchers.Clear();
+            OnPropertyChanged(nameof(FileWatchers));
         }
 
         #endregion

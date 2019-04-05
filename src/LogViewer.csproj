@@ -130,7 +130,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\StringListAnyVisibilityConverter.cs" />
+    <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Converters\DataConverter.cs" />
     <Compile Include="Converters\ProgressStateConverter.cs" />
     <Compile Include="Converters\TreeViewLineConverter.cs" />
@@ -304,20 +304,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
-  <ItemGroup>
-    <FileAssociation Include=".log">
-      <Visible>False</Visible>
-      <Description>Log File</Description>
-      <Progid>LogViewer</Progid>
-      <DefaultIcon>log.ico</DefaultIcon>
-    </FileAssociation>
-    <FileAssociation Include=".txt">
-      <Visible>False</Visible>
-      <Description>Text Log File</Description>
-      <Progid>LogViewer</Progid>
-      <DefaultIcon>log.ico</DefaultIcon>
-    </FileAssociation>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <PublishFile Include="ReleaseNotes.xml">
       <Visible>False</Visible>

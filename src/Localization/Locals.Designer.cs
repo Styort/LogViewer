@@ -1333,6 +1333,42 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Запустить считывание логов из файла.
+        /// </summary>
+        internal static string StartReadingLogsFromFile {
+            get {
+                return ResourceManager.GetString("StartReadingLogsFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Запустить считывание логов по UDP.
+        /// </summary>
+        internal static string StartReadingLogsFromUDP {
+            get {
+                return ResourceManager.GetString("StartReadingLogsFromUDP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Остановить считывание логов из файла.
+        /// </summary>
+        internal static string StopReadingLogsFromFile {
+            get {
+                return ResourceManager.GetString("StopReadingLogsFromFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Остановить считывание логов по UDP.
+        /// </summary>
+        internal static string StopReadingLogsFromUDP {
+            get {
+                return ResourceManager.GetString("StopReadingLogsFromUDP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Успешно установлено.
         /// </summary>
         internal static string SuccessfullyInstalled {

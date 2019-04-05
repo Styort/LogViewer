@@ -3,12 +3,14 @@ using System.ComponentModel;
 using System.Deployment.Application;
 using System.Globalization;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
 using System.Xml.Serialization;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.Views;
+using Microsoft.Win32;
 using NLog;
 
 namespace LogViewer
@@ -73,5 +75,20 @@ namespace LogViewer
             logger.Fatal($"Unhandled Exception: {e.Exception}");
             Environment.Exit(2);
         }
+
+        //public static void SetAssociation(string Extension, string KeyName, string OpenWith, string FileDescription)
+        //{
+
+        //    var currentUser = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + Extension, true);
+        //    if(currentUser == null) return;
+        //    currentUser.DeleteSubKey("UserChoice", false);
+        //    currentUser.Close();
+
+        //    // Tell explorer the file association has been changed
+        //    SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
+        //}
+
+        //[DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        //public static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
     }
 }

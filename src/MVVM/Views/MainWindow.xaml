@@ -148,10 +148,10 @@
                 <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=ImportCommand}"/>
                 <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=ExportCommand}"/>
             </StackPanel>
+            
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                <Button Style="{StaticResource StartButtonStyle}" Command="{Binding Path=StartCommand}" IsEnabled="{Binding Path=StartIsEnabled}"/>
-                <Button Style="{StaticResource PauseButtonStyle}" Command="{Binding Path=PauseCommand}" IsEnabled="{Binding Path=PauseIsEnabled}"/>
-
+                <Button Style="{StaticResource StartPauseNetworkReceiverButtonStyle}"/>
+                <Button Style="{StaticResource StartPauseFileReceiverButtonStyle}" Visibility="{Binding Path=FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
                 <Button Style="{StaticResource ScrollToTop}" Click="OnScrollToTopButtonClick"/>
                 <Button Style="{StaticResource AutoScrollToBottom}" Click="OnAutoScrollToBottomButtonClick" x:Name="AutoScrollButton"/>
                 <Button Style="{StaticResource ScrollToBottom}" Click="OnScrollToBottomButtonClick"/>

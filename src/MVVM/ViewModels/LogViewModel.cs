@@ -19,7 +19,6 @@ using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.Views;
 using NLog;
-using NLog.Layouts;
 using Application = System.Windows.Application;
 using CheckBox = System.Windows.Controls.CheckBox;
 using Clipboard = System.Windows.Clipboard;
@@ -156,7 +155,7 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>
         /// Отвечает за показ изображения на кнопки запуска/паузы считывания логов из файла
         /// </summary>
@@ -304,32 +303,43 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         lock (logsLockObj)
                         {
-                            switch (SelectedMinLogLevel)
+                            if (IsSearchProcess)
                             {
-                                case eLogLevel.Trace:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !exceptLoggers.Contains(x.FullPath)));
-                                    break;
-                                case eLogLevel.Debug:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !x.Level.HasFlag(eLogLevel.Trace) && !exceptLoggers.Contains(x.FullPath)));
-                                    break;
-                                case eLogLevel.Info:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !x.Level.HasFlag(eLogLevel.Debug) && !exceptLoggers.Contains(x.FullPath)));
-                                    break;
-                                case eLogLevel.Warn:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !x.Level.HasFlag(eLogLevel.Info) && !exceptLoggers.Contains(x.FullPath)));
-                                    break;
-                                case eLogLevel.Error:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !x.Level.HasFlag(eLogLevel.Warn) && !exceptLoggers.Contains(x.FullPath)));
-                                    break;
-                                case eLogLevel.Fatal:
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                        .Where(x => !x.Level.HasFlag(eLogLevel.Error) && !exceptLoggers.Contains(x.FullPath)));
-                                    break;
+                                var searchResult = GetSearchResult();
+                                Application.Current.Dispatcher.Invoke(() =>
+                                {
+                                    Logs = new AsyncObservableCollection<LogMessage>(searchResult);
+                                });
+                            }
+                            else
+                            {
+                                switch (SelectedMinLogLevel)
+                                {
+                                    case eLogLevel.Trace:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                    case eLogLevel.Debug:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !x.Level.HasFlag(eLogLevel.Trace) && !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                    case eLogLevel.Info:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !x.Level.HasFlag(eLogLevel.Debug) && !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                    case eLogLevel.Warn:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !x.Level.HasFlag(eLogLevel.Info) && !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                    case eLogLevel.Error:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !x.Level.HasFlag(eLogLevel.Warn) && !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                    case eLogLevel.Fatal:
+                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
+                                            .Where(x => !x.Level.HasFlag(eLogLevel.Error) && !exceptLoggers.Contains(x.FullPath)));
+                                        break;
+                                }
                             }
                         }
                     });

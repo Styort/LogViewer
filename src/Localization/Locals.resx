@@ -593,7 +593,7 @@
     <value>Показать Release Notes</value>
   </data>
   <data name="UpdateInstalledErrorMessage" xml:space="preserve">
-    <value>s</value>
+    <value>Произошла ошибка при установке обновления.</value>
   </data>
   <data name="UpdateWasCancelled" xml:space="preserve">
     <value>Обновление было отменено</value>

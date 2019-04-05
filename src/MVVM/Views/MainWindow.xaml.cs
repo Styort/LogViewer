@@ -11,6 +11,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Xml;
+using System.Xml.Linq;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
@@ -401,8 +403,8 @@ namespace LogViewer.MVVM.Views
             {
                 logger.Warn($"Update completed with error: {e.Error.Message}");
                 MessageBox.Show(Locals.Error, $"{Locals.UpdateInstalledErrorMessage}{Environment.NewLine}{e.Error.Message}",
-                                MessageBoxButton.OK,
-                                MessageBoxImage.Error);
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
                 return;
             }
 
@@ -413,14 +415,46 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            //MessageBoxResult dialogResult = MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            //if (dialogResult != MessageBoxResult.Yes) return;
-            //var applicationEntryPoint = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
-            //if (!File.Exists(applicationEntryPoint)) return;
-            //logger.Debug("Restart application after update");
-            //Process.Start(applicationEntryPoint);
-            //Application.Current.Shutdown(0);
-            MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBoxResult dialogResult = MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            logger.Debug($"Dialog result  = {dialogResult}");
+            if (dialogResult != MessageBoxResult.Yes) return;
+            RestartClickOnceApplication();
+        }
+
+        private void RestartClickOnceApplication()
+        {
+            logger.Debug("RestartClickOnceApplication");
+            try
+            {
+                XDocument xDocument;
+                using (MemoryStream memoryStream = new MemoryStream(AppDomain.CurrentDomain.ActivationContext.DeploymentManifestBytes))
+                using (XmlTextReader xmlTextReader = new XmlTextReader(memoryStream))
+                {
+                    xDocument = XDocument.Load(xmlTextReader);
+                }
+                var description = xDocument.Root.Elements().First(p => p.Name.LocalName == "description");
+                logger.Debug($"RestartClickOnceApplication: desctiption = {description}");
+                var publisher = description.Attributes().First(a => a.Name.LocalName == "publisher");
+                logger.Debug($"RestartClickOnceApplication: publisher = {publisher}");
+                var product = description.Attributes().First(a => a.Name.LocalName == "product");
+                logger.Debug($"RestartClickOnceApplication: product = {product}");
+
+                var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs",
+                    publisher.Value, product.Value, product.Value + ".appref-ms");
+                logger.Debug($"RestartClickOnceApplication: path = {path}");
+                if (File.Exists(path))
+                {
+                    Process.Start(path);
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        Application.Current.Shutdown();
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Warn(ex, "RestartClickOnceApplication exception");
+            }
         }
 
         private void DisplayChangeLog()

@@ -572,8 +572,7 @@ Try selecting a template manually.</value>
   </data>
   <data name="UpdateInstalledSuccessfully" xml:space="preserve">
     <value>Update successfully installed.
-Changes will take effect after the application is restarted.
-Restart application?</value>
+Changes will take effect after the application is restarted.</value>
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Update size:</value>

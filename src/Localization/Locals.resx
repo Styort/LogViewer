@@ -572,8 +572,7 @@
   </data>
   <data name="UpdateInstalledSuccessfully" xml:space="preserve">
     <value>Обновление успешно установлено.
-Для вступления изменений в силу необходимо перезагрузить приложение.
-Перезагрузить?</value>
+Для вступления изменений в силу необходимо перезагрузить приложение.</value>
   </data>
   <data name="UpdateSize" xml:space="preserve">
     <value>Размер обновления:</value>

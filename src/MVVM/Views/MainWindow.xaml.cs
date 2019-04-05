@@ -413,13 +413,14 @@ namespace LogViewer.MVVM.Views
                 return;
             }
 
-            MessageBoxResult dialogResult = MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (dialogResult != MessageBoxResult.Yes) return;
-            var applicationEntryPoint = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
-            if (!File.Exists(applicationEntryPoint)) return;
-            logger.Debug("Restart application after update");
-            Process.Start(applicationEntryPoint);
-            Application.Current.Shutdown(0);
+            //MessageBoxResult dialogResult = MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.YesNo, MessageBoxImage.Question);
+            //if (dialogResult != MessageBoxResult.Yes) return;
+            //var applicationEntryPoint = ApplicationDeployment.CurrentDeployment.UpdatedApplicationFullName;
+            //if (!File.Exists(applicationEntryPoint)) return;
+            //logger.Debug("Restart application after update");
+            //Process.Start(applicationEntryPoint);
+            //Application.Current.Shutdown(0);
+            MessageBox.Show(Locals.UpdateInstalledSuccessfully, Locals.SuccessfullyInstalled, MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void DisplayChangeLog()

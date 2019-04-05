@@ -1505,8 +1505,7 @@ namespace LogViewer.Localization {
         
         /// <summary>
         ///   Looks up a localized string similar to Обновление успешно установлено.
-        ///Для вступления изменений в силу необходимо перезагрузить приложение.
-        ///Перезагрузить?.
+        ///Для вступления изменений в силу необходимо перезагрузить приложение..
         /// </summary>
         internal static string UpdateInstalledSuccessfully {
             get {

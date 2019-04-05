@@ -87,7 +87,7 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        [XmlElement(Order = 7)]
+        [XmlElement(Order = 9)]
         public bool NeedUpdateFile
         {
             get => needUpdateFile;

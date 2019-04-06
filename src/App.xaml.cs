@@ -1,9 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Deployment.Application;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Xml.Serialization;
@@ -61,6 +64,21 @@ namespace LogViewer
                 }
             }
 
+            try
+            {
+                if (!IsAssociated())
+                {
+                    var filePath = Process.GetCurrentProcess().MainModule.FileName;
+
+                    SetAssociation(".txt", "LogViewer", filePath);
+                    SetAssociation(".log", "LogViewer", filePath);
+                }
+            }
+            catch (Exception exception)
+            {
+                logger.Warn(exception, "OnStartup set file association exception");
+            }
+
             base.OnStartup(e);
         }
 
@@ -76,19 +94,55 @@ namespace LogViewer
             Environment.Exit(2);
         }
 
-        //public static void SetAssociation(string Extension, string KeyName, string OpenWith, string FileDescription)
-        //{
+        #region File Assotiation
 
-        //    var currentUser = Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + Extension, true);
-        //    if(currentUser == null) return;
-        //    currentUser.DeleteSubKey("UserChoice", false);
-        //    currentUser.Close();
+        private bool IsAssociated()
+        {
+            return Registry.CurrentUser.OpenSubKey(@"Software\Classes\LogViewer", false) != null;
+        }
 
-        //    // Tell explorer the file association has been changed
-        //    SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
-        //}
+        [DllImport("Shell32.dll")]
+        private static extern int SHChangeNotify(int eventId, int flags, IntPtr item1, IntPtr item2);
 
-        //[DllImport("shell32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        //public static extern void SHChangeNotify(uint wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
+        private const int SHCNE_ASSOCCHANGED = 0x8000000;
+        private const int SHCNF_FLUSH = 0x1000;
+
+        private void SetAssociation(string extension, string progId, string applicationFilePath)
+        {
+            bool madeChanges = false;
+
+            madeChanges |= SetKeyDefaultValue($@"Software\Classes\{progId}\shell\open\command", "\"" + applicationFilePath + "\" \"%1\"");
+            madeChanges |= SetProgIdValue($@"Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\{extension}\OpenWithProgids", progId);
+
+            if (madeChanges) SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
+        }
+
+        private bool SetProgIdValue(string path, string progId)
+        {
+            using (var key = Registry.CurrentUser.CreateSubKey(path))
+            {
+                if(key.GetValueNames().All(x=>x != progId))
+                {
+                    key.SetValue(progId, Encoding.Unicode.GetBytes(string.Empty), RegistryValueKind.Binary);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool SetKeyDefaultValue(string keyPath, string value)
+        {
+            using (var key = Registry.CurrentUser.CreateSubKey(keyPath))
+            {
+                if (key.GetValue(null) as string != value)
+                {
+                    key.SetValue(null, value);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        #endregion
     }
 }

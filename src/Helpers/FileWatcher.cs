@@ -56,6 +56,7 @@ namespace LogViewer.MVVM.Models
                         OnFileChanged(this);
 
                     Position = currentLength;
+                    Thread.Sleep(1000);
                 }
             });
         }

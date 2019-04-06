@@ -1,6 +1,19 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.3.0 (04.08.2019)</Version>
+    <NewFeatures>
+      <string>Добавлена ассоциация с файлами .txt и .log</string>
+    </NewFeatures>
+    <ChangedFeatures>
+      <string>Уменьшена частота считывания изменений из файла лога (каждую секунду), т.к. сильно сьедало CPU.</string>
+    </ChangedFeatures>
+    <FixedBugs>
+      <string>Исправлен баг с перезагрузкой приложения после установки обновления;</string>
+      <string>Исправлен баг при смене уровня лога в процессе поиска.</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.2.2 (04.04.2019)</Version>
     <NewFeatures>
       <string>Добавлена возможность автоматического добавления логов при изменении импортируемого файла (необходимо проставить соответствующую галочку на окне выборе шаблона для лога).</string>
@@ -33,7 +46,7 @@
     </ChangedFeatures>
   </ReleaseNotes>
   <ReleaseNotes>
-    <Version>1.2.1.0 (02.27.2019)</Version>
+    <Version>1.2.1.0 (03.27.2019)</Version>
     <NewFeatures>
       <string>Добавлена возможность сохранять настройки конфигурации импорта логов;</string>
       <string>Добавлена возможность импорта лога по шаблону из конфиг-файла (layout);</string>

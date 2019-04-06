@@ -193,6 +193,7 @@ namespace LogViewer.MVVM.ViewModels
                         this.IsUserTemplateSelected = litvm.IsUserTemplateSelected;
                         this.TemplateSeparator = litvm.TemplateSeparator;
                         this.TemplateString = litvm.TemplateString;
+                        this.NeedUpdateFile = litvm.NeedUpdateFile;
                         this.SelectedPopularTemplate = PopularTemplates.FirstOrDefault(x => x.Value.SequenceEqual(litvm.SelectedPopularTemplate)).Value;
                         this.TemplateLogItems = new ObservableCollection<LogTemplateItem>(litvm.TemplateLogItems);
 

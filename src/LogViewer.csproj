@@ -31,8 +31,8 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>2</ApplicationRevision>
-    <ApplicationVersion>1.2.2.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.2.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -141,6 +141,7 @@
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
     <Compile Include="Helpers\DialogCloser.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
+    <Compile Include="Helpers\SearchableTextControl.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
     <Compile Include="Localization\LanguageEventArgs.cs" />
     <Compile Include="Localization\Locals.Designer.cs">

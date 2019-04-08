@@ -535,10 +535,24 @@
     </DataTemplate>
 
     <DataTemplate x:Key="LogMessageDataTemplate">
-        <TextBlock Text="{Binding Path=Message, Converter={StaticResource LengthConverter}, ConverterParameter=140}" 
-                       ToolTip="{Binding Path=Message}"
-                       VerticalAlignment="Center"/>
+        <helpers:SearchableTextControl Text="{Binding Path=Message, Converter={StaticResource LengthConverter}, ConverterParameter=140}"
+                       ToolTip="{Binding Path=Message}" IsHighlight="True" SearchText="{Binding Path=DataContext.HighlightSearchText, RelativeSource={RelativeSource AncestorType=Window}}"
+                       VerticalAlignment="Center" IsMatchCase="{Binding Path=DataContext.IsMatchCase, RelativeSource={RelativeSource AncestorType=Window}}"/>
     </DataTemplate>
+
+    <Style TargetType="{x:Type helpers:SearchableTextControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type helpers:SearchableTextControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                        <TextBlock TextWrapping="Wrap" x:Name="PART_TEXT"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="BaseContextMenu" TargetType="{x:Type ContextMenu}">
         <Setter Property="Template">

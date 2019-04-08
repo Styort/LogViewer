@@ -77,6 +77,8 @@ namespace LogViewer.MVVM.ViewModels
         private int deletedMessagesCount = 0;
         private int processBarValue = 0;
         private string searchText = string.Empty;
+        private string highlightSearchText = string.Empty;
+        private string loggerHighlightText = string.Empty;
         private SolidColorBrush iconColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#3F51B5");
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
         private bool isSourceVisible = false;
@@ -462,6 +464,32 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
+        /// Подсвечиваемый текст при поиске сообщений
+        /// </summary>
+        public string HighlightSearchText
+        {
+            get => highlightSearchText;
+            set
+            {
+                highlightSearchText = value;
+                OnPropertyChanged();
+            }
+        }
+        
+        /// <summary>
+        /// Подсвечиваемый текст при поиске логгеров
+        /// </summary>
+        public string LoggerHighlightText
+        {
+            get => loggerHighlightText;
+            set
+            {
+                loggerHighlightText = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
         /// Видимость колонки с IP
         /// </summary>
         public bool IsSourceVisible
@@ -776,6 +804,7 @@ namespace LogViewer.MVVM.ViewModels
             warnSearchCounter = 0;
 
             SearchText = string.Empty;
+            HighlightSearchText = string.Empty;
             prevFindNext = string.Empty;
             prevFindPrevious = string.Empty;
 
@@ -835,7 +864,7 @@ namespace LogViewer.MVVM.ViewModels
                             {
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
-                                    SearchResult sr = new SearchResult(logMessages);
+                                    SearchResult sr = new SearchResult(logMessages, SearchText, IsMatchCase);
                                     sr.Show();
                                     sr.ShowLogEvent += delegate (object sender, LogMessage message)
                                     {
@@ -849,6 +878,7 @@ namespace LogViewer.MVVM.ViewModels
                         }
                         else
                         {
+                            HighlightSearchText = SearchText;
                             Application.Current.Dispatcher.Invoke(() =>
                             {
                                 Logs = new AsyncObservableCollection<LogMessage>(searchResult);
@@ -884,10 +914,15 @@ namespace LogViewer.MVVM.ViewModels
                     IsVisibleLoader = true;
 
                     if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
+                    {
                         SearchText = selectedLog.Message;
+                        HighlightSearchText = SearchText;
+                    }
 
                     if (!string.IsNullOrEmpty(SearchText))
                     {
+                        HighlightSearchText = SearchText;
+
                         // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск
                         if (prevFindNext != SearchText)
                         {
@@ -962,10 +997,14 @@ namespace LogViewer.MVVM.ViewModels
                     IsVisibleLoader = true;
 
                     if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
+                    {
                         SearchText = selectedLog.Message;
+                        HighlightSearchText = SearchText;
+                    }
 
                     if (!string.IsNullOrEmpty(SearchText))
                     {
+                        HighlightSearchText = SearchText;
                         // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск
                         if (prevFindPrevious != SearchText)
                         {
@@ -1776,6 +1815,7 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             SearchText = string.Empty;
+            HighlightSearchText = string.Empty;
         }
 
         /// <summary>
@@ -1788,6 +1828,7 @@ namespace LogViewer.MVVM.ViewModels
                 ClearSearchLoggersResult();
                 return;
             }
+            LoggerHighlightText = SearchLoggerText;
             exceptParents.Clear();
             FindLastNodesAndUpdateVisibility(Loggers[0]);
             exceptParents.ForEach(x => x.IsVisible = true);
@@ -1802,10 +1843,12 @@ namespace LogViewer.MVVM.ViewModels
             {
                 SetAllLoggersVisible(Loggers[0]);
                 SearchLoggerText = string.Empty;
+                LoggerHighlightText = string.Empty;
                 isSearchLoggersProcess = false;
                 IsEnableClearSearchLoggers = false;
             }
             SearchLoggerText = string.Empty;
+            LoggerHighlightText = string.Empty;
         }
 
         /// <summary>

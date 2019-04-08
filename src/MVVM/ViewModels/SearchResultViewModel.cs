@@ -21,5 +21,15 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Подсвечиваемый текст
+        /// </summary>
+        public string HighlightSearchText { get; set; }
+
+        /// <summary>
+        /// Учитывать регистр
+        /// </summary>
+        public bool IsMatchCase { get; set; }
     }
 }

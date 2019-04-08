@@ -26,8 +26,8 @@
                     <CheckBox IsChecked="{Binding IsChecked}" Uid="{Binding Id}" Command="{Binding Path=DataContext.TreeViewElementCheckCommand, RelativeSource={RelativeSource AncestorType=Window}}" x:Name="TreeViewCheckBox"
                               CommandParameter="{Binding RelativeSource={RelativeSource Self}}" PreviewMouseLeftButtonDown="TreeViewCheckBox_OnPreviewMouseLeftButtonDown" PreviewKeyDown="TreeViewCheckBox_OnPreviewKeyDown">
                     </CheckBox>
-                    <TextBlock Text="{Binding Text}" Background="{Binding ToggleMark}">
-                        <TextBlock.ToolTip>
+                    <helpers:SearchableTextControl Text="{Binding Text}" SearchText="{Binding DataContext.LoggerHighlightText, RelativeSource={RelativeSource AncestorType=Window}}" IsHighlight="True" IsMatchCase="False" Background="{Binding ToggleMark}">
+                        <helpers:SearchableTextControl.ToolTip>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="65"/>
@@ -43,8 +43,8 @@
                                 <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Text}" VerticalAlignment="Top"/>
                                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding Source}"/>
                             </Grid>
-                        </TextBlock.ToolTip>
-                    </TextBlock>
+                        </helpers:SearchableTextControl.ToolTip>
+                    </helpers:SearchableTextControl>
                     <StackPanel.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}">
                             <MenuItem Header="{localization:LocBinding CollapseAll}" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
@@ -336,7 +336,6 @@
                 </Button>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
-
 
                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,10,10,0">
                     <Grid.ColumnDefinitions>

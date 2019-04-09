@@ -408,6 +408,26 @@ namespace LogViewer.MVVM.ViewModels
 
         public string Version { get; set; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
+        public List<string> EncodingList { get; set; } =
+            new List<string>
+            {
+                "UTF-8",
+                "ISO-8859-1",
+                "Windows-1251",
+                "Windows-1252",
+                "Shift-JIS",
+                "GB2312",
+                "EUC-KR",
+                "ISO-8859-2",
+                "Windows-1250",
+                "EUC-JP",
+                "GBK",
+                "Big5",
+                "ISO-8859-15",
+                "Windows-1256",
+                "ISO-8859-9"
+            };
+
         #endregion
 
         public SettingsViewModel()

@@ -18,6 +18,7 @@ namespace LogViewer.MVVM.Models
         private string name = "UDP Receiver";
         private int port = 7071;
         private bool isActive = true;
+        private string encoding = "UTF-8";
 
         public Receiver()
         {
@@ -73,6 +74,16 @@ namespace LogViewer.MVVM.Models
             set
             {
                 isActive = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string Encoding
+        {
+            get => encoding;
+            set
+            {
+                encoding = value;
                 OnPropertyChanged();
             }
         }

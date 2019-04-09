@@ -1187,7 +1187,7 @@ namespace LogViewer.MVVM.ViewModels
                             if (foundReceiver == null)
                             {
                                 receivers.Add(receiver);
-                                UDPPacketsParser parser = new UDPPacketsParser(receiver.Port);
+                                UDPPacketsParser parser = new UDPPacketsParser(receiver);
                                 parsers.Add(parser);
                             }
                             else
@@ -2523,7 +2523,7 @@ namespace LogViewer.MVVM.ViewModels
 
             foreach (var receiver in receivers.Where(r => r.IsActive))
             {
-                var parser = new UDPPacketsParser(receiver.Port);
+                var parser = new UDPPacketsParser(receiver);
                 parsers.Add(parser);
             }
         }

@@ -24,14 +24,16 @@ namespace LogViewer
         private UdpClient udpClient;
         private IPEndPoint remoteIpEndPoint;
         private readonly XmlParserContext xmlContext;
+        private readonly Encoding encoding;
 
         public int Port { get; }
         public bool IsInitialized { get; private set; }
         public List<IgnoredIPAddress> IgnoredIPs { get; set; } 
 
-        public UDPPacketsParser(int port)
+        public UDPPacketsParser(Receiver receiver)
         {
-            this.Port = port;
+            this.Port = receiver.Port;
+            this.encoding = Encoding.GetEncoding(receiver.Encoding);
             xmlContext = CreateContext();
             IgnoredIPs = Settings.Instance.IgnoredIPs;
         }
@@ -73,7 +75,7 @@ namespace LogViewer
                     return null;
 
                 // переводим их в строку
-                incomingLog = Encoding.UTF8.GetString(receiveBytes);
+                incomingLog = encoding.GetString(receiveBytes);
 
                 log = ReadXmlLog(incomingLog);
                 log.Address = remoteIpEndPoint.Address.ToString();

@@ -162,6 +162,7 @@
                                     <RowDefinition/>
                                     <RowDefinition/>
                                     <RowDefinition/>
+                                    <RowDefinition/>
                                 </Grid.RowDefinitions>
                                 <TextBlock Grid.Row="0" Text="{localization:LocBinding ReceiverName}" VerticalAlignment="Center" FontSize="14"/>
                                 <TextBox Grid.Column="1" Text="{Binding Path=SelectedReceiver.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -176,11 +177,14 @@
                                     </TextBox.Text>
                                 </TextBox>
 
-                                <TextBlock Grid.Row="2" Text="{localization:LocBinding Color}" VerticalAlignment="Center" Margin="0,10"/>
+                                <TextBlock Grid.Row="2" Text="{localization:LocBinding Color}" VerticalAlignment="Center" Margin="0,0"/>
                                 <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
                                     <dropDownCustomColorPicker:CustomColorPicker Width="50" Margin="0,20" SelectedColor="{Binding Path=SelectedReceiver.Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                     <Button Style="{StaticResource SetDefaultButtonStyle}" Command="{Binding Path=SetDefaultColorCommand}" CommandParameter="Receiver"/>
                                 </StackPanel>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="{localization:LocBinding Encoding}" VerticalAlignment="Center" Margin="0,-10,0,10"/>
+                                <ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding EncodingList}" SelectedItem="{Binding SelectedReceiver.Encoding}" Margin="0,-10,0,10"/>
                             </Grid>
                         </StackPanel>
                     </Grid>

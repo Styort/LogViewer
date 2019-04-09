@@ -614,4 +614,7 @@ Restart application?</value>
   <data name="StopReadingLogsFromUDP" xml:space="preserve">
     <value>Stop Reading Logs from UDP</value>
   </data>
+  <data name="Encoding" xml:space="preserve">
+    <value>Encoding:</value>
+  </data>
 </root>

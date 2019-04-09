@@ -28,6 +28,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private string importFilePath = string.Empty;
         private string templateSeparator = ";";
+        private string selectedEncoding = "UTF-8";
         private bool? dialogResult;
         private bool needUpdateFile;
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
@@ -94,6 +95,38 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 needUpdateFile = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public List<string> EncodingList { get; set; } = 
+            new List<string>
+            {
+                "UTF-8",
+                "ISO-8859-1",
+                "Windows-1251",
+                "Windows-1252",
+                "Shift-JIS",
+                "GB2312",
+                "EUC-KR",
+                "ISO-8859-2",
+                "Windows-1250",
+                "EUC-JP",
+                "GBK",
+                "Big5",
+                "ISO-8859-15",
+                "Windows-1256",
+                "ISO-8859-9"
+            };
+
+        [XmlElement(Order = 10)]
+        public string SelectedEncoding
+        {
+            get => selectedEncoding;
+            set
+            {
+                selectedEncoding = value;
                 OnPropertyChanged();
             }
         }
@@ -194,6 +227,7 @@ namespace LogViewer.MVVM.ViewModels
                         this.TemplateSeparator = litvm.TemplateSeparator;
                         this.TemplateString = litvm.TemplateString;
                         this.NeedUpdateFile = litvm.NeedUpdateFile;
+                        this.SelectedEncoding = litvm.SelectedEncoding;
                         this.SelectedPopularTemplate = PopularTemplates.FirstOrDefault(x => x.Value.SequenceEqual(litvm.SelectedPopularTemplate)).Value;
                         this.TemplateLogItems = new ObservableCollection<LogTemplateItem>(litvm.TemplateLogItems);
 
@@ -236,6 +270,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Confirm()
         {
+            LogTemplate.Encoding = SelectedEncoding;
+
             // выбран один из популярных типов шаблонов
             if (IsPopularTemplateSelected)
             {
@@ -438,7 +474,7 @@ namespace LogViewer.MVVM.ViewModels
                     }
                 }
             }
-            
+
             return sb.ToString();
         }
 

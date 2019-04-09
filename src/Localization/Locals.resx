@@ -613,4 +613,7 @@
   <data name="StopReadingLogsFromUDP" xml:space="preserve">
     <value>Остановить считывание логов по UDP</value>
   </data>
+  <data name="Encoding" xml:space="preserve">
+    <value>Кодировка:</value>
+  </data>
 </root>

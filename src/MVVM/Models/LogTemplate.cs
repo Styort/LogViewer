@@ -17,5 +17,10 @@ namespace LogViewer.MVVM.Models
         /// Разделитель
         /// </summary>
         public string Separator { get; set; } = ";";
+
+        /// <summary>
+        /// Кодировка
+        /// </summary>
+        public string Encoding { get; set; } = "UTF-8";
     }
 }

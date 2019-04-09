@@ -1688,7 +1688,7 @@ namespace LogViewer.MVVM.ViewModels
                             }
 
                             var sb = new StringBuilder();
-                            using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("Windows-1251")))
+                            using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(template.Encoding)))
                             {
                                 string line;
                                 while ((line = sr.ReadLine()) != null)
@@ -2696,7 +2696,7 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     stream.Position = watcher.Position;
                     var sb = new StringBuilder();
-                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding("Windows-1251")))
+                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(watcher.Template.Encoding)))
                     {
                         string line;
                         while ((line = sr.ReadLine()) != null)

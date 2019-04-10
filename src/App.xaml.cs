@@ -8,7 +8,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Navigation;
 using System.Xml.Serialization;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
@@ -21,11 +23,12 @@ namespace LogViewer
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App : Application, IDisposable
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
+        private UpdateManager updateManager;
 
         public void ChangeTheme(Uri uri)
         {
@@ -80,6 +83,14 @@ namespace LogViewer
             }
 
             base.OnStartup(e);
+
+            Task.Run(() =>
+            {
+                // даем время прогрузиться окну
+                Thread.Sleep(5000);
+                updateManager = new UpdateManager();
+                updateManager.StarCheckUpdate();
+            });
         }
 
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -121,7 +132,7 @@ namespace LogViewer
         {
             using (var key = Registry.CurrentUser.CreateSubKey(path))
             {
-                if(key.GetValueNames().All(x=>x != progId))
+                if (key.GetValueNames().All(x => x != progId))
                 {
                     key.SetValue(progId, Encoding.Unicode.GetBytes(string.Empty), RegistryValueKind.Binary);
                     return true;
@@ -144,5 +155,10 @@ namespace LogViewer
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            updateManager?.Dispose();
+        }
     }
 }

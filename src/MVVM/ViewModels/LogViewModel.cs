@@ -167,6 +167,10 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 startReadFromFileIsEnabled = value;
+                if (!startReadFromFileIsEnabled  || PauseIsEnabled)
+                    IsShowTaskbarProgress = true;
+                else
+                    IsShowTaskbarProgress = false;
                 OnPropertyChanged();
             }
         }
@@ -182,7 +186,7 @@ namespace LogViewer.MVVM.ViewModels
                 pauseIsEnabled = value;
                 if (pauseIsEnabled)
                     StartIsEnabled = false;
-                IsShowTaskbarProgress = pauseIsEnabled;
+                IsShowTaskbarProgress = pauseIsEnabled || !startReadFromFileIsEnabled;
                 OnPropertyChanged();
             }
         }
@@ -475,7 +479,7 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>
         /// Подсвечиваемый текст при поиске логгеров
         /// </summary>
@@ -1755,6 +1759,7 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     if (logImportTemplateDialogDialog.NeedUpdateFile)
                     {
+                        StartReadFromFileIsEnabled = false;
                         fileWatcher.FileChanged += FileWatcherOnFileChanged;
                         fileWatcher.StartWatch();
                     }

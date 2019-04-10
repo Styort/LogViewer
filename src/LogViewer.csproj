@@ -179,6 +179,7 @@
     <Compile Include="MVVM\Views\SelectTimestampDialog.xaml.cs">
       <DependentUpon>SelectTimestampDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UpdateManager.cs" />
     <Compile Include="Validations\IPValidation.cs" />
     <Compile Include="Validations\PortNumberValidation.cs" />
     <Compile Include="MVVM\Models\Receiver.cs" />

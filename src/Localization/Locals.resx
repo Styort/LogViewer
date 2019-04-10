@@ -556,7 +556,7 @@
     <value>Отображать прогресс в таскбаре:</value>
   </data>
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
-    <value>Показывать прогресс-бар в иконке приложения на панели задач при чтении логов с UDP.</value>
+    <value>Показывать прогресс-бар в иконке приложения на панели задач при чтении логов</value>
   </data>
   <data name="SuccessfullyInstalled" xml:space="preserve">
     <value>Успешно установлено</value>

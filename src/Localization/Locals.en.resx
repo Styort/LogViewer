@@ -556,7 +556,7 @@ Try selecting a template manually.</value>
     <value>Show UDP progress on taskbar icon:</value>
   </data>
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
-    <value>Show progressbar on taskbar icon while reading logs via UDP</value>
+    <value>Show progressbar on taskbar icon while reading logs</value>
   </data>
   <data name="SuccessfullyInstalled" xml:space="preserve">
     <value>Successfully installed</value>

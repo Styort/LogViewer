@@ -1033,15 +1033,11 @@
         <Setter Property="Command" Value="{Binding Path=AddIgnoreIPCommand}"/>
 
         <Style.Triggers>
-            <DataTrigger Binding="{Binding TypedIP}" Value="{x:Null}">
-                <Setter Property="IsEnabled" Value="False"/>
-            </DataTrigger>
-
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=IPAddress}" Value="False"/>
+                    <Condition Binding="{Binding Path=(Validation.HasError), ElementName=IPAddress}" Value="True"/>
                 </MultiDataTrigger.Conditions>
-                <Setter Property="IsEnabled" Value="True"/>
+                <Setter Property="IsEnabled" Value="False"/>
             </MultiDataTrigger>
         </Style.Triggers>
     </Style>

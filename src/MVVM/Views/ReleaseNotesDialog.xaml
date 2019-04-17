@@ -46,7 +46,7 @@
                                     <ItemsControl ItemsSource="{Binding NewFeatures}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="20,0"/>
+                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -54,7 +54,7 @@
                                     <ItemsControl ItemsSource="{Binding ChangedFeatures}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="20,0"/>
+                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
@@ -62,7 +62,7 @@
                                     <ItemsControl ItemsSource="{Binding FixedBugs}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="20,0"/>
+                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>

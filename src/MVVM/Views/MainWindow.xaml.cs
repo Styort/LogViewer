@@ -57,6 +57,7 @@ namespace LogViewer.MVVM.Views
                 string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
                 foreach (var arg in activationData.Where(x => x.EndsWith(".txt") || x.EndsWith(".log")))
                 {
+                    ((LogViewModel)DataContext).IsManualStartup = true;
                     ((LogViewModel)DataContext).ImportLogs(arg);
                 }
                 return;
@@ -69,6 +70,7 @@ namespace LogViewer.MVVM.Views
                 {
                     if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
                     {
+                        ((LogViewModel)DataContext).IsManualStartup = true;
                         ((LogViewModel)DataContext).ImportLogs(arg);
                     }
                 }

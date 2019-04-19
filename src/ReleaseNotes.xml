@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.4.1 (04.22.2019)</Version>
+    <NewFeatures>
+      <string>Добавлен прогресс-бар на иконку приложения при считывании логов из файла.</string>
+    </NewFeatures>
+    <ChangedFeatures>
+      <string>При запуске приложения через 'Открыть файл с помощью...' не начитает считывать логи с UDP автоматом, если стояла такая настройка.</string>
+    </ChangedFeatures>
+    <FixedBugs>
+      <string>Пофикшена (вроде) неактивность кнопки очистки логов (в редких случаях такое случалось), когда они есть.</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.4.0 (04.17.2019)</Version>
     <NewFeatures>
       <string>Добавлена возможность выбора кодировки импортируемого файла;</string>

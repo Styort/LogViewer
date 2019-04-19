@@ -130,8 +130,6 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Свойства
 
-        public bool IsManualStartup { get; set; } = false;
-
         public List<FileWatcher> FileWatchers { get; set; } = new List<FileWatcher>();
 
         public bool IsSearchProcess
@@ -703,12 +701,6 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Start()
         {
-            if (IsManualStartup)
-            {
-                IsManualStartup = false;
-                return;
-            }
-
             if (!parsers.Any())
             {
                 MessageBox.Show(Locals.NoReceiversMessageBoxInfo, Locals.Information,

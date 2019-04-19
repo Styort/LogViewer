@@ -15,7 +15,7 @@ namespace LogViewer.Converters
         {
             if (value is bool val)
             {
-                return val ? TaskbarItemProgressState.Indeterminate : TaskbarItemProgressState.None;
+                return val ? TaskbarItemProgressState.Indeterminate : TaskbarItemProgressState.Normal;
             }
             return value;
         }

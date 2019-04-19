@@ -167,7 +167,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 startReadFromFileIsEnabled = value;
-                if (!startReadFromFileIsEnabled  || PauseIsEnabled)
+                if (!startReadFromFileIsEnabled || PauseIsEnabled)
                     IsShowTaskbarProgress = true;
                 else
                     IsShowTaskbarProgress = false;
@@ -379,7 +379,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isVisibleProcessBar = value;
-                if (isVisibleProcessBar) ProcessBarValue = 0;
+                if (!isVisibleProcessBar) ProcessBarValue = 0;
                 IsVisibleLoader = isVisibleProcessBar;
                 OnPropertyChanged();
             }
@@ -554,9 +554,16 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 processBarValue = value;
+                TaskBarFileLoadProgress = processBarValue == 0 ? 0 : (double)processBarValue / 100;
+                OnPropertyChanged(nameof(TaskBarFileLoadProgress));
                 OnPropertyChanged();
             }
         }
+
+        /// <summary>
+        /// Отображение процесса загрузки файла в таскбаре
+        /// </summary>
+        public double TaskBarFileLoadProgress { get; set; }
 
         /// <summary>
         /// Активность кнопки поиска предыдущего сообщения
@@ -631,7 +638,7 @@ namespace LogViewer.MVVM.ViewModels
 
             ColorReceiverColumnWidth = receivers.Count == 1 || receivers.Where(r => r.IsActive).All(x => x.Color.Color == Colors.White) ? 0 : RECEIVER_COLUMN_WIDTH;
 
-            if (Settings.Instance.AutoStartInStartup)
+            if (Settings.Instance.AutoStartInStartup && !App.IsManualStartup)
                 Start();
         }
 
@@ -1750,7 +1757,7 @@ namespace LogViewer.MVVM.ViewModels
                     finally
                     {
                         importData.Clear();
-                        CleanIsEnabled = Logs.Any();
+                        CleanIsEnabled = allLogs.Any();
                         GC.Collect();
                         GC.WaitForFullGCComplete();
                         IsVisibleProcessBar = false;
@@ -2238,7 +2245,7 @@ namespace LogViewer.MVVM.ViewModels
                     lock (logsLockObj) allLogs.Add(log);
             }
 
-            CleanIsEnabled = Logs.Any();
+            CleanIsEnabled = allLogs.Any();
 
             var nodes = log.Logger.Split('.').ToList();
 
@@ -2758,7 +2765,7 @@ namespace LogViewer.MVVM.ViewModels
             finally
             {
                 importData.Clear();
-                CleanIsEnabled = Logs.Any();
+                CleanIsEnabled = allLogs.Any();
                 GC.Collect();
                 GC.WaitForFullGCComplete();
             }

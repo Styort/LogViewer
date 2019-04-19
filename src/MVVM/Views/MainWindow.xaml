@@ -108,7 +108,7 @@
     </Window.Resources>
 
     <Window.TaskbarItemInfo>
-        <TaskbarItemInfo Description="Log Viewer" ProgressState="{Binding Path=IsShowTaskbarProgress, Converter={StaticResource ProgressStateConverter}}">
+        <TaskbarItemInfo Description="Log Viewer" ProgressValue="{Binding Path=TaskBarFileLoadProgress}" ProgressState="{Binding Path=IsShowTaskbarProgress, Converter={StaticResource ProgressStateConverter}}">
             <TaskbarItemInfo.ThumbButtonInfos>
                 <ThumbButtonInfo Command="{Binding StartCommand}" IsEnabled="{Binding StartIsEnabled}" Description="{localization:LocBinding Start}" ImageSource="{StaticResource PlayWhiteImage}"/>
                 <ThumbButtonInfo Command="{Binding PauseCommand}" IsEnabled="{Binding PauseIsEnabled}" Description="{localization:LocBinding Pause}" ImageSource="{StaticResource PauseWhiteImage}"/>

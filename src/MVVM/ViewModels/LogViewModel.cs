@@ -57,8 +57,7 @@ namespace LogViewer.MVVM.ViewModels
         private AsyncObservableCollection<LogMessage> logs = new AsyncObservableCollection<LogMessage>();
         private CancellationTokenSource cancellationToken;
         private bool startIsEnabled = true;
-        private bool startReadFromFileIsEnabled = false;
-        private bool pauseIsEnabled = false;
+        private bool startReadFromFileIsEnabled = true;
         private bool cleanIsEnabled = false;
         private bool clearSearchResultIsEnabled = false;
         private bool isVisibleLoader = false;
@@ -131,6 +130,8 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Свойства
 
+        public bool IsManualStartup { get; set; } = false;
+
         public List<FileWatcher> FileWatchers { get; set; } = new List<FileWatcher>();
 
         public bool IsSearchProcess
@@ -152,8 +153,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 startIsEnabled = value;
-                if (startIsEnabled)
-                    PauseIsEnabled = false;
+                IsShowTaskbarProgress = !startIsEnabled || !startReadFromFileIsEnabled;
                 OnPropertyChanged();
             }
         }
@@ -167,26 +167,10 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 startReadFromFileIsEnabled = value;
-                if (!startReadFromFileIsEnabled || PauseIsEnabled)
+                if (!startReadFromFileIsEnabled || !StartIsEnabled)
                     IsShowTaskbarProgress = true;
                 else
                     IsShowTaskbarProgress = false;
-                OnPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Активность кнопки паузы считывания логов
-        /// </summary>
-        public bool PauseIsEnabled
-        {
-            get => pauseIsEnabled;
-            set
-            {
-                pauseIsEnabled = value;
-                if (pauseIsEnabled)
-                    StartIsEnabled = false;
-                IsShowTaskbarProgress = pauseIsEnabled || !startReadFromFileIsEnabled;
                 OnPropertyChanged();
             }
         }
@@ -719,6 +703,12 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Start()
         {
+            if (IsManualStartup)
+            {
+                IsManualStartup = false;
+                return;
+            }
+
             if (!parsers.Any())
             {
                 MessageBox.Show(Locals.NoReceiversMessageBoxInfo, Locals.Information,
@@ -738,7 +728,7 @@ namespace LogViewer.MVVM.ViewModels
                     if (parsers.All(x => !x.IsInitialized))
                         return;
 
-                    PauseIsEnabled = true;
+                    StartIsEnabled = false;
 
                     Parallel.ForEach(parsers, parser =>
                     {
@@ -1157,7 +1147,7 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void OpenSettings()
         {
-            var isProgress = PauseIsEnabled;
+            var isProgress = !StartIsEnabled;
             Pause();
 
             var settingsDialog = new Views.SettingsWindow();

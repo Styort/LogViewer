@@ -8,6 +8,9 @@
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
         Title="{localization:LocBinding LogViewerSearchResult}" Height="600" Width="1024">
+    <Window.DataContext>
+        <viewModels:LogViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         <ResourceDictionary>

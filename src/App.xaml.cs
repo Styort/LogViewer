@@ -27,6 +27,7 @@ namespace LogViewer
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        public static bool IsManualStartup { get; private set; } = false;
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
         private UpdateManager updateManager;
 
@@ -36,6 +37,7 @@ namespace LogViewer
         }
 
         static Mutex mutex = new Mutex(true, "{8F6F0AC4-B9A1-45fd-A8CF-72F04E6BDE8F}");
+
         [STAThread]
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -43,6 +45,9 @@ namespace LogViewer
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+
+            if (e.Args.Any(x => (x.EndsWith(".txt") || x.EndsWith(".log")) && File.Exists(x)))
+                IsManualStartup = true;
 
             Settings.Instance.Load();
 

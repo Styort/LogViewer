@@ -10,8 +10,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Navigation;
 using System.Xml.Serialization;
+using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.Views;
@@ -44,10 +46,41 @@ namespace LogViewer
             logger.Trace("OnStartup");
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
             if (e.Args.Any(x => (x.EndsWith(".txt") || x.EndsWith(".log")) && File.Exists(x)))
+            {
                 IsManualStartup = true;
+
+                try
+                {
+                    if (!mutex.WaitOne(TimeSpan.Zero, true))
+                    {
+                        var proc = Process.GetCurrentProcess();
+                        var processName = proc.ProcessName.Replace(".vshost", "");
+                        var runningProcess = Process.GetProcesses()
+                            .FirstOrDefault(x => (x.ProcessName == processName || x.ProcessName == proc.ProcessName || x.ProcessName == proc.ProcessName + ".vshost") && x.Id != proc.Id);
+
+                        if (runningProcess == null)
+                        {
+                            var app = new App();
+                            app.InitializeComponent();
+                            var window = new MainWindow();
+                            MVVM.Views.MainWindow.HandleParameter(e.Args);
+                            app.Run(window);
+                            return; 
+                        }
+
+                        UnsafeNative.SendMessage(runningProcess.MainWindowHandle, string.Join(" ", e.Args));
+                        
+                        Environment.Exit(0);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    logger.Warn(exception, "OnStartup check mutext exception (open with arguments)");
+                }
+            }
 
             Settings.Instance.Load();
 
@@ -94,7 +127,7 @@ namespace LogViewer
                 // даем время прогрузиться окну
                 Thread.Sleep(5000);
                 updateManager = new UpdateManager();
-                updateManager.StarCheckUpdate();
+                updateManager.StartCheckUpdate();
             });
         }
 

@@ -617,4 +617,7 @@ Restart application?</value>
   <data name="Encoding" xml:space="preserve">
     <value>Encoding:</value>
   </data>
+  <data name="UseRegularExpression" xml:space="preserve">
+    <value>Use Regula Expressions</value>
+  </data>
 </root>

@@ -570,4 +570,30 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="RegularExpressionsImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <DrawingGroup>
+                    <GeometryDrawing Brush="#FFFFFFFF">
+                        <GeometryDrawing.Geometry>
+                            <RectangleGeometry RadiusX="0" RadiusY="0" Rect="-1,-1,402,402" />
+                        </GeometryDrawing.Geometry>
+                    </GeometryDrawing>
+                </DrawingGroup>
+                <DrawingGroup>
+                    <DrawingGroup>
+                        <GlyphRunDrawing ForegroundBrush="#FF000000">
+                            <GlyphRunDrawing.GlyphRun>
+                                <GlyphRun PixelsPerDip="1" BaselineOrigin="31.5,260.4375" FontRenderingEmSize="250" BidiLevel="0" IsSideways="False" CaretStops="1 1 1 1 1" ClusterMap="0 1 2 3" Characters="(.*)" GlyphIndices="11 17 13 12" AdvanceWidths="83.2533333333333 69.4566666666667 97.29 83.2533333333333" GlyphOffsets="0,0 0,0 0,0 0,0" Language="en-us">
+                                    <GlyphRun.GlyphTypeface>
+                                        <GlyphTypeface FontUri="C:\WINDOWS\FONTS\ARIAL.TTF" StyleSimulations="None" />
+                                    </GlyphRun.GlyphTypeface>
+                                </GlyphRun>
+                            </GlyphRunDrawing.GlyphRun>
+                        </GlyphRunDrawing>
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
 </ResourceDictionary>

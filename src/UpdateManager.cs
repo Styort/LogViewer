@@ -29,9 +29,9 @@ namespace LogViewer
         /// <summary>
         /// Запускает проверку наличия обновлений
         /// </summary>
-        public void StarCheckUpdate()
+        public void StartCheckUpdate()
         {
-            logger.Debug("StarCheckUpdate");
+            logger.Debug("StartCheckUpdate");
 
             updateTimer = new Timer(CheckUpdate, null, 0, CHECK_UPDATE_PERIOD);
         }

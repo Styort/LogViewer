@@ -9,7 +9,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
-        mc:Ignorable="d"
+        mc:Ignorable="d" 
         Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized" Loaded="MainWindow_OnLoaded">
     <Window.DataContext>
         <viewModels:LogViewModel/>

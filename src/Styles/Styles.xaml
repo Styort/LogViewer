@@ -723,6 +723,21 @@
                                 </ControlTemplate>
                             </ToggleButton.Template>
                         </ToggleButton>
+
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding UseRegularExpression}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.UseRegularExpressions}">
+                            <ToggleButton.Template>
+                                <ControlTemplate>
+                                    <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
+                                        <Image Source="{StaticResource RegularExpressionsImage}" Margin="0"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="ToggleButton.IsChecked" Value="True">
+                                            <Setter Property="BorderThickness" TargetName="toggleBorder" Value="2"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
                     </StackPanel>
 
                     <ControlTemplate.Triggers>

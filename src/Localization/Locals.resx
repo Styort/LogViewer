@@ -616,4 +616,7 @@
   <data name="Encoding" xml:space="preserve">
     <value>Кодировка:</value>
   </data>
+  <data name="UseRegularExpression" xml:space="preserve">
+    <value>Использовать регулярные выражения</value>
+  </data>
 </root>

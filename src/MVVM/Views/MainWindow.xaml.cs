@@ -11,8 +11,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Xml;
 using System.Xml.Linq;
+using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
@@ -44,6 +46,12 @@ namespace LogViewer.MVVM.Views
         {
             InitializeComponent();
             AutoScrollButton.ToolTip = Locals.EnableAutoScroll;
+
+            this.Loaded += (s, e) =>
+            {
+                MainWindow.WindowHandle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
+                HwndSource.FromHwnd(MainWindow.WindowHandle)?.AddHook(HandleMessages);
+            };
         }
 
         /// <summary>
@@ -358,6 +366,44 @@ namespace LogViewer.MVVM.Views
             releaseNotesDialog.Owner = this;
             releaseNotesDialog.ShowDialog();
         }
+
+        #region Передача параметров в другую аппу, если существует
+
+        public static IntPtr WindowHandle { get; private set; }
+
+        internal static void HandleParameter(string[] args)
+        {
+            if (Application.Current?.MainWindow is MainWindow mainWindow &&
+                args != null && args.Length > 0 && args.All(x => x.EndsWith(".txt") || x.EndsWith(".log")))
+            {
+                ((LogViewModel)mainWindow.DataContext).ImportLogs(args.First());
+            }
+        }
+
+        private static IntPtr HandleMessages(IntPtr handle, int message, IntPtr wParameter, IntPtr lParameter, ref Boolean handled)
+        {
+            var data = UnsafeNative.GetMessage(message, lParameter);
+
+            if (data != null)
+            {
+                if (Application.Current.MainWindow == null)
+                    return IntPtr.Zero;
+
+                if (Application.Current.MainWindow.WindowState == WindowState.Minimized)
+                    Application.Current.MainWindow.WindowState = WindowState.Normal;
+
+                UnsafeNative.SetForegroundWindow(new WindowInteropHelper
+                    (Application.Current.MainWindow).Handle);
+
+                var args = data.Split(' ');
+                HandleParameter(args);
+                handled = true;
+            }
+
+            return IntPtr.Zero;
+        }
+
+        #endregion
 
         public void Dispose()
         {

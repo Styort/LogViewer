@@ -32,7 +32,7 @@
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.2.4.%2a</ApplicationVersion>
+    <ApplicationVersion>1.2.5.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -143,6 +143,7 @@
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\SearchableTextControl.cs" />
     <Compile Include="Helpers\TVIExtender.cs" />
+    <Compile Include="Helpers\UnsafeNative.cs" />
     <Compile Include="Localization\LanguageEventArgs.cs" />
     <Compile Include="Localization\Locals.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -264,6 +265,7 @@
     <EmbeddedResource Include="Localization\Locals.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Locals.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

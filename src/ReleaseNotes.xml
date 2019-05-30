@@ -1,7 +1,17 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
-    <Version>1.2.4.1 (04.22.2019)</Version>
+    <Version>1.2.5.0 (05.30.2019)</Version>
+    <FixedBugs>
+      <string>Исправлен ряд багов</string>
+    </FixedBugs>
+    <NewFeatures>
+      <string>Добавлена возможность поиска по регулярному выражению</string>
+      <string>При открытии лога через 'Открыть с помощью' он открывается в уже существующем приложении (если есть)</string>
+    </NewFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
+    <Version>1.2.4.1 (04.23.2019)</Version>
     <NewFeatures>
       <string>Добавлен прогресс-бар на иконку приложения при считывании логов из файла.</string>
     </NewFeatures>

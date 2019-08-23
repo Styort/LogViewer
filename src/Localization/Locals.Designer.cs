@@ -242,7 +242,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Очистить текст и результат поиска (Ctrl+R).
+        ///   Looks up a localized string similar to Очистить текст и результат поиска (Shift+R).
         /// </summary>
         internal static string ClearSearchAndSearchResult {
             get {
@@ -626,6 +626,15 @@ namespace LogViewer.Localization {
         internal static string IgnoredList {
             get {
                 return ResourceManager.GetString("IgnoredList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Процесс импорта логов.
+        /// </summary>
+        internal static string ImportLogsProcess {
+            get {
+                return ResourceManager.GetString("ImportLogsProcess", resourceCulture);
             }
         }
         

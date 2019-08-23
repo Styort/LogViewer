@@ -296,7 +296,8 @@ namespace LogViewer.MVVM.ViewModels
                         {
                             if (IsSearchProcess)
                             {
-                                var searchResult = GetSearchResult();
+                                var searchResult = Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                                    IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
                                 Application.Current.Dispatcher.Invoke(() =>
                                 {
                                     Logs = new AsyncObservableCollection<LogMessage>(searchResult);
@@ -800,6 +801,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Clean()
         {
+            if (IsVisibleLoader) return;
+
             if (Logs.Any()) Logs.Clear();
 
             nextMessages.Clear();
@@ -844,6 +847,8 @@ namespace LogViewer.MVVM.ViewModels
         {
             logger.Debug($"Search with {SearchText}");
 
+            if(IsVisibleLoader) return;
+
             var searchTask = Task.Run(() =>
             {
                 try
@@ -867,7 +872,9 @@ namespace LogViewer.MVVM.ViewModels
                     if (allLogs.Any())
                     {
                         // осуществляем поиск всему списку логов
-                        IEnumerable<LogMessage> searchResult = GetSearchResult();
+                        IEnumerable<LogMessage> searchResult =
+                            Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                                IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
 
                         // открывать результат поиска в отдельном окне или нет
                         if (isOpenInAnotherWinow)
@@ -920,6 +927,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void FindNext()
         {
+            if (IsVisibleLoader) return;
+
             Task.Run(() =>
             {
                 try
@@ -961,16 +970,12 @@ namespace LogViewer.MVVM.ViewModels
                             if (!nextMessages.Any())
                             {
                                 lock (logsLockObj)
-                                    nextMessages = IsMatchCase
-                                        ? Logs.Where(x => x.Message.Contains(SearchText) || UseRegularExpressions && Regex.IsMatch(x.Message, SearchText)).ToList()
-                                        : Logs.Where(x => x.Message.ToUpper().Contains(SearchText.ToUpper()) ||
-                                                          UseRegularExpressions && Regex.IsMatch(x.Message, SearchText, RegexOptions.IgnoreCase)).ToList();
+                                    nextMessages = Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                                        IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
                             }
                             else
-                                nextMessages = IsMatchCase
-                                    ? nextMessages.Where(x => x.Message.Contains(SearchText) || UseRegularExpressions && Regex.IsMatch(x.Message, SearchText)).ToList()
-                                    : nextMessages.Where(x => x.Message.ToUpper().Contains(SearchText.ToUpper()) ||
-                                                              UseRegularExpressions && Regex.IsMatch(x.Message, SearchText, RegexOptions.IgnoreCase)).ToList();
+                                nextMessages = nextMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                                        IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
 
                             if (!nextMessages.Any() || nextMessages.Count <= lastSelectedMessageCounter)
                             {
@@ -1006,6 +1011,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void FindPrevious()
         {
+            if (IsVisibleLoader) return;
+
             Task.Run(() =>
             {
                 try
@@ -1040,10 +1047,8 @@ namespace LogViewer.MVVM.ViewModels
                                 previousMessages = Logs.Take(selectedLogIndex).ToList();
 
                             if (previousMessages.Any())
-                                previousMessages = IsMatchCase
-                                    ? previousMessages.Where(x => x.Message.Contains(SearchText) || UseRegularExpressions && Regex.IsMatch(x.Message, SearchText)).ToList()
-                                    : previousMessages.Where(x => x.Message.ToUpper().Contains(SearchText.ToUpper()) ||
-                                                                  UseRegularExpressions && Regex.IsMatch(x.Message, SearchText, RegexOptions.IgnoreCase)).ToList();
+                                previousMessages = previousMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                                    IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
                             else
                                 return;
 
@@ -1790,6 +1795,8 @@ namespace LogViewer.MVVM.ViewModels
         {
             logger.Debug($"ExportLogs with {obj}");
 
+            if (IsVisibleLoader) return;
+
             Pause();
 
             Node node = null;
@@ -1825,6 +1832,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void ClearSearchResult()
         {
+            if (IsVisibleLoader) return;
+
             if (IsSearchProcess)
             {
                 IsSearchProcess = false;
@@ -1876,6 +1885,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void GoToTimestamp()
         {
+            if (IsVisibleLoader) return;
+
             SelectTimestampDialog selectTimestampDialog = new SelectTimestampDialog(SelectedLog?.Time);
             selectTimestampDialog.ShowDialog();
 
@@ -1904,6 +1915,8 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void SetTimeInterval()
         {
+            if (IsVisibleLoader) return;
+
             SelectTimeIntervalDialog selectTimeIntervalDialog = new SelectTimeIntervalDialog(SelectedLog?.Time);
             selectTimeIntervalDialog.ShowDialog();
             if (selectTimeIntervalDialog.DialogResult.HasValue && selectTimeIntervalDialog.DialogResult.Value)
@@ -2189,13 +2202,11 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void BuildTreeByMessage(LogMessage log, bool addLog = true)
         {
-            bool isImportFile = File.Exists(log.Address);
-
             // Если с таким IP не найден корневой элемент - создаем новое дерево.
-            var root = Loggers[0].Children.FirstOrDefault(x => x.Text == (isImportFile ? Path.GetFileName(log.Address) : log.Address));
+            var root = Loggers[0].Children.FirstOrDefault(x => x.Text == log.Address);
             if (root == null)
             {
-                var rootNode = new Node(Loggers[0], isImportFile ? Path.GetFileName(log.Address) : log.Address)
+                var rootNode = new Node(Loggers[0], log.Address)
                 {
                     IsRoot = true,
                     IsExpanded = true,
@@ -2479,7 +2490,7 @@ namespace LogViewer.MVVM.ViewModels
 
                                 if (isTimeIntervalProcess)
                                 {
-                                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval)
+                                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval && !exceptLoggers.Contains(log.FullPath))
                                         lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
@@ -2491,23 +2502,23 @@ namespace LogViewer.MVVM.ViewModels
                                 }
 
                                 if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                                    && log.Message.ToUpper().Contains(currentSearch.ToUpper()))
+                                    && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
                                 {
                                     lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
                                 if (IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                                    && log.Message.Contains(currentSearch))
+                                    && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
                                 {
                                     lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
-                                if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch))
+                                if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
                                 {
                                     lock (logsLockObj) Logs.Add(log);
                                     return;
                                 }
-                                if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()))
+                                if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
                                 {
                                     lock (logsLockObj) Logs.Add(log);
                                     return;
@@ -2657,57 +2668,6 @@ namespace LogViewer.MVVM.ViewModels
                 }
             }
             LogTypeArray = logTypeList.ToArray();
-        }
-
-        /// <summary>
-        /// Осуществляет поиск с учетом всех фильтров
-        /// </summary>
-        private IEnumerable<LogMessage> GetSearchResult()
-        {
-            IEnumerable<LogMessage> searchResult = allLogs.ToList();
-
-            if (!IsMatchCase && IsMatchLogLevel && !IsMatchWholeWord)
-                return searchResult.Where(x => SelectedMinLogLevel.HasFlag(x.Level) &&
-                                               (x.Message.ToUpper().Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                                               UseRegularExpressions && Regex.IsMatch(x.Message.ToUpper(), SearchText, RegexOptions.IgnoreCase)));
-            if (IsMatchCase && IsMatchLogLevel && !IsMatchWholeWord)
-                return searchResult.Where(x => SelectedMinLogLevel.HasFlag(x.Level) && 
-                (x.Message.Contains(SearchText) ||
-                 UseRegularExpressions && Regex.IsMatch(x.Message, SearchText)));
-
-            if (IsMatchCase && !IsMatchLogLevel && !IsMatchWholeWord)
-                return searchResult.Where(x => x.Message.Contains(SearchText) ||
-                                               UseRegularExpressions && Regex.IsMatch(x.Message, SearchText));
-
-            if (!IsMatchCase && !IsMatchLogLevel && !IsMatchWholeWord)
-                return searchResult.Where(x => x.Message.ToUpper().Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
-                                               UseRegularExpressions && Regex.IsMatch(x.Message.ToUpper(), SearchText, RegexOptions.IgnoreCase));
-
-            if (IsMatchWholeWord && IsMatchCase && IsMatchLogLevel)
-                return searchResult.Where(x => SelectedMinLogLevel.HasFlag(x.Level) &&
-                                               (x.Message.Contains($" {SearchText} ") ||
-                                                x.Message.StartsWith($"{SearchText} ") ||
-                                                x.Message.EndsWith($" {SearchText}") ||
-                                                x.Message.StartsWith(SearchText) && x.Message.EndsWith(SearchText)));
-            if (IsMatchWholeWord && !IsMatchCase && IsMatchLogLevel)
-                return searchResult.Where(x => SelectedMinLogLevel.HasFlag(x.Level) &&
-                                               (x.Message.Contains($" {SearchText} ", StringComparison.OrdinalIgnoreCase) ||
-                                                x.Message.StartsWith($"{SearchText} ", StringComparison.OrdinalIgnoreCase) ||
-                                                x.Message.EndsWith($" {SearchText}", StringComparison.OrdinalIgnoreCase) ||
-                                                x.Message.StartsWith(SearchText, StringComparison.OrdinalIgnoreCase) &&
-                                                x.Message.EndsWith(SearchText, StringComparison.OrdinalIgnoreCase)));
-            if (IsMatchWholeWord && IsMatchCase && !IsMatchLogLevel)
-                return searchResult.Where(x => x.Message.Contains($" {SearchText} ") ||
-                                               x.Message.StartsWith($" {SearchText}") ||
-                                               x.Message.EndsWith($" {SearchText}") ||
-                                               x.Message.StartsWith(SearchText) && x.Message.EndsWith(SearchText));
-            if (IsMatchWholeWord && !IsMatchCase && !IsMatchLogLevel)
-                return searchResult.Where(x => x.Message.Contains($" {SearchText} ", StringComparison.OrdinalIgnoreCase) ||
-                                               x.Message.StartsWith($" {SearchText}", StringComparison.OrdinalIgnoreCase) ||
-                                               x.Message.EndsWith($" {SearchText}", StringComparison.OrdinalIgnoreCase) ||
-                                               x.Message.StartsWith(SearchText, StringComparison.OrdinalIgnoreCase) &&
-                                               x.Message.EndsWith(SearchText, StringComparison.OrdinalIgnoreCase));
-            return searchResult;
         }
 
         /// <summary>

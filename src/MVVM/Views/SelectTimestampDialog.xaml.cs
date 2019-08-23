@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace LogViewer.MVVM.Views
     {
         private DateTime selectedDateTime = DateTime.Now;
         public DateTime PickedDateTime => selectedDateTime;
+        string[] dateFormats = { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss.f", "dd/MM/yyyy HH:mm:ss.ff", "dd/MM/yyyy HH:mm:ss.fff",
+            "dd/MM/yyyy HH:mm:s", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH:m", "dd/MM/yyyy HH"};
 
         public SelectTimestampDialog(DateTime? currentLogDateTime)
         {
@@ -86,7 +89,11 @@ namespace LogViewer.MVVM.Views
         {
             if (string.IsNullOrEmpty(SelectedDateTimeTB.Text))
                 return;
-            if (DateTime.TryParse(SelectedDateTimeTB.Text, out DateTime date))
+            if (DateTime.TryParseExact(SelectedDateTimeTB.Text,
+                dateFormats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime date))
             {
                 selectedDateTime = date;
             }

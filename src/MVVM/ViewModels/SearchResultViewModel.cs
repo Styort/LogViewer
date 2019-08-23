@@ -1,5 +1,7 @@
 ﻿using LogViewer.MVVM.Models;
 using System.Collections.ObjectModel;
+using System.Windows;
+using LogViewer.MVVM.Commands;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -31,5 +33,19 @@ namespace LogViewer.MVVM.ViewModels
         /// Учитывать регистр
         /// </summary>
         public bool IsMatchCase { get; set; }
+
+        private RelayCommand copyMessageCommand;
+
+        public RelayCommand CopyMessageCommand => copyMessageCommand ?? (copyMessageCommand = new RelayCommand(CopyMessage));
+
+        /// <summary>
+        /// Копирует сообщение лога в буфер
+        /// </summary>
+        private void CopyMessage()
+        {
+            if (SelectedLog == null) return;
+            Clipboard.SetDataObject(SelectedLog.Message);
+        }
+
     }
 }

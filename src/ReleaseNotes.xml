@@ -1,6 +1,18 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.6.0 (08.22.2019)</Version>
+    <FixedBugs>
+      <string>Исправлен баг с добавлением сообщений, которые удовлетворяют условиям поиска, но не выбраны в списке логгеров</string>
+      <string>Исправлено не копирование сообщения лога в отдельном окне поиска при нажатии на кнопку "Copy"</string>
+      <string>Исправлен баг с поиском предыдущего/следующего сообщения в списке, если стоит флаг учитывать только слово целиком</string>
+      <string>Исправлен баг с поиском сообщений по интервалу времени (Ctrl+Shift+T), либо просто по конкретному времени (Ctrl+T)</string>
+    </FixedBugs>
+    <ChangedFeatures>
+      <string>Убрана возможность выполнения команд горячих клавиш во время какого-либо процесса (когда крутится лоадер)</string>
+    </ChangedFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.5.0 (05.30.2019)</Version>
     <FixedBugs>
       <string>Исправлен ряд багов</string>

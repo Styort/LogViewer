@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Dispatcher;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using LogViewer.Enums;
+using LogViewer.MVVM.Models;
 
 namespace LogViewer.Helpers
 {
@@ -98,6 +101,44 @@ namespace LogViewer.Helpers
             if (timeSpan == TimeSpan.Zero) return dateTime; // Or could throw an ArgumentException
             if (dateTime == DateTime.MinValue || dateTime == DateTime.MaxValue) return dateTime; // do not modify "guard" values
             return dateTime.AddTicks(-(dateTime.Ticks % timeSpan.Ticks));
+        }
+
+        /// <summary>
+        /// Осуществляет фильтр переданного списка сообщений логов по переданным параметрам
+        /// </summary>
+        /// <param name="messages">Список сообщений</param>
+        /// <param name="text">Искомый текст</param>
+        /// <param name="matchCase">Учитывать ли регистр</param>
+        /// <param name="matchWholeWord">Учитывать только слово целиком</param>
+        /// <param name="useRegularExp">Использовать регулярные выражения</param>
+        /// <param name="level">Минимальный уровень лога</param>
+        /// <returns></returns>
+        public static IEnumerable<LogMessage> Filter(this IEnumerable<LogMessage> messages, string text, bool matchCase, bool matchWholeWord, bool useRegularExp, eLogLevel level = eLogLevel.Trace)
+        {
+            IEnumerable<LogMessage> searchResult = messages.ToList();
+
+            if (!matchCase && !matchWholeWord)
+                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.ToUpper().Contains(text, StringComparison.OrdinalIgnoreCase) || useRegularExp && Regex.IsMatch(x.Message.ToUpper(), text, RegexOptions.IgnoreCase)));
+
+            if (matchCase && !matchWholeWord)
+                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains(text) || useRegularExp && Regex.IsMatch(x.Message, text)));
+
+            if (matchCase && matchWholeWord)
+                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains($" {text} ") ||
+                                                                      x.Message.StartsWith($"{text} ") ||
+                                                                      x.Message.EndsWith($" {text}") ||
+                                                                      x.Message.StartsWith(text) && x.Message.EndsWith(text) ||
+                                                                      useRegularExp && Regex.IsMatch(x.Message, text)));
+
+            if (!matchCase && matchWholeWord)
+                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains($" {text} ", StringComparison.OrdinalIgnoreCase) ||
+                                                                      x.Message.StartsWith($"{text} ", StringComparison.OrdinalIgnoreCase) ||
+                                                                      x.Message.EndsWith($" {text}", StringComparison.OrdinalIgnoreCase) ||
+                                                                      x.Message.StartsWith(text, StringComparison.OrdinalIgnoreCase) &&
+                                                                      x.Message.EndsWith(text, StringComparison.OrdinalIgnoreCase)) || 
+                                                                      useRegularExp && Regex.IsMatch(x.Message.ToUpper(), text, RegexOptions.IgnoreCase));
+
+            return searchResult;
         }
 
         //public static T DeepClone<T>(T obj)

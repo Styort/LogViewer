@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using LogViewer.MVVM.Models;
 using MaterialDesignThemes.Wpf;
 
 namespace LogViewer.MVVM.Views
@@ -14,6 +16,9 @@ namespace LogViewer.MVVM.Views
         private DateTime selectedDateTimeTo = DateTime.Now;
         public DateTime DateTimeFrom => selectedDateTimeFrom;
         public DateTime DateTimeTo => selectedDateTimeTo;
+
+        string[] dateFormats = { "dd/MM/yyyy HH:mm:ss", "dd/MM/yyyy HH:mm:ss.f", "dd/MM/yyyy HH:mm:ss.ff", "dd/MM/yyyy HH:mm:ss.fff",
+            "dd/MM/yyyy HH:mm:s", "dd/MM/yyyy HH:mm", "dd/MM/yyyy HH:m", "dd/MM/yyyy HH"};
 
         public SelectTimeIntervalDialog(DateTime? currentLogDateTime)
         {
@@ -36,7 +41,7 @@ namespace LogViewer.MVVM.Views
                 if (selectedDateTimeTo.Millisecond != 0)
                     selectedDateTimeTo = selectedDateTimeTo.AddMilliseconds(-selectedDateTimeTo.Millisecond);
             }
-            
+
             SelectedDateTimeFromTB.Text = selectedDateTimeFrom.ToString("dd/MM/yyyy HH:mm:ss.fff");
             SelectedDateTimeToTB.Text = selectedDateTimeTo.ToString("dd/MM/yyyy HH:mm:ss.fff");
         }
@@ -45,7 +50,12 @@ namespace LogViewer.MVVM.Views
         {
             if (string.IsNullOrEmpty(SelectedDateTimeFromTB.Text))
                 return;
-            if (DateTime.TryParse(SelectedDateTimeFromTB.Text, out DateTime date))
+
+            if (DateTime.TryParseExact(SelectedDateTimeFromTB.Text,
+                dateFormats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime date))
             {
                 selectedDateTimeFrom = date;
             }
@@ -55,7 +65,12 @@ namespace LogViewer.MVVM.Views
         {
             if (string.IsNullOrEmpty(SelectedDateTimeToTB.Text))
                 return;
-            if (DateTime.TryParse(SelectedDateTimeToTB.Text, out DateTime date))
+
+            if (DateTime.TryParseExact(SelectedDateTimeToTB.Text,
+                dateFormats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateTime date))
             {
                 selectedDateTimeTo = date;
             }

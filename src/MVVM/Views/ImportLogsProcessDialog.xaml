@@ -1,0 +1,49 @@
+﻿<Window x:Class="LogViewer.MVVM.Views.ImportLogsProcessDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LogViewer.MVVM.Views"
+        xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
+        mc:Ignorable="d"
+        Title="{localization:LocBinding ImportLogsProcess}" Height="320" Width="500">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl Margin="10" ItemsSource="{Binding ImportFiles}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding Path=FilePath}" Margin="0,10,0,5"/>
+                            <Grid>
+                                <ProgressBar Value="{Binding Path=Process, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="20" />
+                                <TextBlock Text="{Binding Path=Process, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0}%}"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <WrapPanel Grid.Row="1"  HorizontalAlignment="Right" Margin="10" VerticalAlignment="Bottom">
+            <Button IsEnabled="{Binding Path=OkIsEnabled}" Click="OkButtonClick" IsDefault="True" MinWidth="100" Height="30" Margin="0,0,10,0" Content="OK"/>
+            <Button Click="CancelButtonClick" MinWidth="100" Content="{localization:LocBinding Cancel}"/>
+        </WrapPanel>
+    </Grid>
+</Window>

@@ -474,6 +474,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand сancelCommand;
         private RelayCommand setDefaultColorCommand;
         private RelayCommand showReleaseNotesCommand;
+        private RelayCommand checkUpdatesCommand;
 
         public RelayCommand AddReceiverCommand => addReceiverCommand ?? (addReceiverCommand = new RelayCommand(AddReceiver));
         public RelayCommand RemoveReceiverCommand => removeReceiverCommand ?? (removeReceiverCommand = new RelayCommand(RemoveReceiver));
@@ -483,6 +484,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand CancelCommand => сancelCommand ?? (сancelCommand = new RelayCommand(Cancel));
         public RelayCommand SetDefaultColorCommand => setDefaultColorCommand ?? (setDefaultColorCommand = new RelayCommand(SetDefaultColor));
         public RelayCommand ShowReleaseNotesCommand => showReleaseNotesCommand ?? (showReleaseNotesCommand = new RelayCommand(ShowReleaseNotes));
+        public RelayCommand CheckUpdatesCommand => checkUpdatesCommand ?? (checkUpdatesCommand = new RelayCommand(CheckUpdates));
 
         #endregion
 
@@ -604,6 +606,13 @@ namespace LogViewer.MVVM.ViewModels
             releaseNotesDialog.ShowDialog();
         }
 
+        private void CheckUpdates()
+        {
+            if (UpdateManager.CheckForUpdates())
+                UpdateManager.InstallNewUpdate();
+            else
+                MessageBox.Show(Locals.NoUpdatesFound);
+        }
 
         private string currentThemeName = string.Empty;
         private void ParseTheme()

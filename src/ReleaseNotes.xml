@@ -1,6 +1,13 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.7.0 (08.30.2019)</Version>
+    <NewFeatures>
+      <string>Добавлена возможность импорта сразу нескольких лог-файлов с отображением процесса импорта файлов в отдельном окне</string>
+      <string>Добавлена кнопка проверки наличия новых обновлений в настройках</string>
+    </NewFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.6.0 (08.22.2019)</Version>
     <FixedBugs>
       <string>Исправлен баг с добавлением сообщений, которые удовлетворяют условиям поиска, но не выбраны в списке логгеров</string>

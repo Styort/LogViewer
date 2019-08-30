@@ -197,6 +197,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Проверка обновлений.
+        /// </summary>
+        internal static string CheckForUpdates {
+            get {
+                return ResourceManager.GetString("CheckForUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Очистить.
         /// </summary>
         internal static string Clear {
@@ -482,6 +491,15 @@ namespace LogViewer.Localization {
         internal static string File {
             get {
                 return ResourceManager.GetString("File", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Файл {0} уже добавлен.
+        /// </summary>
+        internal static string FileAlreadyAdded {
+            get {
+                return ResourceManager.GetString("FileAlreadyAdded", resourceCulture);
             }
         }
         
@@ -942,6 +960,15 @@ namespace LogViewer.Localization {
         internal static string NothingFoundMessageBoxInfo {
             get {
                 return ResourceManager.GetString("NothingFoundMessageBoxInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновлений не найдено.
+        /// </summary>
+        internal static string NoUpdatesFound {
+            get {
+                return ResourceManager.GetString("NoUpdatesFound", resourceCulture);
             }
         }
         

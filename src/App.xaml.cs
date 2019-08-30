@@ -31,7 +31,6 @@ namespace LogViewer
 
         public static bool IsManualStartup { get; private set; } = false;
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
-        private UpdateManager updateManager;
 
         public void ChangeTheme(Uri uri)
         {
@@ -126,8 +125,7 @@ namespace LogViewer
             {
                 // даем время прогрузиться окну
                 Thread.Sleep(5000);
-                updateManager = new UpdateManager();
-                updateManager.StartCheckUpdate();
+                UpdateManager.StartCheckUpdate();
             });
         }
 
@@ -196,7 +194,7 @@ namespace LogViewer
 
         public void Dispose()
         {
-            updateManager?.Dispose();
+            UpdateManager.Dispose();
         }
     }
 }

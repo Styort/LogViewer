@@ -619,7 +619,16 @@
   <data name="UseRegularExpression" xml:space="preserve">
     <value>Использовать регулярные выражения</value>
   </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Проверка обновлений</value>
+  </data>
+  <data name="FileAlreadyAdded" xml:space="preserve">
+    <value>Файл {0} уже добавлен</value>
+  </data>
   <data name="ImportLogsProcess" xml:space="preserve">
     <value>Процесс импорта логов</value>
+  </data>
+  <data name="NoUpdatesFound" xml:space="preserve">
+    <value>Обновлений не найдено</value>
   </data>
 </root>

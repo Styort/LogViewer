@@ -620,7 +620,16 @@ Restart application?</value>
   <data name="UseRegularExpression" xml:space="preserve">
     <value>Use Regular Expressions</value>
   </data>
+  <data name="CheckForUpdates" xml:space="preserve">
+    <value>Check for updates</value>
+  </data>
+  <data name="FileAlreadyAdded" xml:space="preserve">
+    <value>File {0} already added</value>
+  </data>
   <data name="ImportLogsProcess" xml:space="preserve">
     <value>Import logs process</value>
+  </data>
+  <data name="NoUpdatesFound" xml:space="preserve">
+    <value>No updates found</value>
   </data>
 </root>

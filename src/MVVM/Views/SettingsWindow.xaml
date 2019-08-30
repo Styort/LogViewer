@@ -297,6 +297,7 @@
                 </GroupBox>
             </TabItem>
         </TabControl>
+        <Button Grid.Row="1" Grid.Column="0" Foreground="{Binding Path=FontColor}" Width="200" HorizontalAlignment="Left" Margin="5,0,120,0" Content="{localization:LocBinding CheckForUpdates}" Command="{Binding Path=CheckUpdatesCommand}" />
         <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="105" HorizontalAlignment="Right" Margin="0,0,120,0" Content="{localization:LocBinding Save}" Command="{Binding Path=SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
         <Button Grid.Row="1" Grid.ColumnSpan="2" Foreground="{Binding Path=FontColor}" Width="105" HorizontalAlignment="Right" Margin="120,0,5,0" Content="{localization:LocBinding Cancel}" Command="{Binding Path=CancelCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"/>
     </Grid>

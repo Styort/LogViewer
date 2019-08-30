@@ -427,7 +427,7 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         /// <summary>
         /// Использовать регулярные выражения
         /// </summary>
@@ -847,7 +847,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             logger.Debug($"Search with {SearchText}");
 
-            if(IsVisibleLoader) return;
+            if (IsVisibleLoader) return;
 
             var searchTask = Task.Run(() =>
             {
@@ -1420,6 +1420,9 @@ namespace LogViewer.MVVM.ViewModels
                             ClearLoggers();
                             Clean();
                         }
+
+                        if (importData.ContainsKey(node.Logger))
+                            importData.Remove(node.Logger);
                     }
                 }
                 catch (Exception ex)
@@ -1656,8 +1659,8 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        private List<LogMessage> importData = new List<LogMessage>();
-        private string importFilePath = string.Empty;
+        private Dictionary<string, List<LogMessage>> importData = new Dictionary<string, List<LogMessage>>();
+        private CancellationTokenSource cancelImportLogTokenSource = new CancellationTokenSource();
 
         /// <summary>
         /// Загружает логи из файла
@@ -1666,23 +1669,48 @@ namespace LogViewer.MVVM.ViewModels
         public void ImportLogs(object obj)
         {
             // выбираем файл
-            importFilePath = string.Empty;
 
-            if (obj is string filePath && !string.IsNullOrEmpty(filePath) && File.Exists(filePath))
+            List<ImportLogFile> importLogFiles = new List<ImportLogFile>();
+            cancelImportLogTokenSource = new CancellationTokenSource();
+
+            if (obj is IEnumerable<string> filesPath && filesPath.All(x => !string.IsNullOrEmpty(x) && File.Exists(x)))
             {
-                importFilePath = filePath;
+                foreach (var filePath in filesPath)
+                {
+                    if (CheckFileExistsInImportLogs(filePath)) continue;
+
+                    importData.Add(filePath, new List<LogMessage>());
+                    importLogFiles.Add(new ImportLogFile
+                    {
+                        FilePath = filePath,
+                        Process = 0,
+                        FileName = Path.GetFileName(filePath)
+                    });
+                }
             }
             else
             {
-                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*" };
+                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*", Multiselect = true};
                 if (fileDialog.ShowDialog() == true)
-                    importFilePath = fileDialog.FileName;
-                else
-                    return;
+                {
+                    foreach (var fileDialogFileName in fileDialog.FileNames)
+                    {
+                        if (CheckFileExistsInImportLogs(fileDialogFileName)) continue;
+                        importData.Add(fileDialogFileName, new List<LogMessage>());
+                        importLogFiles.Add(new ImportLogFile
+                        {
+                            FilePath = fileDialogFileName,
+                            Process = 0,
+                            FileName = Path.GetFileName(fileDialogFileName)
+                        });
+                    }
+                }
             }
 
+            if(!importLogFiles.Any()) return;
+
             // выбираем шаблон парсинга
-            LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importFilePath);
+            LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
             logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             logImportTemplateDialogDialog.ShowDialog();
             if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
@@ -1692,96 +1720,174 @@ namespace LogViewer.MVVM.ViewModels
                 UpdateLogTypeArray(template);
 
                 Pause();
-                FileWatcher fileWatcher = new FileWatcher();
+
+                List<FileWatcher> currentFileWatchers = new List<FileWatcher>();
+
+                // если больше одного файла - показываем диалоговое окно с информацией о процессе импорта каждого файла
+                if (importLogFiles.Count > 1)
+                {
+                    ImportLogsProcessDialog importLogsProcessDialog = new ImportLogsProcessDialog(importLogFiles);
+                    importLogsProcessDialog.Show();
+                    importLogsProcessDialog.ImportProcessDialogResult += (sender, result) =>
+                    {
+                        if (!result) cancelImportLogTokenSource.Cancel();
+                    };
+                }
+
+                List<Task> importLogTasks = new List<Task>();
+
+                IsVisibleProcessBar = true;
+
+                foreach (var importLog in importLogFiles)
+                {
+                    Task importLogTask = new Task(() =>
+                    {
+                        // считываем весь файл
+                        try
+                        {
+                            using (FileStream stream = File.Open(importLog.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                            {
+                                if (logImportTemplateDialogDialog.NeedUpdateFile && FileWatchers.All(x => x.FilePath != importLog.FilePath))
+                                {
+                                    FileWatcher fileWatcher = new FileWatcher();
+                                    fileWatcher.FilePath = importLog.FilePath;
+                                    fileWatcher.Position = stream.Length;
+                                    fileWatcher.Template = template;
+                                    currentFileWatchers.Add(fileWatcher);
+                                }
+
+                                var sb = new StringBuilder();
+                                using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(template.Encoding)))
+                                {
+                                    string line;
+                                    while ((line = sr.ReadLine()) != null && !cancelImportLogTokenSource.IsCancellationRequested)
+                                    {
+                                        //проверяем, текущая запись - это новая запись или продолжение предыдущей.
+                                        if (line.ContainsAnyOf(LogTypeArray))
+                                        {
+                                            if (line.Length != 0)
+                                            {
+                                                try
+                                                {
+                                                    // парсим лог и добавляем в список
+                                                    LogParse(sb.ToString(), template, importLog.FilePath);
+                                                    importLog.Process = (int)((double)sr.BaseStream.Position / sr.BaseStream.Length * 100);
+                                                    ProcessBarValue = (int)(importLogFiles.Sum(x => x.Process) / importLogFiles.Count);
+                                                }
+                                                catch (OutOfMemoryException ex)
+                                                {
+                                                    logger.Error(ex, "An error occured while LogParse");
+                                                    throw;
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    logger.Error(e, "An error occured while LogParse");
+                                                    MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
+                                                    throw;
+                                                }
+                                                sb = new StringBuilder();
+                                            }
+                                            sb.Append(line);
+                                        }
+                                        else
+                                        {
+                                            sb.Append(Environment.NewLine);
+                                            sb.Append(line);
+                                        }
+                                    }
+                                    LogParse(sb.ToString(), template, importLog.FilePath);
+                                }
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            logger.Error(e, "An error occured while reading log file");
+                        }
+                    });
+
+                    importLogTasks.Add(importLogTask);
+                }
+
+                // тут делаем очередь на максимально 2 загружаемых файла единовременно, т.к. иначе все виснет к херам
                 Task.Run(() =>
                 {
-                    IsVisibleProcessBar = true;
+                    int index = 0;
+                    int workingThreads = 0;
 
-                    // считываем весь файл
+                    while (index != importLogTasks.Count)
+                    {
+                        if (workingThreads >= 2)
+                        {
+                            Thread.Sleep(500);
+                            continue;
+                        }
+
+                        importLogTasks[index].Start();
+                        importLogTasks[index].ContinueWith(x =>
+                        {
+                            workingThreads--;
+                        });
+                        index++;
+                        workingThreads++;
+                    }
+                });
+
+                Task.WhenAll(importLogTasks).ContinueWith(x =>
+                {
                     try
                     {
-                        using (FileStream stream = File.Open(importFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                        if (cancelImportLogTokenSource.IsCancellationRequested)
                         {
-                            if (logImportTemplateDialogDialog.NeedUpdateFile && FileWatchers.All(x => x.FilePath != importFilePath))
+                            // удаляем из дерева логов все ветки, относящиеся к импортируемымы файлам
+                            foreach (var importLogFile in importLogFiles)
                             {
-                                fileWatcher.FilePath = importFilePath;
-                                fileWatcher.Position = stream.Length;
-                                fileWatcher.Template = template;
-                                FileWatchers.Add(fileWatcher);
-                                OnPropertyChanged(nameof(FileWatchers));
+                                var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
+                                if (currentNode != null) ClearChildrenLoggers(currentNode);
                             }
-
-                            var sb = new StringBuilder();
-                            using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(template.Encoding)))
-                            {
-                                string line;
-                                while ((line = sr.ReadLine()) != null)
-                                {
-                                    //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                                    if (line.ContainsAnyOf(LogTypeArray))
-                                    {
-                                        if (line.Length != 0)
-                                        {
-                                            try
-                                            {
-                                                // парсим лог и добавляем в список
-                                                LogParse(sb.ToString(), template);
-                                                ProcessBarValue = (int)((double)sr.BaseStream.Position / sr.BaseStream.Length * 100);
-                                            }
-                                            catch (OutOfMemoryException ex)
-                                            {
-                                                logger.Error(ex, "An error occured while LogParse");
-                                                throw;
-                                            }
-                                            catch (Exception e)
-                                            {
-                                                logger.Error(e, "An error occured while LogParse");
-                                                MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
-                                                throw;
-                                            }
-                                            sb = new StringBuilder();
-                                        }
-                                        sb.Append(line);
-                                    }
-                                    else
-                                    {
-                                        sb.Append(Environment.NewLine);
-                                        sb.Append(line);
-                                    }
-                                }
-                                LogParse(sb.ToString(), template);
-                            }
+                            importData.Clear();
+                            return;
                         }
 
                         var allLogsTemp = allLogs.ToList();
-                        allLogsTemp.AddRange(importData);
                         var logsTemp = Logs.ToList();
-                        logsTemp.AddRange(importData.Where(l => SelectedMinLogLevel.HasFlag(l.Level) && !exceptLoggers.Contains(l.FullPath)));
+
+                        foreach (var importLog in importLogFiles)
+                        {
+                            allLogsTemp.AddRange(importData[importLog.FilePath]);
+                            logsTemp.AddRange(importData[importLog.FilePath].Where(l => SelectedMinLogLevel.HasFlag(l.Level) && !exceptLoggers.Contains(l.FullPath)));
+                        }
+
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            Logs = new AsyncObservableCollection<LogMessage>(logsTemp.OrderBy(x => x.Time));
-                            allLogs = new AsyncObservableCollection<LogMessage>(allLogsTemp.OrderBy(x => x.Time));
+                            Logs = new AsyncObservableCollection<LogMessage>(logsTemp.OrderBy(l => l.Time));
+                            allLogs = new AsyncObservableCollection<LogMessage>(allLogsTemp.OrderBy(l => l.Time));
                         });
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        logger.Error(e, "An error occured while reading log file");
+                        logger.Error(ex, "An error occured while add imported logs to list");
                     }
                     finally
                     {
-                        importData.Clear();
+                        foreach (var idata in importData)
+                            idata.Value.Clear();
+
                         CleanIsEnabled = allLogs.Any();
                         GC.Collect();
                         GC.WaitForFullGCComplete();
                         IsVisibleProcessBar = false;
-                    }
-                }).ContinueWith(x =>
-                {
-                    if (logImportTemplateDialogDialog.NeedUpdateFile)
-                    {
-                        StartReadFromFileIsEnabled = false;
-                        fileWatcher.FileChanged += FileWatcherOnFileChanged;
-                        fileWatcher.StartWatch();
+
+                        if (logImportTemplateDialogDialog.NeedUpdateFile)
+                        {
+                            StartReadFromFileIsEnabled = false;
+                            foreach (var fileWatcher in currentFileWatchers)
+                            {
+                                FileWatchers.Add(fileWatcher);
+                                fileWatcher.FileChanged += FileWatcherOnFileChanged;
+                                fileWatcher.StartWatch();
+                                OnPropertyChanged(nameof(FileWatchers));
+                            }
+                        }
                     }
                 });
             }
@@ -2562,7 +2668,7 @@ namespace LogViewer.MVVM.ViewModels
         /// <summary>
         /// Считываем в конечный массив инфу из пришедших строк
         /// </summary>
-        private void LogParse(String line, LogTemplate template)
+        private void LogParse(String line, LogTemplate template, string importFilePath)
         {
             if (string.IsNullOrEmpty(line))
                 return;
@@ -2604,7 +2710,7 @@ namespace LogViewer.MVVM.ViewModels
                     ProcessID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.processid) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.processid]]) : (int?)null,
                 };
                 BuildTreeByMessage(lm, false);
-                importData.Add(lm);
+                importData[importFilePath].Add(lm);
             });
         }
 
@@ -2695,7 +2801,7 @@ namespace LogViewer.MVVM.ViewModels
                                     try
                                     {
                                         // парсим лог и добавляем в список
-                                        LogParse(sb.ToString(), watcher.Template);
+                                        LogParse(sb.ToString(), watcher.Template, watcher.FilePath);
                                     }
                                     catch (OutOfMemoryException ex)
                                     {
@@ -2718,12 +2824,12 @@ namespace LogViewer.MVVM.ViewModels
                                 sb.Append(line);
                             }
                         }
-                        LogParse(sb.ToString(), watcher.Template);
+                        LogParse(sb.ToString(), watcher.Template, watcher.FilePath);
                     }
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        foreach (var logMessage in importData)
+                        foreach (var logMessage in importData[watcher.FilePath])
                         {
                             allLogs.Add(logMessage);
                             if (SelectedMinLogLevel.HasFlag(logMessage.Level) && !exceptLoggers.Contains(logMessage.FullPath))
@@ -2738,11 +2844,26 @@ namespace LogViewer.MVVM.ViewModels
             }
             finally
             {
-                importData.Clear();
+                importData[watcher.FilePath].Clear();
                 CleanIsEnabled = allLogs.Any();
                 GC.Collect();
                 GC.WaitForFullGCComplete();
             }
+        }
+
+        /// <summary>
+        /// Проверяет, есть ли данный файл в дикшионари importData
+        /// </summary>
+        /// <param name="filePath">Путь к файлу</param>
+        /// <returns></returns>
+        private bool CheckFileExistsInImportLogs(string filePath)
+        {
+            if (importData.ContainsKey(filePath))
+            {
+                MessageBox.Show(string.Format(Locals.FileAlreadyAdded, filePath));
+                return true;
+            }
+            return false;
         }
 
         #endregion

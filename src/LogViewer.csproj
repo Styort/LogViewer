@@ -31,8 +31,8 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>1.2.6.%2a</ApplicationVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.2.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -154,10 +154,15 @@
     <Compile Include="Localization\TranslationSource.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
     <Compile Include="Helpers\FileWatcher.cs" />
+    <Compile Include="MVVM\Models\ImportLogFile.cs" />
     <Compile Include="MVVM\Models\LogTemplate.cs" />
     <Compile Include="MVVM\Models\LogTemplateItemInfo.cs" />
     <Compile Include="MVVM\Models\ReleaseNotes.cs" />
+    <Compile Include="MVVM\ViewModels\ImportLogsProcessViewModel.cs" />
     <Compile Include="MVVM\ViewModels\ReleaseNotesViewModel.cs" />
+    <Compile Include="MVVM\Views\ImportLogsProcessDialog.xaml.cs">
+      <DependentUpon>ImportLogsProcessDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\Views\LogImportTemplateDialog.xaml.cs">
       <DependentUpon>LogImportTemplateDialog.xaml</DependentUpon>
     </Compile>
@@ -195,6 +200,10 @@
     <Compile Include="MVVM\TreeView\CheckBoxId.cs" />
     <Compile Include="MVVM\TreeView\Node.cs" />
     <Compile Include="UDPPacketsParser.cs" />
+    <Page Include="MVVM\Views\ImportLogsProcessDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MVVM\Views\NewUpdateAvailableDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

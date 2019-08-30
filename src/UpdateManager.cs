@@ -20,82 +20,113 @@ namespace LogViewer
     /// <summary>
     /// Управляет загрузкой и установкой обновлений
     /// </summary>
-    public class UpdateManager : IDisposable
+    public static class UpdateManager
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         private const int CHECK_UPDATE_PERIOD = 600000;
-        private Timer updateTimer;
-        
+        private static Timer updateTimer;
+        private static ApplicationDeployment applicationDeployment;
+
         /// <summary>
         /// Запускает проверку наличия обновлений
         /// </summary>
-        public void StartCheckUpdate()
+        public static void StartCheckUpdate()
         {
             logger.Debug("StartCheckUpdate");
 
-            updateTimer = new Timer(CheckUpdate, null, 0, CHECK_UPDATE_PERIOD);
+            updateTimer = new Timer(UpdaterPeriodicProcess, null, 0, CHECK_UPDATE_PERIOD);
         }
 
         /// <summary>
         /// Останавливает проверку на наличие обновлений
         /// </summary>
-        public void StopCheckUpdate()
+        public static void StopCheckUpdate()
         {
             logger.Debug("StopCheckUpdate");
             updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         /// <summary>
-        /// Проверяет наличие обновлений
+        /// Проверка наличия новых обновлений
         /// </summary>
-        private void CheckUpdate(object state)
+        /// <returns></returns>
+        public static bool CheckForUpdates()
+        {
+            if (ApplicationDeployment.IsNetworkDeployed)
+            {
+                UpdateCheckInfo info = applicationDeployment.CheckForDetailedUpdate();
+                return info.UpdateAvailable;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Установить новое обновление
+        /// </summary>
+        public static void InstallNewUpdate()
         {
             try
             {
-                if (ApplicationDeployment.IsNetworkDeployed)
+                UpdateCheckInfo info = applicationDeployment.CheckForDetailedUpdate();
+                if (info.UpdateAvailable)
                 {
-                    ApplicationDeployment ad = ApplicationDeployment.CurrentDeployment;
-                    ad.UpdateCompleted += OnUpdateCompleted;
-                    UpdateCheckInfo info = ad.CheckForDetailedUpdate();
-                    if (info.UpdateAvailable)
+                    applicationDeployment.UpdateCompleted += OnUpdateCompleted;
+                    logger.Debug($"New update available: {info.AvailableVersion}");
+                    Application.Current.Dispatcher.Invoke(() =>
                     {
-                        logger.Debug($"New update available: {info.AvailableVersion}");
-                        Application.Current.Dispatcher.Invoke(() =>
+                        if (ShowNewUpdateDialog(info))
                         {
-                            NewUpdateAvailableDialog newUpdateAvailableDialog = new NewUpdateAvailableDialog(info);
-                            newUpdateAvailableDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-                            newUpdateAvailableDialog.Owner = Application.Current.MainWindow;
-                            newUpdateAvailableDialog.ShowDialog();
-
-                            if (newUpdateAvailableDialog.DialogResult.HasValue &&
-                                newUpdateAvailableDialog.DialogResult.Value)
-                            {
-                                logger.Debug("Start update async");
-                                ad.UpdateAsync();
-                            }
-                            else
-                            {
-                                logger.Debug("Update scheduled at next launch");
-                                StopCheckUpdate();
-                            }
-                        });
-                    }
+                            logger.Debug("Start update async");
+                            applicationDeployment.UpdateAsync();
+                        }
+                        else
+                        {
+                            logger.Debug("Update scheduled at next launch");
+                            StopCheckUpdate();
+                            applicationDeployment.UpdateCompleted -= OnUpdateCompleted;
+                        }
+                    });
                 }
             }
-            catch (Exception ex)
+            catch (Exception e)
             {
-                logger.Debug(ex, "An error occurred while check for new updates");
+                logger.Warn(e, "An error occurred while install new new update");
             }
         }
 
-        private bool isUpdated;
+        /// <summary>
+        /// Показывает окно с информацией по обновлению
+        /// </summary>
+        /// <param name="info">Информация по обновлению</param>
+        /// <returns></returns>
+        private static bool ShowNewUpdateDialog(UpdateCheckInfo info)
+        {
+            NewUpdateAvailableDialog newUpdateAvailableDialog = new NewUpdateAvailableDialog(info);
+            newUpdateAvailableDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            newUpdateAvailableDialog.Owner = Application.Current.MainWindow;
+            newUpdateAvailableDialog.ShowDialog();
+            return newUpdateAvailableDialog.DialogResult.HasValue && newUpdateAvailableDialog.DialogResult.Value;
+        }
 
-        private void OnUpdateCompleted(object sender, AsyncCompletedEventArgs e)
+        /// <summary>
+        /// Проверяет наличие обновлений
+        /// </summary>
+        public static void UpdaterPeriodicProcess(object state)
+        {
+            if (!CheckForUpdates()) return;
+            InstallNewUpdate();
+        }
+
+        private static bool isUpdated;
+
+        private static void OnUpdateCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (isUpdated) return;
 
-            logger.Debug($"Update successfully intalled with cancelled - {e.Cancelled}, error - {e.Error}, state - {e.UserState}");
+            logger.Debug($"Update successfully installed with cancelled - {e.Cancelled}, error - {e.Error}, state - {e.UserState}");
             StopCheckUpdate();
+            applicationDeployment.UpdateCompleted -= OnUpdateCompleted;
             isUpdated = true;
 
             if (e.Error != null)
@@ -123,7 +154,7 @@ namespace LogViewer
         /// <summary>
         /// Выполняет перезагрузку приложения после успешного обновления
         /// </summary>
-        private void RestartClickOnceApplication()
+        private static void RestartClickOnceApplication()
         {
             logger.Debug("RestartClickOnceApplication");
             try
@@ -159,7 +190,7 @@ namespace LogViewer
             }
         }
 
-        public void Dispose()
+        public static void Dispose()
         {
             updateTimer?.Dispose();
         }

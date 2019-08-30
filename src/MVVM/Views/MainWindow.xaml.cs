@@ -341,11 +341,11 @@ namespace LogViewer.MVVM.Views
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files != null && files.Any())
                 {
-                    var file = files.FirstOrDefault(x => Path.GetExtension(x) == ".txt" ||
-                                                         Path.GetExtension(x) == ".log");
-                    if (file != null)
+                    var logFiles = files.Where(x => Path.GetExtension(x) == ".txt" ||
+                                                Path.GetExtension(x) == ".log");
+                    if (logFiles.Any())
                     {
-                        ((LogViewModel)this.DataContext).ImportLogs(file);
+                        ((LogViewModel)this.DataContext).ImportLogs(logFiles);
                     }
                 }
             }

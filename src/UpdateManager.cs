@@ -34,6 +34,9 @@ namespace LogViewer
         {
             logger.Debug("StartCheckUpdate");
 
+            if (ApplicationDeployment.IsNetworkDeployed)
+                applicationDeployment = ApplicationDeployment.CurrentDeployment;
+
             updateTimer = new Timer(UpdaterPeriodicProcess, null, 0, CHECK_UPDATE_PERIOD);
         }
 
@@ -52,9 +55,11 @@ namespace LogViewer
         /// <returns></returns>
         public static bool CheckForUpdates()
         {
-            if (ApplicationDeployment.IsNetworkDeployed)
+            logger.Debug("CheckForUpdates");
+            if (ApplicationDeployment.IsNetworkDeployed && applicationDeployment != null)
             {
                 UpdateCheckInfo info = applicationDeployment.CheckForDetailedUpdate();
+                logger.Debug($"CheckForUpdates info = {info}");
                 return info.UpdateAvailable;
             }
 

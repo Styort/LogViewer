@@ -1675,39 +1675,23 @@ namespace LogViewer.MVVM.ViewModels
 
             if (obj is IEnumerable<string> filesPath && filesPath.All(x => !string.IsNullOrEmpty(x) && File.Exists(x)))
             {
-                foreach (var filePath in filesPath)
-                {
-                    if (CheckFileExistsInImportLogs(filePath)) continue;
-
-                    importData.Add(filePath, new List<LogMessage>());
-                    importLogFiles.Add(new ImportLogFile
-                    {
-                        FilePath = filePath,
-                        Process = 0,
-                        FileName = Path.GetFileName(filePath)
-                    });
-                }
+                AddImportedLogFiles(filesPath, importLogFiles);
+            }
+            else if (obj is string logPath && !string.IsNullOrEmpty(logPath) && File.Exists(logPath))
+            {
+                if (CheckFileExistsInImportLogs(logPath)) return;
+                AddImportedLogFile(logPath, importLogFiles);
             }
             else
             {
-                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*", Multiselect = true};
+                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*", Multiselect = true };
                 if (fileDialog.ShowDialog() == true)
                 {
-                    foreach (var fileDialogFileName in fileDialog.FileNames)
-                    {
-                        if (CheckFileExistsInImportLogs(fileDialogFileName)) continue;
-                        importData.Add(fileDialogFileName, new List<LogMessage>());
-                        importLogFiles.Add(new ImportLogFile
-                        {
-                            FilePath = fileDialogFileName,
-                            Process = 0,
-                            FileName = Path.GetFileName(fileDialogFileName)
-                        });
-                    }
+                    AddImportedLogFiles(fileDialog.FileNames, importLogFiles);
                 }
             }
 
-            if(!importLogFiles.Any()) return;
+            if (!importLogFiles.Any()) return;
 
             // выбираем шаблон парсинга
             LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
@@ -1782,6 +1766,7 @@ namespace LogViewer.MVVM.ViewModels
                                                 catch (Exception e)
                                                 {
                                                     logger.Error(e, "An error occured while LogParse");
+                                                    importData.Remove(importLog.FilePath);
                                                     MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
                                                     throw;
                                                 }
@@ -1891,6 +1876,26 @@ namespace LogViewer.MVVM.ViewModels
                     }
                 });
             }
+        }
+
+        private void AddImportedLogFiles(IEnumerable<string> filesPath, List<ImportLogFile> importLogFiles)
+        {
+            foreach (var filePath in filesPath)
+            {
+                if (CheckFileExistsInImportLogs(filePath)) continue;
+                AddImportedLogFile(filePath, importLogFiles);
+            }
+        }
+
+        private void AddImportedLogFile(string filePath, List<ImportLogFile> importLogFiles)
+        {
+            importData.Add(filePath, new List<LogMessage>());
+            importLogFiles.Add(new ImportLogFile
+            {
+                FilePath = filePath,
+                Process = 0,
+                FileName = Path.GetFileName(filePath)
+            });
         }
 
         /// <summary>
@@ -2695,9 +2700,14 @@ namespace LogViewer.MVVM.ViewModels
                 if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.ticks))
                     dataFormat = eImportTemplateParameters.ticks;
 
-                var date = dataFormat != eImportTemplateParameters.ticks
-                    ? DateTime.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""))
-                    : new DateTime(long.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", "")));
+                var date = dataFormat == eImportTemplateParameters.ticks
+                    ? new DateTime(long.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", "")))
+                    : DateTime.TryParse(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""), out DateTime dt)
+                        ? dt
+                        : DateTime.TryParseExact(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""),
+                            "yy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt2)
+                            ? dt2
+                            : DateTime.Now;
 
                 var lm = new LogMessage
                 {

@@ -1,6 +1,20 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.7.3 (26.02.2020)</Version>
+    <FixedBugs>
+      <string>Исправлен баг с загрузкой даты экспортируемых логов</string>
+      <string>Исправлен баг с повторным импортом лог файла после неудачного парсинга из-за неверного формата шаблона</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
+    <Version>1.2.7.2 (08.30.2019)</Version>
+    <FixedBugs>
+      <string>Поправлены баги с проверкой обновлений</string>
+      <string>Исправлен баг с открытием лога через 'Открыть с помощью'</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.7.1 (08.30.2019)</Version>
     <FixedBugs>
       <string>Хотфикс падения приложения версии 1.2.7.0 при старте</string>

@@ -32,12 +32,19 @@ namespace LogViewer
         /// </summary>
         public static void StartCheckUpdate()
         {
-            logger.Debug("StartCheckUpdate");
+            try
+            {
+                logger.Debug("StartCheckUpdate");
 
-            if (ApplicationDeployment.IsNetworkDeployed)
-                applicationDeployment = ApplicationDeployment.CurrentDeployment;
+                if (ApplicationDeployment.IsNetworkDeployed)
+                    applicationDeployment = ApplicationDeployment.CurrentDeployment;
 
-            updateTimer = new Timer(UpdaterPeriodicProcess, null, 0, CHECK_UPDATE_PERIOD);
+                updateTimer = new Timer(UpdaterPeriodicProcess, null, 0, CHECK_UPDATE_PERIOD);
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "An error occurred while StartCheckUpdate");
+            }
         }
 
         /// <summary>
@@ -46,7 +53,7 @@ namespace LogViewer
         public static void StopCheckUpdate()
         {
             logger.Debug("StopCheckUpdate");
-            updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            updateTimer?.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         /// <summary>
@@ -55,12 +62,19 @@ namespace LogViewer
         /// <returns></returns>
         public static bool CheckForUpdates()
         {
-            logger.Debug("CheckForUpdates");
-            if (ApplicationDeployment.IsNetworkDeployed && applicationDeployment != null)
+            try
             {
-                UpdateCheckInfo info = applicationDeployment.CheckForDetailedUpdate();
-                logger.Debug($"CheckForUpdates info = {info}");
-                return info.UpdateAvailable;
+                logger.Debug("CheckForUpdates");
+                if (ApplicationDeployment.IsNetworkDeployed && applicationDeployment != null)
+                {
+                    UpdateCheckInfo info = applicationDeployment.CheckForDetailedUpdate();
+                    logger.Debug($"CheckForUpdates info = {info}");
+                    return info.UpdateAvailable;
+                }
+            }
+            catch (Exception e)
+            {
+                logger.Error(e, "An error occurred while CheckForUpdates");
             }
 
             return false;

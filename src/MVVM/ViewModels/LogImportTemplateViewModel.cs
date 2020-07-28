@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -100,7 +101,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         [XmlIgnore]
-        public List<string> EncodingList { get; set; } = 
+        public List<string> EncodingList { get; set; } =
             new List<string>
             {
                 "UTF-8",
@@ -259,7 +260,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand AddTemplateItemCommand => addTemplateItemCommand ?? (addTemplateItemCommand = new RelayCommand(AddTemplateItem));
         public RelayCommand RemoveTemplateItemCommand => removeTemplateItemCommand ?? (removeTemplateItemCommand = new RelayCommand(RemoveTemplateItem));
         public RelayCommand OkCommand => okCommand ?? (okCommand = new RelayCommand(Confirm));
-        public RelayCommand SaveTemplateSettingsCommand => saveTemplateSettingsCommand ?? (saveTemplateSettingsCommand = new RelayCommand(SaveTemplateSettings));
+        public RelayCommand SaveTemplateSettingsCommand => saveTemplateSettingsCommand ?? (saveTemplateSettingsCommand = new RelayCommand(SaveTemplateSettingsToFile));
 
         #endregion
 
@@ -272,73 +273,27 @@ namespace LogViewer.MVVM.ViewModels
         {
             LogTemplate.Encoding = SelectedEncoding;
 
-            // выбран один из популярных типов шаблонов
-            if (IsPopularTemplateSelected)
-            {
-                for (int i = 0; i < SelectedPopularTemplate.Count; i++)
-                {
-                    LogTemplate.TemplateParameterses.Add(SelectedPopularTemplate[i], i);
-                }
-            }
-
-            // выбран автоматический подбор шаблона
             if (IsAutomaticDetectTemplateSelected)
             {
-                //выбираем первое сообщение 
-                string firstMessage = GetFirstMessage();
-
-                if (string.IsNullOrWhiteSpace(firstMessage))
-                {
-                    MessageBox.Show(Locals.AutomaticDetectTemplateError);
-                    return;
-                }
-
-                //пытаемся сопоставить
-                if (!TryDetectTemplate(firstMessage))
-                {
-                    MessageBox.Show(Locals.AutomaticDetectTemplateError);
-                    return;
-                }
+                if (TryGetLogTemplateByAutodetect()) return;
             }
-
-            // выбрана генерация шаблона пользователем
-            if (IsUserTemplateSelected)
+            else if (IsPopularTemplateSelected)
+                GetLogTemplateByPopularTemplates();
+            else if (IsLayoutStringTemplateSelected)
+                GetLogTemplateByParsingLayoutPattern();
+            else if (IsUserTemplateSelected)
             {
-                LogTemplate.Separator = TemplateSeparator;
-                for (int i = 0; i < TemplateLogItems.Count; i++)
-                {
-                    try
-                    {
-                        LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter.Parameter, i);
-                    }
-                    catch (Exception exception)
-                    {
-                        LogTemplate.TemplateParameterses.Clear();
-                        MessageBox.Show(Locals.MessageTemplateErrorSameParameters);
-                        return;
-                    }
-                }
-            }
-
-            if (IsLayoutStringTemplateSelected)
-            {
-                ParseTemplateString();
+                if (TryGetLogTemplateByUserGeneratedPattern()) return;
             }
 
             DialogResult = true;
         }
 
-        /// <summary>
-        /// Добавление параметра шаблона
-        /// </summary>
         private void AddTemplateItem()
         {
             TemplateLogItems.Add(new LogTemplateItem());
         }
 
-        /// <summary>
-        /// Удаление параметра шаблона
-        /// </summary>
         private void RemoveTemplateItem(object obj)
         {
             LogTemplateItem item = obj as LogTemplateItem;
@@ -346,10 +301,7 @@ namespace LogViewer.MVVM.ViewModels
                 TemplateLogItems.Remove(item);
         }
 
-        /// <summary>
-        /// Сохраняет настройки конфигурации шаблонов в файл
-        /// </summary>
-        private void SaveTemplateSettings()
+        private void SaveTemplateSettingsToFile()
         {
             try
             {
@@ -373,10 +325,55 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Работа с подбором шаблона
 
-        /// <summary>
-        /// Разбираем строку лейаута
-        /// </summary>
-        private void ParseTemplateString()
+
+        private bool TryGetLogTemplateByAutodetect()
+        {
+            //выбираем первое сообщение 
+            string firstMessage = GetFirstLogMessage();
+
+            if (string.IsNullOrWhiteSpace(firstMessage))
+            {
+                MessageBox.Show(Locals.AutomaticDetectTemplateError);
+                return true;
+            }
+
+            //пытаемся сопоставить
+            if (!TryDetectTemplate(firstMessage))
+            {
+                MessageBox.Show(Locals.AutomaticDetectTemplateError);
+                return true;
+            }
+            return false;
+        }
+
+        private bool TryGetLogTemplateByUserGeneratedPattern()
+        {
+            LogTemplate.Separator = TemplateSeparator;
+            for (int i = 0; i < TemplateLogItems.Count; i++)
+            {
+                try
+                {
+                    LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter.Parameter, i);
+                }
+                catch (Exception exception)
+                {
+                    LogTemplate.TemplateParameterses.Clear();
+                    MessageBox.Show(Locals.MessageTemplateErrorSameParameters);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void GetLogTemplateByPopularTemplates()
+        {
+            for (int i = 0; i < SelectedPopularTemplate.Count; i++)
+            {
+                LogTemplate.TemplateParameterses.Add(SelectedPopularTemplate[i], i);
+            }
+        }
+
+        private void GetLogTemplateByParsingLayoutPattern()
         {
             SimpleLayout layout = new SimpleLayout(TemplateString);
             var elements = layout.Renderers.Where(x => !(x is LiteralLayoutRenderer)).ToList();
@@ -433,19 +430,16 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        /// <summary>
-        /// Получаем первое сообщение лога из выбранного файла
-        /// </summary>
-        private string GetFirstMessage()
+        private string GetFirstLogMessage()
         {
-            string[] LogTypeArraySeparator1 =
+            string[] logTypeArraySeparator1 =
             {
                 ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;",
                 ";Fatal", ";Error", ";Warn", ";Trace", ";Debug", ";Info",
                 "Fatal;", "Error;", "Warn;", "Trace;", "Debug;", "Info;"
             };
 
-            string[] LogTypeArraySeparator2 =
+            string[] logTypeArraySeparator2 =
             {
                 "|Fatal|", "|Error|", "|Warn|", "|Trace|", "|Debug|", "|Info|",
                 "|Fatal", "|Error", "|Warn", "|Trace", "|Debug", "|Info",
@@ -461,7 +455,7 @@ namespace LogViewer.MVVM.ViewModels
                     while ((line = sr.ReadLine()) != null)
                     {
                         //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                        if (line.ContainsAnyOf(LogTypeArraySeparator1) || line.ContainsAnyOf(LogTypeArraySeparator2))
+                        if (line.ContainsAnyOf(logTypeArraySeparator1) || line.ContainsAnyOf(logTypeArraySeparator2))
                         {
                             if (sb.Length != 0) break;
                             sb.Append(line);
@@ -540,6 +534,10 @@ namespace LogViewer.MVVM.ViewModels
             {
                 if (DateTime.TryParse(logSplit[i], out DateTime date))
                     return i;
+
+                if (DateTime.TryParseExact(logSplit[i], "yy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    return i;
+
 
                 if (long.TryParse(logSplit[i], out long tickDateTime))
                 {

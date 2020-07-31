@@ -73,13 +73,7 @@ namespace LogViewer.MVVM.Views
             var args = Environment.GetCommandLineArgs().Where(x => x.EndsWith(".txt") || x.EndsWith(".log")).ToList();
             if (args.Any())
             {
-                foreach (var arg in args)
-                {
-                    if (arg.EndsWith(".txt") || arg.EndsWith(".log"))
-                    {
-                        ((LogViewModel)DataContext).ImportLogs(arg);
-                    }
-                }
+                ((LogViewModel)DataContext).ImportLogs(args.Where(x=>x.EndsWith(".txt") || x.EndsWith(".log")));
                 return;
             }
 

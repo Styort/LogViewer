@@ -1662,6 +1662,8 @@ namespace LogViewer.MVVM.ViewModels
         private Dictionary<string, List<LogMessage>> importData = new Dictionary<string, List<LogMessage>>();
         private CancellationTokenSource cancelImportLogTokenSource = new CancellationTokenSource();
 
+        private SemaphoreSlim importLogSemaphoreSlim;
+
         /// <summary>
         /// Загружает логи из файла
         /// </summary>
@@ -1692,6 +1694,8 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             if (!importLogFiles.Any()) return;
+
+            importLogSemaphoreSlim = new SemaphoreSlim(2, 2);
 
             // выбираем шаблон парсинга
             LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
@@ -1729,9 +1733,12 @@ namespace LogViewer.MVVM.ViewModels
                         // считываем весь файл
                         try
                         {
+                            importLogSemaphoreSlim.Wait();
+
                             using (FileStream stream = File.Open(importLog.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                             {
-                                if (logImportTemplateDialogDialog.NeedUpdateFile && FileWatchers.All(x => x.FilePath != importLog.FilePath))
+                                if (logImportTemplateDialogDialog.NeedUpdateFile &&
+                                    FileWatchers.All(x => x.FilePath != importLog.FilePath))
                                 {
                                     FileWatcher fileWatcher = new FileWatcher();
                                     fileWatcher.FilePath = importLog.FilePath;
@@ -1744,7 +1751,8 @@ namespace LogViewer.MVVM.ViewModels
                                 using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(template.Encoding)))
                                 {
                                     string line;
-                                    while ((line = sr.ReadLine()) != null && !cancelImportLogTokenSource.IsCancellationRequested)
+                                    while ((line = sr.ReadLine()) != null &&
+                                           !cancelImportLogTokenSource.IsCancellationRequested)
                                     {
                                         //проверяем, текущая запись - это новая запись или продолжение предыдущей.
                                         if (line.ContainsAnyOf(LogTypeArray))
@@ -1755,8 +1763,12 @@ namespace LogViewer.MVVM.ViewModels
                                                 {
                                                     // парсим лог и добавляем в список
                                                     LogParse(sb.ToString(), template, importLog.FilePath);
-                                                    importLog.Process = (int)((double)sr.BaseStream.Position / sr.BaseStream.Length * 100);
-                                                    ProcessBarValue = (int)(importLogFiles.Sum(x => x.Process) / importLogFiles.Count);
+                                                    importLog.Process =
+                                                        (int) ((double) sr.BaseStream.Position / sr.BaseStream.Length *
+                                                               100);
+                                                    ProcessBarValue =
+                                                        (int) (importLogFiles.Sum(x => x.Process) / importLogFiles.Count
+                                                        );
                                                 }
                                                 catch (OutOfMemoryException ex)
                                                 {
@@ -1766,8 +1778,16 @@ namespace LogViewer.MVVM.ViewModels
                                                 catch (Exception e)
                                                 {
                                                     logger.Error(e, "An error occured while LogParse");
+
+                                                    // удаляем инфу о лог-файле
                                                     importData.Remove(importLog.FilePath);
-                                                    MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
+                                                    var currentNode =
+                                                        Loggers[0].Children
+                                                            .FirstOrDefault(l => l.Logger == importLog.FilePath);
+                                                    if (currentNode != null) ClearChildrenLoggers(currentNode);
+
+                                                    MessageBox.Show(
+                                                        $"{Locals.IncorrectLogMessageTemplateMessageBoxInfo}\n{importLog.FilePath}");
                                                     throw;
                                                 }
                                                 sb = new StringBuilder();
@@ -1786,36 +1806,18 @@ namespace LogViewer.MVVM.ViewModels
                         }
                         catch (Exception e)
                         {
+                            importLogSemaphoreSlim.Release();
                             logger.Error(e, "An error occured while reading log file");
+                        }
+                        finally
+                        {
+                            importLogSemaphoreSlim.Release();
                         }
                     });
 
                     importLogTasks.Add(importLogTask);
+                    importLogTask.Start();
                 }
-
-                // тут делаем очередь на максимально 2 загружаемых файла единовременно, т.к. иначе все виснет к херам
-                Task.Run(() =>
-                {
-                    int index = 0;
-                    int workingThreads = 0;
-
-                    while (index != importLogTasks.Count)
-                    {
-                        if (workingThreads >= 2)
-                        {
-                            Thread.Sleep(500);
-                            continue;
-                        }
-
-                        importLogTasks[index].Start();
-                        importLogTasks[index].ContinueWith(x =>
-                        {
-                            workingThreads--;
-                        });
-                        index++;
-                        workingThreads++;
-                    }
-                });
 
                 Task.WhenAll(importLogTasks).ContinueWith(x =>
                 {
@@ -1823,7 +1825,7 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         if (cancelImportLogTokenSource.IsCancellationRequested)
                         {
-                            // удаляем из дерева логов все ветки, относящиеся к импортируемымы файлам
+                            // удаляем из дерева логов все ветки, относящиеся к импортируемым файлам
                             foreach (var importLogFile in importLogFiles)
                             {
                                 var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
@@ -1838,6 +1840,7 @@ namespace LogViewer.MVVM.ViewModels
 
                         foreach (var importLog in importLogFiles)
                         {
+                            if (!importData.ContainsKey(importLog.FilePath)) continue;
                             allLogsTemp.AddRange(importData[importLog.FilePath]);
                             logsTemp.AddRange(importData[importLog.FilePath].Where(l => SelectedMinLogLevel.HasFlag(l.Level) && !exceptLoggers.Contains(l.FullPath)));
                         }
@@ -2797,6 +2800,7 @@ namespace LogViewer.MVVM.ViewModels
                 using (FileStream stream = File.Open(watcher.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
                     stream.Position = watcher.Position;
+
                     var sb = new StringBuilder();
                     using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(watcher.Template.Encoding)))
                     {

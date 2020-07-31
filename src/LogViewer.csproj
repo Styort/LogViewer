@@ -31,7 +31,7 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.2.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -64,7 +64,7 @@
     <StartupObject>LogViewer.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>86B9BBE4CD9E32C2E7E37F8C86BD028F7421E8EC</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>FA6A27C2F266912E968584442E1A9439D9794016</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>LogViewer_TemporaryKey.pfx</ManifestKeyFile>
@@ -80,6 +80,12 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>LogViewer_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="CustomColorPicker">

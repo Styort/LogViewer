@@ -1,6 +1,15 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.7.4 (28.07.2020)</Version>
+    <FixedBugs>
+      <string>Правка багов в импорте сразу нескольких файлов лога</string>
+    </FixedBugs>
+    <NewFeatures>
+      <string>Добавлена возможность импорта сразу нескольких лог-файлов при драг-энд-дропе файлов на иконку приложения (или через командную строку)</string>
+    </NewFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.7.3 (26.02.2020)</Version>
     <FixedBugs>
       <string>Исправлен баг с загрузкой даты экспортируемых логов</string>

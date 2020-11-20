@@ -63,9 +63,9 @@ namespace LogViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon log {
+        internal static System.Drawing.Icon log1 {
             get {
-                object obj = ResourceManager.GetObject("log", resourceCulture);
+                object obj = ResourceManager.GetObject("log1", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }

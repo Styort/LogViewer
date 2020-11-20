@@ -31,7 +31,7 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.2.7.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -299,9 +299,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="log.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <None Include="log.ico" />
     <Content Include="ReleaseNotes.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

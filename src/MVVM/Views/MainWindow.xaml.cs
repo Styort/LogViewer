@@ -94,7 +94,7 @@ namespace LogViewer.MVVM.Views
                 {
                     trayIcon = new NotifyIcon
                     {
-                        Icon = Properties.Resources.log,
+                        Icon = Properties.Resources.log1,
                         Visible = true,
                         Text = "Log Viewer"
                     };

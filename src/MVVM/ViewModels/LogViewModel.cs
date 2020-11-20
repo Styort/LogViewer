@@ -873,7 +873,7 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         // осуществляем поиск всему списку логов
                         IEnumerable<LogMessage> searchResult =
-                            Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                            allLogs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
                                 IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
 
                         // открывать результат поиска в отдельном окне или нет

@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
-    <Version>1.2.7.5 (20.11.2020)</Version>
+    <Version>1.2.8.0 (20.11.2020)</Version>
     <FixedBugs>
       <string>Правка бага при множественном поиске и не очистке результата поиска</string>
+      <string>Правка бага с добавлением логов при использовании фильтров для подгружаемых из файла логов</string>
+      <string>Правка бага с вылетом приложения при открытии окна с выбором интервала времени (Ctrl+T/Ctrl+Shift+T)</string>
     </FixedBugs>
   </ReleaseNotes>
   <ReleaseNotes>

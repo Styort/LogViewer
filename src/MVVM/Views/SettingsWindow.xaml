@@ -266,7 +266,7 @@
                                     <TextBlock Text="GitHub"/>
                                 </Hyperlink>
                                 <materialDesign:Chip.Icon>
-                                    <materialDesign:PackIcon Kind="GithubCircle" />
+                                    <materialDesign:PackIcon Kind="Github" />
                                 </materialDesign:Chip.Icon>
                             </materialDesign:Chip>
 

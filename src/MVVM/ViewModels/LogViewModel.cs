@@ -1764,10 +1764,10 @@ namespace LogViewer.MVVM.ViewModels
                                                     // парсим лог и добавляем в список
                                                     LogParse(sb.ToString(), template, importLog.FilePath);
                                                     importLog.Process =
-                                                        (int) ((double) sr.BaseStream.Position / sr.BaseStream.Length *
+                                                        (int)((double)sr.BaseStream.Position / sr.BaseStream.Length *
                                                                100);
                                                     ProcessBarValue =
-                                                        (int) (importLogFiles.Sum(x => x.Process) / importLogFiles.Count
+                                                        (int)(importLogFiles.Sum(x => x.Process) / importLogFiles.Count
                                                         );
                                                 }
                                                 catch (OutOfMemoryException ex)
@@ -2596,48 +2596,7 @@ namespace LogViewer.MVVM.ViewModels
 
                         Application.Current.Dispatcher.Invoke(() =>
                         {
-                            // если в конкретный момент идет процесс поиска, то добавляем в отображаемый список только то, что проходит условия поиска,
-                            // а все кидаем в общий список
-                            if (IsSearchProcess)
-                            {
-                                lock (logsLockObj) allLogs.Add(log);
-
-                                if (isTimeIntervalProcess)
-                                {
-                                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval && !exceptLoggers.Contains(log.FullPath))
-                                        lock (logsLockObj) Logs.Add(log);
-                                    return;
-                                }
-
-                                if (toggledMarksCount > 0)
-                                {
-                                    var currentNode = GetNodeFromMessage(log);
-                                    log.ToggleMark = currentNode.ToggleMark;
-                                }
-
-                                if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                                    && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
-                                {
-                                    lock (logsLockObj) Logs.Add(log);
-                                    return;
-                                }
-                                if (IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                                    && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
-                                {
-                                    lock (logsLockObj) Logs.Add(log);
-                                    return;
-                                }
-                                if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
-                                {
-                                    lock (logsLockObj) Logs.Add(log);
-                                    return;
-                                }
-                                if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
-                                {
-                                    lock (logsLockObj) Logs.Add(log);
-                                    return;
-                                }
-                            }
+                            if (AddLogBySearchFilters(log)) return;
 
                             BuildTreeByMessage(log);
                         });
@@ -2648,6 +2607,59 @@ namespace LogViewer.MVVM.ViewModels
                     logger.Warn(e, $"An error occurred while ReadLogs from port {parser.Port}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Добавление логов в список на отображения только если подходит по фильтрам
+        /// </summary>
+        /// <returns></returns>
+        private bool AddLogBySearchFilters(LogMessage log)
+        {
+            // если в конкретный момент идет процесс поиска, то добавляем в отображаемый список только то, что проходит условия поиска,
+            // а все кидаем в общий список
+            if (IsSearchProcess)
+            {
+                lock (logsLockObj) allLogs.Add(log);
+
+                if (isTimeIntervalProcess)
+                {
+                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval && !exceptLoggers.Contains(log.FullPath))
+                        lock (logsLockObj) Logs.Add(log);
+                    return true;
+                }
+
+                if (toggledMarksCount > 0)
+                {
+                    var currentNode = GetNodeFromMessage(log);
+                    log.ToggleMark = currentNode.ToggleMark;
+                }
+
+                if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
+                    && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
+                {
+                    lock (logsLockObj) Logs.Add(log);
+                    return true;
+                }
+                if (IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
+                    && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
+                {
+                    lock (logsLockObj) Logs.Add(log);
+                    return true;
+                }
+                if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch) &&
+                    !exceptLoggers.Contains(log.FullPath))
+                {
+                    lock (logsLockObj) Logs.Add(log);
+                    return true;
+                }
+                if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()) &&
+                    !exceptLoggers.Contains(log.FullPath))
+                {
+                    lock (logsLockObj) Logs.Add(log);
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -2845,9 +2857,10 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         foreach (var logMessage in importData[watcher.FilePath])
                         {
-                            allLogs.Add(logMessage);
-                            if (SelectedMinLogLevel.HasFlag(logMessage.Level) && !exceptLoggers.Contains(logMessage.FullPath))
+                            if(!IsSearchProcess)
                                 Logs.Add(logMessage);
+                            else
+                                AddLogBySearchFilters(logMessage);
                         }
                     });
                 }

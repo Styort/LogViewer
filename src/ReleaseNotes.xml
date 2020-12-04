@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.8.1 (04.12.2020)</Version>
+    <FixedBugs>
+      <string>Правка бага с фильтрацией добавляемых логов по уровню логгирования из подгружаемого файла</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.8.0 (20.11.2020)</Version>
     <FixedBugs>
       <string>Правка бага при множественном поиске и не очистке результата поиска</string>

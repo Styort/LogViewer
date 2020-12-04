@@ -2617,6 +2617,7 @@ namespace LogViewer.MVVM.ViewModels
         {
             // если в конкретный момент идет процесс поиска, то добавляем в отображаемый список только то, что проходит условия поиска,
             // а все кидаем в общий список
+
             if (IsSearchProcess)
             {
                 lock (logsLockObj) allLogs.Add(log);
@@ -2857,10 +2858,9 @@ namespace LogViewer.MVVM.ViewModels
                     {
                         foreach (var logMessage in importData[watcher.FilePath])
                         {
-                            if(!IsSearchProcess)
-                                Logs.Add(logMessage);
-                            else
-                                AddLogBySearchFilters(logMessage);
+                            if (AddLogBySearchFilters(logMessage)) continue;
+
+                            BuildTreeByMessage(logMessage);
                         }
                     });
                 }

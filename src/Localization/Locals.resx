@@ -631,4 +631,16 @@
   <data name="NoUpdatesFound" xml:space="preserve">
     <value>Обновлений не найдено</value>
   </data>
+  <data name="MessageHighlightByReceiverColor" xml:space="preserve">
+    <value>Выделять сообщения цветом приемника:</value>
+  </data>
+  <data name="MessageHighlightByReceiverColorTooltip" xml:space="preserve">
+    <value>В качестве цвета выделения будет взят цвет приемника с прозрачностью.</value>
+  </data>
+  <data name="SeparateIpLoggersByPort" xml:space="preserve">
+    <value>Разделять UDP логгеры по портам:</value>
+  </data>
+  <data name="SeparateIpLoggersByPortTooltip" xml:space="preserve">
+    <value>Разделять UDP логгеры по портам</value>
+  </data>
 </root>

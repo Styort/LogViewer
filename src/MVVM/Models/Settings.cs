@@ -41,9 +41,32 @@ namespace LogViewer.MVVM.Models
         };
         public List<Receiver> Receivers { get; set; } = new List<Receiver>();
         public List<IgnoredIPAddress> IgnoredIPs { get; set; } = new List<IgnoredIPAddress>();
+
+        /// <summary>
+        /// Показывать ли колонку с источником 
+        /// </summary>
         public bool IsShowSourceColumn { get; set; } = false;
+        
+        /// <summary>
+        /// Показывать ли колонку с номером потока
+        /// </summary>
         public bool IsShowThreadColumn { get; set; } = true;
+
+        /// <summary>
+        /// Показывать ли прогресс в таскбаре
+        /// </summary>
         public bool IsShowTaskbarProgress { get; set; } = true;
+
+        /// <summary>
+        /// Подсвечивать сообщение тем же цветом, что и цвет ресивера, но только с прозрачностью
+        /// </summary>
+        public bool ShowMessageHighlightByReceiverColor { get; set; } = false;
+
+        /// <summary>
+        /// Разделять IP логгеры по портам
+        /// </summary>
+        public bool IsSeparateIpLoggersByPort { get; set; } = false;
+
 
         private Settings()
         {
@@ -145,6 +168,8 @@ namespace LogViewer.MVVM.Models
                         Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
                         Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
                         Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
+                        Instance.ShowMessageHighlightByReceiverColor = settings.ShowMessageHighlightByReceiverColor;
+                        Instance.IsSeparateIpLoggersByPort = settings.IsSeparateIpLoggersByPort;
                         Instance.Language = settings.Language;
                     }
 

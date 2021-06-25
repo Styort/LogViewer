@@ -2060,22 +2060,45 @@ namespace LogViewer.MVVM.ViewModels
             var node = obj as Node;
             if (node != null)
             {
+                var receiverColor = allLogs.FirstOrDefault(x => x.FullPath == node.Logger)?.Receiver?.Color?.Clone();
+
+                bool isSet = false;
+
                 SolidColorBrush currentColor;
                 if (node.ToggleMark.Color.ToString() != TRANSPARENT_COLOR)
                 {
                     toggledMarksCount--;
-                    currentColor = new SolidColorBrush(Colors.Transparent);
+
+                    if (Settings.Instance.ShowMessageHighlightByReceiverColor)
+                    {
+                        if (receiverColor != null)
+                        {
+                            receiverColor.Opacity = 0.3;
+                            currentColor = receiverColor;
+                        }
+                        else
+                        {
+                            currentColor = new SolidColorBrush(Colors.Transparent);
+                        }
+                    }
+                    else
+                    {
+                        currentColor = new SolidColorBrush(Colors.Transparent);
+                    }
                 }
                 else
                 {
+                    isSet = true;
                     toggledMarksCount++;
                     // назначаем выделение
                     Random rnd = new Random();
                     Color randomColor = Color.FromRgb((byte)rnd.Next(256), (byte)rnd.Next(256), (byte)rnd.Next(256));
                     currentColor = new SolidColorBrush(randomColor);
+                    currentColor.Opacity = 0.1;
                 }
 
-                node.ToggleMark = currentColor;
+                node.ToggleMark = isSet ? currentColor : new SolidColorBrush(Colors.Transparent);
+
                 lock (logsLockObj)
                 {
                     foreach (var logMessage in Logs.Where(x => x.FullPath.Contains(node.Logger)))
@@ -2591,6 +2614,12 @@ namespace LogViewer.MVVM.ViewModels
                             {
                                 log.Receiver.Color = currentReceiver.Color;
                                 log.Receiver.Name = currentReceiver.Name;
+                                if (Settings.Instance.ShowMessageHighlightByReceiverColor)
+                                {
+                                    var messageColor = log.Receiver.Color.Clone();
+                                    messageColor.Opacity = 0.1;
+                                    log.ToggleMark = messageColor;
+                                }
                             });
                         }
 

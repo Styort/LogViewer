@@ -28,7 +28,7 @@ namespace LogViewer
 
         public int Port { get; }
         public bool IsInitialized { get; private set; }
-        public List<IgnoredIPAddress> IgnoredIPs { get; set; } 
+        public List<IgnoredIPAddress> IgnoredIPs { get; set; }
 
         public UDPPacketsParser(Receiver receiver)
         {
@@ -78,7 +78,7 @@ namespace LogViewer
                 incomingLog = encoding.GetString(receiveBytes);
 
                 log = ReadXmlLog(incomingLog);
-                log.Address = remoteIpEndPoint.Address.ToString();
+                log.Address = Settings.Instance.IsSeparateIpLoggersByPort ? $"{remoteIpEndPoint.Address.ToString()}:{Port}" : remoteIpEndPoint.Address.ToString();
                 log.Receiver.Port = this.Port;
             }
             catch (SocketException)
@@ -90,7 +90,7 @@ namespace LogViewer
                 log = new LogMessage
                 {
                     Logger = "UDP Logger",
-                    Address = remoteIpEndPoint.Address.ToString(),
+                    Address = Settings.Instance.IsSeparateIpLoggersByPort ? $"{remoteIpEndPoint.Address.ToString()}:{Port}" : remoteIpEndPoint.Address.ToString(),
                     Thread = -1,
                     Message = $"An error occurred while parsing log: {incomingLog}. {Environment.NewLine} Exception: {e}",
                     Time = DateTime.Now,

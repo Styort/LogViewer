@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.8.3 (25.06.2021)</Version>
+    <NewFeatures>
+      <string>Добавлена возможность подсвечивания сообщений по цвету приёмника. Регулируется в настройках. По-умолчанию выключено.</string>
+      <string>Добавлено всплывающее окно с названием приёмника при наведении на цвет приёмника.</string>
+      <string>Разделение логерово портам приёмников.</string>
+    </NewFeatures>
+    <ChangedFeatures>
+      <string>При подсвечивании сообщений из списка логгеров цвет подсвечивания теперь проставляется с прозрачностью 0.3.</string>
+    </ChangedFeatures>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.8.1 (04.12.2020)</Version>
     <FixedBugs>
       <string>Правка бага с фильтрацией добавляемых логов по уровню логгирования из подгружаемого файла</string>

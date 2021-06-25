@@ -280,7 +280,7 @@
             </ListView.ItemsPanel>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}"/>
+                    <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}" />
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
                     <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Width="{Binding Path=ThreadColumnWidth}" Header="{localization:LocBinding Thread}" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>

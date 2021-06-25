@@ -10,7 +10,7 @@
         xmlns:dropDownCustomColorPicker="clr-namespace:DropDownCustomColorPicker;assembly=CustomColorPicker"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding Settings}" Height="560" Width="600" MinHeight="505">
+        Title="{localization:LocBinding Settings}" Height="630" Width="600" MinHeight="505">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -58,6 +58,8 @@
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="40"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
 
                         <TextBlock Text="{localization:LocBinding AutoStartReadingLogsAtStartup}" ToolTip="{localization:LocBinding AutoStartReadingLogsAtStartupToolTip}" VerticalAlignment="Center" />
@@ -107,6 +109,12 @@
                             <dropDownCustomColorPicker:CustomColorPicker Width="50" Margin="0,5,0,0" VerticalAlignment="Center" SelectedColor="{Binding Path=SelectedFontColor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Style="{StaticResource SetDefaultButtonStyle}" Command="{Binding Path=SetDefaultColorCommand}" CommandParameter="Font"/>
                         </StackPanel>
+
+                        <TextBlock Text="{localization:LocBinding MessageHighlightByReceiverColor}" ToolTip="{localization:LocBinding MessageHighlightByReceiverColorTooltip}" VerticalAlignment="Center"  Grid.Row="12"/>
+                        <ToggleButton Grid.Row="12" Grid.Column="1" IsChecked="{Binding Path=ShowMessageHighlightByReceiverColor}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
+
+                        <TextBlock Text="{localization:LocBinding SeparateIpLoggersByPort}" ToolTip="{localization:LocBinding SeparateIpLoggersByPortTooltip}" VerticalAlignment="Center"  Grid.Row="13"/>
+                        <ToggleButton Grid.Row="13" Grid.Column="1" IsChecked="{Binding Path=IsSeparateIpLoggersByPort}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
                     </Grid>
                 </GroupBox>
             </TabItem>
@@ -235,7 +243,7 @@
                                         </DataTrigger>
                                     </DataTemplate.Triggers>
                                 </DataTemplate>
-                            </ListBox.ItemTemplate>    
+                            </ListBox.ItemTemplate>
                         </ListBox>
                     </Grid>
                 </GroupBox>

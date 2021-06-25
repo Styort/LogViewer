@@ -632,4 +632,16 @@ Restart application?</value>
   <data name="NoUpdatesFound" xml:space="preserve">
     <value>No updates found</value>
   </data>
+  <data name="MessageHighlightByReceiverColor" xml:space="preserve">
+    <value>Highlight messages by receiver color:</value>
+  </data>
+  <data name="MessageHighlightByReceiverColorTooltip" xml:space="preserve">
+    <value>Highlight messages by receiver color</value>
+  </data>
+  <data name="SeparateIpLoggersByPort" xml:space="preserve">
+    <value>Separate UDP Loggers by ports:</value>
+  </data>
+  <data name="SeparateIpLoggersByPortTooltip" xml:space="preserve">
+    <value>Separate UDP loggers by ports</value>
+  </data>
 </root>

@@ -882,6 +882,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Выделять сообщения цветом приемника:.
+        /// </summary>
+        internal static string MessageHighlightByReceiverColor {
+            get {
+                return ResourceManager.GetString("MessageHighlightByReceiverColor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В качестве цвета выделения будет взят цвет приемника с прозрачностью..
+        /// </summary>
+        internal static string MessageHighlightByReceiverColorTooltip {
+            get {
+                return ResourceManager.GetString("MessageHighlightByReceiverColorTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Шаблон сообщения не должен содержать одинаковых параметров!.
         /// </summary>
         internal static string MessageTemplateErrorSameParameters {
@@ -1221,6 +1239,24 @@ namespace LogViewer.Localization {
         internal static string SelectTimeInterval {
             get {
                 return ResourceManager.GetString("SelectTimeInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Разделять UDP логгеры по портам:.
+        /// </summary>
+        internal static string SeparateIpLoggersByPort {
+            get {
+                return ResourceManager.GetString("SeparateIpLoggersByPort", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Разделять UDP логгеры по портам.
+        /// </summary>
+        internal static string SeparateIpLoggersByPortTooltip {
+            get {
+                return ResourceManager.GetString("SeparateIpLoggersByPortTooltip", resourceCulture);
             }
         }
         

@@ -38,6 +38,8 @@ namespace LogViewer.MVVM.ViewModels
         private bool isShowSourceColumn;
         private bool isShowThreadColumn;
         private bool isShowTaskbarProgress;
+        private bool showMessageHighlightByReceiverColor;
+        private bool isSeparateIpLoggersByPort;
 
         #region Свойства
 
@@ -396,12 +398,33 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public bool IsShowTaskbarProgress
         {
             get => isShowTaskbarProgress;
             set
             {
                 isShowTaskbarProgress = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowMessageHighlightByReceiverColor
+        {
+            get => showMessageHighlightByReceiverColor;
+            set
+            {
+                showMessageHighlightByReceiverColor = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsSeparateIpLoggersByPort
+        {
+            get => isSeparateIpLoggersByPort;
+            set
+            {
+                isSeparateIpLoggersByPort = value;
                 OnPropertyChanged();
             }
         }
@@ -452,6 +475,8 @@ namespace LogViewer.MVVM.ViewModels
                 IsShowSourceColumn = Settings.Instance.IsShowSourceColumn;
                 IsShowThreadColumn = Settings.Instance.IsShowThreadColumn;
                 IsShowTaskbarProgress = Settings.Instance.IsShowTaskbarProgress;
+                ShowMessageHighlightByReceiverColor = Settings.Instance.ShowMessageHighlightByReceiverColor;
+                IsSeparateIpLoggersByPort = Settings.Instance.IsSeparateIpLoggersByPort;
                 SelectedLanguage = TranslationSource.Instance.CurrentCulture;
 
                 var theme = Themes.FirstOrDefault(x => x.Name == Settings.Instance.CurrentTheme.Name);
@@ -547,6 +572,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.IsShowSourceColumn = IsShowSourceColumn;
             Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;
             Settings.Instance.IsShowTaskbarProgress = IsShowTaskbarProgress;
+            Settings.Instance.ShowMessageHighlightByReceiverColor = ShowMessageHighlightByReceiverColor;
             Settings.Instance.CurrentTheme = SelectedTheme;
             Settings.Instance.DataFormat = SelectedDataFormat;
             Settings.Instance.IgnoredIPs = IgnoredIpAdresses.ToList();
@@ -557,6 +583,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.DeletedMessagesCount = DeletedMessagesCount;
             Settings.Instance.OnlyOneAppInstance = OnlyOneAppInstance;
             Settings.Instance.Language = SelectedLanguage.Name;
+            Settings.Instance.IsSeparateIpLoggersByPort = IsSeparateIpLoggersByPort;
 
             if (!string.IsNullOrEmpty(currentThemeName) && SelectedTheme.Name != currentThemeName)
                 Settings.Instance.ApplyTheme();

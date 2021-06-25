@@ -518,7 +518,7 @@
     </DataTemplate>
 
     <DataTemplate x:Key="ReceiverColorColumnDataTemplate">
-        <Grid Background="{Binding Path=Receiver.Color}">
+        <Grid Background="{Binding Path=Receiver.Color}" ToolTip="{Binding Path=Receiver.Name}">
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>

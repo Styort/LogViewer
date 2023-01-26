@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <ReleaseNotes>
+    <Version>1.2.8.4 (26.01.2023)</Version>
+    <FixedBugs>
+      <string>Исправлен баг с поиском логов с фильтрами</string>
+    </FixedBugs>
+  </ReleaseNotes>
+  <ReleaseNotes>
     <Version>1.2.8.3 (25.06.2021)</Version>
     <NewFeatures>
       <string>Добавлена возможность подсвечивания сообщений по цвету приёмника. Регулируется в настройках. По-умолчанию выключено.</string>

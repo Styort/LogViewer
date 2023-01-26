@@ -869,11 +869,12 @@ namespace LogViewer.MVVM.ViewModels
 
                     IsSearchProcess = !isOpenInAnotherWinow;
 
-                    if (allLogs.Any())
+                    if (Logs.Any())
                     {
+
                         // осуществляем поиск всему списку логов
                         IEnumerable<LogMessage> searchResult =
-                            allLogs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                            Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
                                 IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
 
                         // открывать результат поиска в отдельном окне или нет

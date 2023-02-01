@@ -11,9 +11,23 @@ Software support searching, filtering and many other useful feature.
  * Import logs from a file.
  * Export logs to a file.
  * Sorting, filtering (logger tree, log level) and searching.
+ * Highlight search text when searching.
  * List of ignored IP addresses for receiving logs from UDP.
  * Multiple receiver support.
  * Many color themes ;)
+ 
+## Hotkeys
+ * Ctrl+F - Show search result
+ * Ctrl+Shift+F - Show search result in another window (tips: double clicking on a log message in another window will highlight the log message in the main window)
+ * Shift+F - Find previous log message using search filter
+ * Shift+D - Find next log message using search filter
+ * Ctrl+R - Clear all logs
+ * Ctrl+R - Clear search text and search result
+ * Ctrl+W - Go to next warning message
+ * Ctrl+E - Go to next error message
+ * Ctrl+T - Go to Timestamp
+ * Ctrl+Shift+T - Set time interval
+ 
  
 ## Screenshots
 Main window <br>

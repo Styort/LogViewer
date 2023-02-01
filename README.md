@@ -17,18 +17,18 @@ Software support searching, filtering and many other useful feature.
  
 ## Screenshots
 Main window <br>
-![Alt text](/docs/1-main.png?raw=true) 
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/1-main.png?raw=true) 
 
-![Alt text](/docs/4-main-searching.png?raw=true)
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/4-main-searching.png?raw=true)
 
 Dialogs <br>
-![Alt text](/docs/2-log-dialog.png?raw=true)
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/2-log-dialog.png?raw=true)
 
-![Alt text](/docs/3-logger-dialog.png?raw=true)
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/3-logger-dialog.png?raw=true)
 
 Settings <br>
-![Alt text](/docs/5-settings-main.png?raw=true) 
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/5-settings-main.png?raw=true) 
 
-![Alt text](/docs/6-settings-receivers.png?raw=true)
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/6-settings-receivers.png?raw=true)
 
-![Alt text](/docs/7-settings-ignored-ips.png?raw=true)
+![Loading...](https://github.com/Styort/LogViewer/blob/master/docs/7-settings-ignored-ips.png?raw=true)

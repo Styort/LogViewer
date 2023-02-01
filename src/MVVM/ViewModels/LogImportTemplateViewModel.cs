@@ -462,8 +462,7 @@ namespace LogViewer.MVVM.ViewModels
                         }
                         else
                         {
-                            sb.Append(Environment.NewLine);
-                            sb.Append(line);
+                            sb.AppendLine(line);
                         }
                     }
                 }
@@ -513,8 +512,8 @@ namespace LogViewer.MVVM.ViewModels
 
             LogTemplate.TemplateParameterses.Add(dataParameter, dateTimeIndex);
             LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, logLevelIndex);
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, otherIndexes.Last());
-            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, otherIndexes[otherIndexes.Count - 2]);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, otherIndexes[1]);
+            LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, otherIndexes.First());
 
             if (intIndexes.Count > 0)
             {

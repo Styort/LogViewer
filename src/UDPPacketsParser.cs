@@ -179,6 +179,7 @@ namespace LogViewer
             try
             {
                 IsInitialized = false;
+                udpClient?.Close();
                 udpClient?.Dispose();
                 udpClient = null;
             }

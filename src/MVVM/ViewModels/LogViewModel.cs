@@ -1797,8 +1797,7 @@ namespace LogViewer.MVVM.ViewModels
                                         }
                                         else
                                         {
-                                            sb.Append(Environment.NewLine);
-                                            sb.Append(line);
+                                            sb.AppendLine(line);
                                         }
                                     }
                                     LogParse(sb.ToString(), template, importLog.FilePath);
@@ -2564,12 +2563,17 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void ReadLogs(UDPPacketsParser parser)
         {
+            logger.Debug($"{nameof(ReadLogs)} from port '{parser.Port}'");
             while (true)
             {
                 try
                 {
                     if (cancellationToken.Token.IsCancellationRequested)
+                    {
+                        logger.Debug($"{nameof(ReadLogs)} from port '{parser.Port}' cancel requested");
                         return;
+                    }
+
                     var log = parser.GetLog();
 
                     // если учитывается максимальный буффер сообщений и он превыше - удаляем первое сообщение

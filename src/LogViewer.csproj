@@ -33,7 +33,7 @@
     <PublisherName>Sinev Viktor</PublisherName>
     <SuiteName>Log Viewer</SuiteName>
     <MinimumRequiredVersion>1.2.1.0</MinimumRequiredVersion>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>5</ApplicationRevision>
     <ApplicationVersion>1.2.8.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -66,7 +66,7 @@
     <StartupObject>LogViewer.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>E5CABCF5E9A99D68E5FC64AA359DB85FD8CCD4C4</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>3FE3A9EC7F02CF4421E16973FA4615D34B333302</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>LogViewer_TemporaryKey.pfx</ManifestKeyFile>

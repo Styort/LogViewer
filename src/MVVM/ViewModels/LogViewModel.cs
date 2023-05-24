@@ -1756,7 +1756,7 @@ namespace LogViewer.MVVM.ViewModels
                                            !cancelImportLogTokenSource.IsCancellationRequested)
                                     {
                                         //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                                        if (line.ContainsAnyOf(LogTypeArray))
+                                        if (line.ContainsAnyOf(LogTypeArray, true))
                                         {
                                             if (line.Length != 0)
                                             {
@@ -2763,7 +2763,7 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     Address = importFilePath,
                     Time = date,
-                    Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.level]]],
+                    Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.level]].ToPascalCase()],
                     Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.threadid) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.threadid]]) : -1,
                     Message = message.ToString(),
                     Logger = log[template.TemplateParameterses[eImportTemplateParameters.logger]],
@@ -2855,7 +2855,7 @@ namespace LogViewer.MVVM.ViewModels
                         while ((line = sr.ReadLine()) != null)
                         {
                             //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                            if (line.ContainsAnyOf(LogTypeArray))
+                            if (line.ContainsAnyOf(LogTypeArray, true))
                             {
                                 if (line.Length != 0)
                                 {

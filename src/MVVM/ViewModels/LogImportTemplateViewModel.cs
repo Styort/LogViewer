@@ -455,7 +455,7 @@ namespace LogViewer.MVVM.ViewModels
                     while ((line = sr.ReadLine()) != null)
                     {
                         //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                        if (line.ContainsAnyOf(logTypeArraySeparator1) || line.ContainsAnyOf(logTypeArraySeparator2))
+                        if (line.ContainsAnyOf(logTypeArraySeparator1, true) || line.ContainsAnyOf(logTypeArraySeparator2, true))
                         {
                             if (sb.Length != 0) break;
                             sb.Append(line);
@@ -577,7 +577,7 @@ namespace LogViewer.MVVM.ViewModels
             var index = -1;
             for (int i = 0; i < logSplit.Length; i++)
             {
-                if (Enum.TryParse(logSplit[i], out eLogLevel level))
+                if (Enum.TryParse(logSplit[i].ToPascalCase(), out eLogLevel level))
                     return i;
             }
             return index;

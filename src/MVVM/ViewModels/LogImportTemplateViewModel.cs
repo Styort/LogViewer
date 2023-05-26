@@ -17,6 +17,7 @@ using NLog.Fluent;
 using NLog.LayoutRenderers;
 using NLog.Layouts;
 using System.Runtime.Serialization;
+using NLog.LayoutRenderers.Wrappers;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -376,7 +377,7 @@ namespace LogViewer.MVVM.ViewModels
         private void GetLogTemplateByParsingLayoutPattern()
         {
             SimpleLayout layout = new SimpleLayout(TemplateString);
-            var elements = layout.Renderers.Where(x => !(x is LiteralLayoutRenderer)).ToList();
+            var elements = layout.Renderers;
 
             // минимальное количество элементов - 4 (дата, уровень лога, логгер и сообщение)
             if (elements.Count < 4)
@@ -389,45 +390,85 @@ namespace LogViewer.MVVM.ViewModels
 
             LogTemplate.Separator = separator != null ? separator.Render(LogEventInfo.CreateNullEvent()) : ";";
 
+            foreach (var layoutRenderer in elements)
+            {
+                if (layoutRenderer is LiteralLayoutRenderer) continue;
+
+                var currentLayoutRenderer = layoutRenderer is WrapperLayoutRendererBase rb &&
+                                            rb.Inner is SimpleLayout sl ? sl.Renderers.Count > 0 ? sl.Renderers[0] : layoutRenderer : layoutRenderer;
+
+                var i = elements.IndexOf(layoutRenderer);
+
+                if (currentLayoutRenderer is LevelLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, i);
+                if (currentLayoutRenderer is CallSiteLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.сallsite, i);
+                if (currentLayoutRenderer is MessageLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, i);
+                if (currentLayoutRenderer is ThreadIdLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, i);
+                if (currentLayoutRenderer is ProcessIdLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.processid, i);
+                if (currentLayoutRenderer is LoggerNameLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, i);
+                if (currentLayoutRenderer is TimeLayoutRenderer || currentLayoutRenderer is DateLayoutRenderer ||
+                    currentLayoutRenderer is LongDateLayoutRenderer || currentLayoutRenderer is ShortDateLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
+                if (currentLayoutRenderer is TicksLayoutRenderer)
+                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ticks, i);
+            }
+
             // в строке могут быть кастомные лейауты и SimpleLayout их не добавляет, надо распарсить самому и сверить
-            var tElements = TemplateString.Split(new[] { LogTemplate.Separator }, StringSplitOptions.None)
-                .Where(x => !string.IsNullOrEmpty(x)).ToList();
+            //var tElements = TemplateString.Split(new[] { LogTemplate.Separator }, StringSplitOptions.None)
+            //    .Where(x => !string.IsNullOrEmpty(x)).ToList();
 
             // индекс в массиве elements
-            int j = 0;
-            for (int i = 0; i < tElements.Count; i++)
-            {
-                var modifyIndex = tElements[i].IndexOf(":");
-                if (modifyIndex > 0)
-                    tElements[i] = tElements[i].Substring(0, modifyIndex);
-                tElements[i] = tElements[i].Replace("}", "");
+            //int j = 0;
+            //for (int i = 0; i < tElements.Count; i++)
+            //{
+            //    var modifyIndex = tElements[i].IndexOf(":");
+            //    if (modifyIndex > 0)
+            //        tElements[i] = tElements[i].Substring(0, modifyIndex);
+            //    tElements[i] = tElements[i].Replace("}", "");
 
-                if (j <= elements.Count)
-                {
-                    var layoutRender = elements[j].ToString();
-                    if (!layoutRender.Contains(tElements[i]))
-                        continue;
-                }
+            //    if (j <= elements.Count)
+            //    {
+            //        var layoutRender = elements[j].ToString();
+            //        if (!layoutRender.Contains(tElements[i]))
+            //            continue;
+            //    }
 
-                if (elements[j] is LevelLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, i);
-                if (elements[j] is CallSiteLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.сallsite, i);
-                if (elements[j] is MessageLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, i);
-                if (elements[j] is ThreadIdLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, i);
-                if (elements[j] is ProcessIdLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.processid, i);
-                if (elements[j] is LoggerNameLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, i);
-                if (elements[j] is TimeLayoutRenderer || elements[j] is DateLayoutRenderer ||
-                    elements[j] is LongDateLayoutRenderer || elements[j] is ShortDateLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
-                if (elements[j] is TicksLayoutRenderer)
-                    LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ticks, i);
-                j++;
-            }
+            //    var type = elements[j].GetType();
+
+            //    var element = (elements[j] is WrapperLayoutRendererBase rbWrapper ? rbWrapper.Inner : elements[j] as Layout);
+            //    if (elements[j] is WrapperLayoutRendererBase rb)
+            //    {
+            //        var innerType = rb.Inner.GetType();
+            //        if(rb.Inner is SimpleLayout sl)
+            //        {
+            //            elements[j] = sl.Renderers[0];
+            //        }
+            //    }
+
+            //    if (elements[j] is LevelLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.level, i);
+            //    if (elements[j] is CallSiteLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.сallsite, i);
+            //    if (elements[j] is MessageLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.message, i);
+            //    if (elements[j] is ThreadIdLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.threadid, i);
+            //    if (elements[j] is ProcessIdLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.processid, i);
+            //    if (elements[j] is LoggerNameLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.logger, i);
+            //    if (elements[j] is TimeLayoutRenderer || elements[j] is DateLayoutRenderer ||
+            //        elements[j] is LongDateLayoutRenderer || elements[j] is ShortDateLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.date, i);
+            //    if (elements[j] is TicksLayoutRenderer)
+            //        LogTemplate.TemplateParameterses.Add(eImportTemplateParameters.ticks, i);
+            //    j++;
+            //}
         }
 
         private string GetFirstLogMessage()

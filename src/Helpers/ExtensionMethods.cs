@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Dispatcher;
 using System.Text;
@@ -91,9 +92,9 @@ namespace LogViewer.Helpers
         /// <param name="line">Строка, в которой ищутся значения массива</param>
         /// <param name="search"></param>
         /// <returns></returns>
-        public static bool ContainsAnyOf(this String line, string[] search)
+        public static bool ContainsAnyOf(this String line, string[] search, bool ignoreCase = false)
         {
-            return search.Any(line.Contains);
+            return search.Any(x=> ignoreCase ? line.ToUpper().Contains(x.ToUpper()) : line.Contains(x));
         }
 
         public static DateTime Truncate(this DateTime dateTime, TimeSpan timeSpan)
@@ -139,6 +140,13 @@ namespace LogViewer.Helpers
                                                                       useRegularExp && Regex.IsMatch(x.Message.ToUpper(), text, RegexOptions.IgnoreCase));
 
             return searchResult;
+        }
+
+        public static string ToPascalCase(this string text)
+        {
+            var yourString = text.ToLower().Replace("_", " ");
+            TextInfo info = CultureInfo.CurrentCulture.TextInfo;
+            return info.ToTitleCase(yourString).Replace(" ", string.Empty);
         }
 
         //public static T DeepClone<T>(T obj)

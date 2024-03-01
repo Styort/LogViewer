@@ -2764,10 +2764,10 @@ namespace LogViewer.MVVM.ViewModels
                     Address = importFilePath,
                     Time = date,
                     Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.level]].ToPascalCase()],
-                    Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.threadid) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.threadid]]) : -1,
+                    Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.threadid) ? int.TryParse(log[template.TemplateParameterses[eImportTemplateParameters.threadid]], out int threadId) ? threadId : -1 : -1,
                     Message = message.ToString(),
                     Logger = log[template.TemplateParameterses[eImportTemplateParameters.logger]],
-                    ProcessID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.processid) ? int.Parse(log[template.TemplateParameterses[eImportTemplateParameters.processid]]) : (int?)null,
+                    ProcessID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.processid) ? int.TryParse(log[template.TemplateParameterses[eImportTemplateParameters.processid]], out int processId) ? processId : (int?)null : (int?)null,
                 };
                 BuildTreeByMessage(lm, false);
                 importData[importFilePath].Add(lm);

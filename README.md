@@ -6,6 +6,8 @@ Software support searching, filtering and many other useful feature.
 
 <a href="https://sourceforge.net/projects/styort-logviewer/files/latest/download"><img alt="Download LogViewer" src="https://a.fsdn.com/con/app/sf-download-button" width=276 height=48 srcset="https://a.fsdn.com/con/app/sf-download-button?button_size=2x 2x"></a>
 
+Overall downloads on sourceforge: <a href="https://sourceforge.net/projects/styort-logviewer/files/latest/download"><img alt="Download Log Viewer (Log4j, NLog)" src="https://img.shields.io/sourceforge/dt/styort-logviewer.svg" ></a>
+
 ## Features
  * Read logs from UDP package by Log4j/NLog template.
  * Import logs from a file.

@@ -1,6 +1,12 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
+		<Version>1.2.8.6 (11.06.2024)</Version>
+		<FixedBugs>
+			<string>Улучшено автоопределение шаблона лога при загрузке логов из файла</string>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
 		<Version>1.2.8.5 (01.03.2024)</Version>
 		<FixedBugs>
 			<string>Поправлена загрузка логов из файла при ручном вводе шаблона записи лога</string>

@@ -572,8 +572,7 @@ namespace LogViewer.MVVM.ViewModels
             var index = -1;
             for (int i = 0; i < logSplit.Length; i++)
             {
-                if (Enum.TryParse(logSplit[i].ToPascalCase(), out eLogLevel level))
-                    return i;
+                if (Enum.IsDefined(typeof(eLogLevel), logSplit[i].ToPascalCase())) return i;
             }
             return index;
         }

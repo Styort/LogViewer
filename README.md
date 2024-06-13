@@ -24,7 +24,7 @@ Overall downloads on sourceforge: <a href="https://sourceforge.net/projects/styo
  * Shift+F - Find previous log message using search filter
  * Shift+D - Find next log message using search filter
  * Ctrl+R - Clear all logs
- * Ctrl+R - Clear search text and search result
+ * Shift+R - Clear search text and search result
  * Ctrl+W - Go to next warning message
  * Ctrl+E - Go to next error message
  * Ctrl+T - Go to Timestamp

@@ -1,6 +1,6 @@
 # LogViewer
 
-LogViewer is a hight performance realtime log viewer via UDP (Chainsaw/NLogViewer) or text file.
+LogViewer is a high performance realtime log viewer via UDP (Chainsaw/NLogViewer) or text file.
 
 ## Download
 

@@ -1,6 +1,6 @@
 # LogViewer
-Reading logs from UDP or text file using the Log4j and NLog template.
-Software support searching, filtering and many other useful feature.
+
+LogViewer is a hight performance realtime log viewer via UDP (Chainsaw/NLogViewer) or text file.
 
 ## Download
 
@@ -9,7 +9,7 @@ Software support searching, filtering and many other useful feature.
 Overall downloads on sourceforge: <a href="https://sourceforge.net/projects/styort-logviewer/files/latest/download"><img alt="Download Log Viewer (Log4j, NLog)" src="https://img.shields.io/sourceforge/dt/styort-logviewer.svg" ></a>
 
 ## Features
- * Read logs from UDP package by Log4j/NLog template.
+ * Read logs via UDP (Chainsaw - NLog, Log4Net, Log4j, etc.).
  * Import logs from a file.
  * Export logs to a file.
  * Sorting, filtering (logger tree, log level) and searching.

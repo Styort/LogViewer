@@ -2,3 +2,4 @@ bin/
 .vs/
 obj/
 LogViewer_TemporaryKey.pfx
+packages/

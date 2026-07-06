@@ -115,7 +115,8 @@ namespace LogViewer
 
                 log.Logger = reader.GetAttribute("logger");
                 log.Level = (eLogLevel)Enum.Parse(typeof(eLogLevel), reader.GetAttribute("level").ToLower().FirstCharToUpper());
-                log.Thread = int.Parse(reader.GetAttribute("thread"));
+                log.Thread = int.TryParse(reader.GetAttribute("thread"), out var threadId)
+                    ? threadId : 0;
 
                 long timeStamp;
                 if (long.TryParse(reader.GetAttribute("timestamp"), out timeStamp))

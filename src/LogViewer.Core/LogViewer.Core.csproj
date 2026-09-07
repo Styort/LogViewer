@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>LogViewer.Core</RootNamespace>
+    <AssemblyName>LogViewer.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\ILogSource.cs" />
+    <Compile Include="Abstractions\ILogParser.cs" />
+    <Compile Include="Abstractions\ILogFilter.cs" />
+    <Compile Include="Abstractions\IReceiverConfig.cs" />
+    <Compile Include="Abstractions\ILogImportService.cs" />
+    <Compile Include="Domain\LogLevel.cs" />
+    <Compile Include="Domain\LogEntry.cs" />
+    <Compile Include="Domain\FilterCriteria.cs" />
+    <Compile Include="Domain\ImportTemplateParameters.cs" />
+    <Compile Include="Domain\LogTemplateDto.cs" />
+    <Compile Include="Domain\LoggerTreeNode.cs" />
+    <Compile Include="Services\StringUtils.cs" />
+    <Compile Include="Services\XmlLogParser.cs" />
+    <Compile Include="Services\TemplateLogParser.cs" />
+    <Compile Include="Services\LogFilter.cs" />
+    <Compile Include="Services\UdpLogSource.cs" />
+    <Compile Include="Services\FileLogSource.cs" />
+    <Compile Include="Services\LogProcessingService.cs" />
+    <Compile Include="Services\LogImportService.cs" />
+    <Compile Include="State\LogSession.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

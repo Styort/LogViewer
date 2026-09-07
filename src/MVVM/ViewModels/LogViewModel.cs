@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -12,6 +12,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using LogViewer.Adapters;
+using LogViewer.Factories;
+using LogViewer.Core.Domain;
+using LogViewer.Core.Abstractions;
+using LogViewer.Core.Services;
+using LogViewer.Core.State;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -26,6 +32,7 @@ using Clipboard = System.Windows.Clipboard;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
+using LogLevel = LogViewer.Core.Domain.LogLevel;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -35,12 +42,18 @@ namespace LogViewer.MVVM.ViewModels
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly object logsLockObj = new object();
         private const int RECEIVER_COLUMN_WIDTH = 15;
         private const string TRANSPARENT_COLOR = "#00FFFFFF";
 
         private bool filterChanged = false;
-        private readonly List<UDPPacketsParser> parsers;
+        private bool _treeCheckJustDone;
+        private readonly List<UdpLogSource> udpSources = new List<UdpLogSource>();
+        private LogSession session;
+        private ILogFilter coreFilter;
+        private LogProcessingService processingService;
+        private CoreToUiAdapter coreToUiAdapter;
+        private ILogImportService logImportService;
+        private readonly UdpSourceFactory udpSourceFactory = new UdpSourceFactory();
 
         // весь список классов, который имеется за текущий сеанс
         private HashSet<string> availableLoggers = new HashSet<string>();
@@ -118,7 +131,6 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        private string[] LogTypeArray = { ";Fatal;", ";Error;", ";Warn;", ";Trace;", ";Debug;", ";Info;" };
         private readonly Dictionary<string, eLogLevel> LogLevelMapping = new Dictionary<string, eLogLevel>
         {
             { "Trace", eLogLevel.Trace },
@@ -133,7 +145,7 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Свойства
 
-        public List<FileWatcher> FileWatchers { get; set; } = new List<FileWatcher>();
+        public List<WatchedFileInfo> FileWatchers { get; set; } = new List<WatchedFileInfo>();
 
         public bool IsSearchProcess
         {
@@ -283,62 +295,8 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 selectedMinLogLevel = value;
+                SyncFilterCriteriaToSession();
                 OnPropertyChanged();
-
-                Task.Run(() =>
-                {
-                    IsVisibleLoader = true;
-                    LastLogMessage = SelectedLog;
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        lock (logsLockObj)
-                        {
-                            if (IsSearchProcess)
-                            {
-                                var searchResult = Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
-                                    IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    Logs = new AsyncObservableCollection<LogMessage>(searchResult);
-                                });
-                            }
-                            else
-                            {
-                                switch (SelectedMinLogLevel)
-                                {
-                                    case eLogLevel.Trace:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                    case eLogLevel.Debug:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !x.Level.HasFlag(eLogLevel.Trace) && !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                    case eLogLevel.Info:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !x.Level.HasFlag(eLogLevel.Debug) && !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                    case eLogLevel.Warn:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !x.Level.HasFlag(eLogLevel.Info) && !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                    case eLogLevel.Error:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !x.Level.HasFlag(eLogLevel.Warn) && !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                    case eLogLevel.Fatal:
-                                        Logs = new AsyncObservableCollection<LogMessage>(allLogs
-                                            .Where(x => !x.Level.HasFlag(eLogLevel.Error) && !exceptLoggers.Contains(x.FullPath)));
-                                        break;
-                                }
-                            }
-                        }
-                    });
-
-                    IsVisibleLoader = false;
-                    SelectedLog = GetLastSelecterOrNearbyMessage();
-                });
             }
         }
 
@@ -616,7 +574,6 @@ namespace LogViewer.MVVM.ViewModels
         {
             Logs = new AsyncObservableCollection<LogMessage>();
             cancellationToken = new CancellationTokenSource();
-            parsers = new List<UDPPacketsParser>();
 
             IconColor = Settings.Instance.CurrentTheme.Color;
             FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
@@ -637,12 +594,161 @@ namespace LogViewer.MVVM.ViewModels
                 Source = "-"
             });
 
-            CreateParsers();
+            session = new LogSession();
+            session.AllowMaxMessageBufferSize = allowMaxMessageBufferSize;
+            session.MaxMessageBufferSize = maxMessageBufferSize;
+            session.DeletedMessagesCount = deletedMessagesCount;
+            coreFilter = new LogFilter();
+            processingService = new LogProcessingService(session, coreFilter);
+            coreToUiAdapter = new CoreToUiAdapter(SynchronizationContext.Current, processingService);
+            coreToUiAdapter.EntryProcessed += OnCoreEntryProcessed;
+            coreToUiAdapter.SessionCleared += OnCoreSessionCleared;
+            coreToUiAdapter.EntriesRemoved += OnCoreEntriesRemoved;
+            coreToUiAdapter.FilteredViewUpdated += OnFilteredViewUpdated;
+            coreToUiAdapter.Subscribe();
+
+            logImportService = new LogImportService(session);
+
+            CreateUdpSourcesFromFactory();
+            SyncFilterCriteriaToSession();
 
             ColorReceiverColumnWidth = receivers.Count == 1 || receivers.Where(r => r.IsActive).All(x => x.Color.Color == Colors.White) ? 0 : RECEIVER_COLUMN_WIDTH;
 
             if (Settings.Instance.AutoStartInStartup && !App.IsManualStartup)
                 Start();
+        }
+
+        private void OnCoreEntryProcessed(object sender, LogEntryProcessedEventArgs e)
+        {
+            if (e?.Entry == null) return;
+            var msg = LogEntryConverter.ToLogMessage(e.Entry, receivers);
+            if (msg == null) return;
+            var currentReceiver = receivers.FirstOrDefault(x => x.Port == e.Entry.ReceiverPort);
+            if (currentReceiver != null)
+            {
+                msg.Receiver.Color = currentReceiver.Color;
+                msg.Receiver.Name = currentReceiver.Name;
+                if (Settings.Instance.ShowMessageHighlightByReceiverColor)
+                {
+                    var messageColor = msg.Receiver.Color.Clone();
+                    messageColor.Opacity = 0.1;
+                    msg.ToggleMark = messageColor;
+                }
+            }
+            allLogs.Add(msg);
+            if (e.IncludedInFilter)
+                Logs.Add(msg);
+            BuildTreeByMessage(msg, true);
+            CleanIsEnabled = allLogs.Any();
+        }
+
+        private void OnCoreSessionCleared(object sender, EventArgs e)
+        {
+            allLogs.Clear();
+            Logs.Clear();
+            availableLoggers.Clear();
+            exceptLoggers.Clear();
+            exceptLoggersWithBuffer.Clear();
+            var root = Loggers[0];
+            root.Children.Clear();
+            CleanIsEnabled = false;
+        }
+
+        private void OnCoreEntriesRemoved(int count)
+        {
+            if (count <= 0) return;
+            LastLogMessage = SelectedLog;
+            var allList = allLogs.ToList();
+            var logsList = Logs.ToList();
+            int removeAll = Math.Min(count, allList.Count);
+            if (removeAll > 0) allList.RemoveRange(0, removeAll);
+            int removeLogs = Math.Min(count, logsList.Count);
+            if (removeLogs > 0) logsList.RemoveRange(0, removeLogs);
+            allLogs = new AsyncObservableCollection<LogMessage>(allList);
+            Logs = new AsyncObservableCollection<LogMessage>(logsList);
+            SelectedLog = GetLastSelecterOrNearbyMessage();
+        }
+
+        private void OnFilteredViewUpdated(object sender, FilteredViewUpdatedEventArgs e)
+        {
+            if (e?.Entries == null) return;
+            var filtered = e.Entries.Select(entry => LogEntryConverter.ToLogMessage(entry, receivers)).Where(m => m != null).ToList();
+            foreach (var msg in filtered)
+            {
+                var rec = receivers.FirstOrDefault(x => x.Port == msg.Receiver?.Port);
+                if (rec != null)
+                {
+                    msg.Receiver.Color = rec.Color;
+                    msg.Receiver.Name = rec.Name;
+                    if (Settings.Instance.ShowMessageHighlightByReceiverColor)
+                    {
+                        var mc = msg.Receiver.Color.Clone();
+                        mc.Opacity = 0.1;
+                        msg.ToggleMark = mc;
+                    }
+                }
+            }
+            Logs = new AsyncObservableCollection<LogMessage>(filtered);
+            if (e.AllEntries != null)
+            {
+                var all = e.AllEntries.Select(entry => LogEntryConverter.ToLogMessage(entry, receivers)).Where(m => m != null).ToList();
+                foreach (var msg in all)
+                {
+                    var rec = receivers.FirstOrDefault(x => x.Port == msg.Receiver?.Port);
+                    if (rec != null) { msg.Receiver.Color = rec.Color; msg.Receiver.Name = rec.Name; }
+                }
+                allLogs = new AsyncObservableCollection<LogMessage>(all);
+                BuildLoggersFromCore();
+            }
+            CleanIsEnabled = allLogs.Any();
+            if (_treeCheckJustDone)
+            {
+                _treeCheckJustDone = false;
+                SelectedLog = GetLastSelecterOrNearbyMessage();
+            }
+        }
+
+        /// <summary>
+        /// Rebuilds Loggers tree from Core GetLoggerHierarchy and syncs checkbox state from FilterCriteria.
+        /// </summary>
+        private void BuildLoggersFromCore()
+        {
+            var roots = session.GetLoggerHierarchy();
+            var excluded = session.FilterCriteria?.ExcludedLoggerFullPaths ?? new HashSet<string>();
+            Loggers[0].Children.Clear();
+            foreach (var r in roots)
+            {
+                var node = BuildNodeFromCore(r, Loggers[0], r.Name);
+                if (node != null)
+                {
+                    node.IsRoot = true;
+                    node.IsExpanded = true;
+                    node.Source = r.Name;
+                    node.Logger = r.Name;
+                    node.IsChecked = !excluded.Contains(r.Name);
+                    Loggers[0].Children.Add(node);
+                }
+            }
+        }
+
+        private Node BuildNodeFromCore(LoggerTreeNode core, Node parent, string address)
+        {
+            var node = new Node(parent, core.Name);
+            if (parent == Loggers[0])
+            {
+                node.Source = core.Name;
+                node.Logger = core.Name;
+            }
+            else if (!string.IsNullOrEmpty(core.FullPath))
+                node.Logger = core.FullPath;
+            var excluded = session.FilterCriteria?.ExcludedLoggerFullPaths;
+            node.IsChecked = string.IsNullOrEmpty(core.FullPath)
+                ? parent?.IsChecked
+                : (excluded == null || !excluded.Contains(core.FullPath));
+            node.IsVisible = true;
+            foreach (var child in core.Children ?? new List<LoggerTreeNode>())
+                node.Children.Add(BuildNodeFromCore(child, node, address));
+            return node;
         }
 
         #endregion
@@ -722,38 +828,15 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Start()
         {
-            if (!parsers.Any())
+            if (!udpSources.Any())
             {
                 MessageBox.Show(Locals.NoReceiversMessageBoxInfo, Locals.Information,
                     MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            cancellationToken = new CancellationTokenSource();
-
-            Task.Run(() =>
-            {
-                try
-                {
-                    foreach (var udpPacketsParser in parsers)
-                    {
-                        udpPacketsParser.Init();
-                    }
-                    if (parsers.All(x => !x.IsInitialized))
-                        return;
-
-                    StartIsEnabled = false;
-
-                    Parallel.ForEach(parsers, parser =>
-                    {
-                        if (parser.IsInitialized)
-                            ReadLogs(parser);
-                    });
-                }
-                catch (Exception e)
-                {
-                    logger.Warn(e, "An error occurred while ReadLogs");
-                }
-            });
+            SyncFilterCriteriaToSession();
+            processingService.StartAllSources();
+            StartIsEnabled = false;
         }
 
         /// <summary>
@@ -761,39 +844,28 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         private void Pause()
         {
-            cancellationToken.Cancel();
-            foreach (var udpPacketsParser in parsers)
-            {
-                if (udpPacketsParser.IsInitialized)
-                    udpPacketsParser.Dispose();
-            }
+            processingService.StopAllSources();
             StartIsEnabled = true;
         }
 
         /// <summary>
-        /// Запустить считывание логов из файла
+        /// Запустить считывание логов из файла (Core FileLogSource).
         /// </summary>
         private void StartFileReading()
         {
             StartReadFromFileIsEnabled = false;
-            foreach (var fileWatcher in FileWatchers)
-            {
-                fileWatcher.StartWatch();
-                fileWatcher.FileChanged += FileWatcherOnFileChanged;
-            }
+            foreach (var w in FileWatchers)
+                w.Source?.Start();
         }
 
         /// <summary>
-        /// Остановить считывание логов из файла
+        /// Остановить считывание логов из файла.
         /// </summary>
         private void StopFileReading()
         {
             StartReadFromFileIsEnabled = true;
-            foreach (var fileWatcher in FileWatchers)
-            {
-                fileWatcher.StopWatch();
-                fileWatcher.FileChanged -= FileWatcherOnFileChanged;
-            }
+            foreach (var w in FileWatchers)
+                w.Source?.Stop();
         }
 
         /// <summary>
@@ -802,7 +874,7 @@ namespace LogViewer.MVVM.ViewModels
         private void Clean()
         {
             if (IsVisibleLoader) return;
-
+            processingService.ClearSession();
             if (Logs.Any()) Logs.Clear();
 
             nextMessages.Clear();
@@ -846,76 +918,46 @@ namespace LogViewer.MVVM.ViewModels
         private void Search(object obj)
         {
             logger.Debug($"Search with {SearchText}");
-
             if (IsVisibleLoader) return;
 
-            var searchTask = Task.Run(() =>
+            if (string.IsNullOrEmpty(SearchText))
             {
-                try
-                {
-                    IsVisibleLoader = true;
-                    // введённой значение пусто - возвращаем обратно весь список
-                    if (string.IsNullOrEmpty(SearchText))
-                    {
-                        Application.Current.Dispatcher.Invoke(ClearSearchResult);
-                        return;
-                    }
+                ClearSearchResult();
+                return;
+            }
 
-                    LastLogMessage = SelectedLog;
+            LastLogMessage = SelectedLog;
+            currentSearch = SearchText;
+            bool isOpenInAnotherWinow = (bool)obj;
 
-                    currentSearch = SearchText;
-
-                    bool isOpenInAnotherWinow = (bool)obj;
-
-                    IsSearchProcess = !isOpenInAnotherWinow;
-
-                    if (Logs.Any())
-                    {
-
-                        // осуществляем поиск всему списку логов
-                        IEnumerable<LogMessage> searchResult =
-                            Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
-                                IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace);
-
-                        // открывать результат поиска в отдельном окне или нет
-                        if (isOpenInAnotherWinow)
-                        {
-                            var logMessages = searchResult as List<LogMessage> ?? searchResult.ToList();
-                            if (logMessages.Any())
-                            {
-                                Application.Current.Dispatcher.Invoke(() =>
-                                {
-                                    SearchResult sr = new SearchResult(logMessages, SearchText, IsMatchCase);
-                                    sr.Show();
-                                    sr.ShowLogEvent += delegate (object sender, LogMessage message)
-                                    {
-                                        SelectedLog = message;
-                                    };
-                                });
-                            }
-                            else
-                                MessageBox.Show(Locals.NothingFoundMessageBoxInfo, Locals.Search,
-                                    MessageBoxButton.OK, MessageBoxImage.Information);
-                        }
-                        else
-                        {
-                            HighlightSearchText = SearchText;
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Logs = new AsyncObservableCollection<LogMessage>(searchResult);
-                            });
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    logger.Warn(e, "An error occurred while Search");
-                }
-            });
-            searchTask.ContinueWith(x =>
+            if (isOpenInAnotherWinow)
             {
-                IsVisibleLoader = false;
-            });
+                // Не включаем IsSearchProcess в основном окне — фильтруем отдельно с IsSearchActive=true
+                var searchCriteria = CreateFilterCriteria(isSearchActive: true);
+                var entries = session.GetAllEntries()
+                    .Where(e => processingService.Filter.ShouldInclude(e, searchCriteria))
+                    .ToList();
+                var logMessages = entries.Select(e => LogEntryConverter.ToLogMessage(e, receivers)).Where(m => m != null).ToList();
+                foreach (var msg in logMessages)
+                {
+                    var rec = receivers.FirstOrDefault(x => x.Port == msg.Receiver?.Port);
+                    if (rec != null) { msg.Receiver.Color = rec.Color; msg.Receiver.Name = rec.Name; }
+                }
+                if (logMessages.Any())
+                {
+                    var sr = new SearchResult(logMessages, SearchText, IsMatchCase);
+                    sr.Show();
+                    sr.ShowLogEvent += (sender, message) => SelectedLog = message;
+                }
+                else
+                    MessageBox.Show(Locals.NothingFoundMessageBoxInfo, Locals.Search, MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                IsSearchProcess = true;
+                SyncFilterCriteriaToSession();
+                HighlightSearchText = SearchText;
+            }
         }
 
         private string prevFindNext = string.Empty;
@@ -929,77 +971,53 @@ namespace LogViewer.MVVM.ViewModels
         private void FindNext()
         {
             if (IsVisibleLoader) return;
-
-            Task.Run(() =>
+            try
             {
-                try
+                if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
                 {
-                    IsVisibleLoader = true;
-
-                    if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
-                    {
-                        SearchText = selectedLog.Message;
-                        HighlightSearchText = SearchText;
-                    }
-
-                    if (!string.IsNullOrEmpty(SearchText))
-                    {
-                        HighlightSearchText = SearchText;
-
-                        // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск
-                        if (prevFindNext != SearchText || filterChanged)
-                        {
-                            filterChanged = false;
-                            lastSelectedMessageCounter = 0;
-                            prevFindNext = SearchText;
-                            nextMessages = new List<LogMessage>();
-                        }
-
-                        // если счётчик найденных сообщений достиг количества ранее найденных сообщений по данному запросу,
-                        // то делаем новую выборку - вдруг появилось то-нибудь новое
-                        // или если выбран новый элемент в логе - поиск начинаем от него
-                        if (lastSelectedMessageCounter >= nextMessages.Count || findNextPrevSelectedLog != SelectedLog)
-                        {
-                            if (SelectedLog != null)
-                            {
-                                lastSelectedMessageCounter = 0;
-                                var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                                lock (logsLockObj)
-                                    nextMessages = Logs.TakeLast(Logs.Count - selectedLogIndex - 1).ToList();
-                            }
-
-                            if (!nextMessages.Any())
-                            {
-                                lock (logsLockObj)
-                                    nextMessages = Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
-                                        IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
-                            }
-                            else
-                                nextMessages = nextMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
-                                        IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
-
-                            if (!nextMessages.Any() || nextMessages.Count <= lastSelectedMessageCounter)
-                            {
-                                if (nextMessages.Count <= lastSelectedMessageCounter)
-                                    return;
-                                SelectedLog = null;
-                                return;
-                            }
-                        }
-
-                        SelectedLog = nextMessages[lastSelectedMessageCounter];
-                        findNextPrevSelectedLog = SelectedLog;
-                        lastSelectedMessageCounter++;
-                    }
+                    SearchText = selectedLog.Message;
+                    HighlightSearchText = SearchText;
                 }
-                catch (Exception e)
+                if (string.IsNullOrEmpty(SearchText)) return;
+
+                HighlightSearchText = SearchText;
+                if (prevFindNext != SearchText || filterChanged)
                 {
-                    logger.Warn(e, "An error occurred while FindNext");
+                    filterChanged = false;
+                    lastSelectedMessageCounter = 0;
+                    prevFindNext = SearchText;
+                    nextMessages = new List<LogMessage>();
                 }
-            }).ContinueWith(x =>
+
+                if (lastSelectedMessageCounter >= nextMessages.Count || findNextPrevSelectedLog != SelectedLog)
+                {
+                    if (SelectedLog != null)
+                    {
+                        lastSelectedMessageCounter = 0;
+                        var selectedLogIndex = Logs.IndexOf(SelectedLog);
+                        nextMessages = selectedLogIndex >= 0 && selectedLogIndex < Logs.Count - 1
+                            ? Logs.Skip(selectedLogIndex + 1).ToList()
+                            : new List<LogMessage>();
+                    }
+                    if (!nextMessages.Any())
+                        nextMessages = Logs.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                            IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
+                    else
+                        nextMessages = nextMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                            IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
+
+                    if (!nextMessages.Any() || nextMessages.Count <= lastSelectedMessageCounter)
+                        return;
+                }
+
+                SelectedLog = nextMessages[lastSelectedMessageCounter];
+                findNextPrevSelectedLog = SelectedLog;
+                lastSelectedMessageCounter++;
+            }
+            catch (Exception e)
             {
-                IsVisibleLoader = false;
-            });
+                logger.Warn(e, "An error occurred while FindNext");
+            }
         }
 
         private string prevFindPrevious = string.Empty;
@@ -1013,71 +1031,53 @@ namespace LogViewer.MVVM.ViewModels
         private void FindPrevious()
         {
             if (IsVisibleLoader) return;
-
-            Task.Run(() =>
+            try
             {
-                try
+                if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
                 {
-                    IsVisibleLoader = true;
-
-                    if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
-                    {
-                        SearchText = selectedLog.Message;
-                        HighlightSearchText = SearchText;
-                    }
-
-                    if (!string.IsNullOrEmpty(SearchText))
-                    {
-                        HighlightSearchText = SearchText;
-                        // если предыдущий запрос не такой же, то обнуляем счётчики - начинаем новый поиск
-                        // или если один из фильтров изменился
-                        if (prevFindPrevious != SearchText || filterChanged)
-                        {
-                            filterChanged = false;
-                            prevFindPrevious = SearchText;
-                            previousMessages = new List<LogMessage>();
-                            lastSelectedPreviousMessageCounter = -1;
-                        }
-
-                        // если счётчик достиг 0, то усе - приехали
-                        // или если выбран новый элемент в логе - поиск начинаем от него
-                        if (lastSelectedPreviousMessageCounter == -1 || findPrevousPrevSelectedLog != SelectedLog)
-                        {
-                            var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                            lock (logsLockObj)
-                                previousMessages = Logs.Take(selectedLogIndex).ToList();
-
-                            if (previousMessages.Any())
-                                previousMessages = previousMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
-                                    IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
-                            else
-                                return;
-
-                            lastSelectedPreviousMessageCounter = previousMessages.Count - 1;
-
-                            if (!previousMessages.Any() || lastSelectedPreviousMessageCounter == -1)
-                                return;
-                        }
-
-                        SelectedLog = previousMessages[lastSelectedPreviousMessageCounter];
-                        findPrevousPrevSelectedLog = SelectedLog;
-                        lastSelectedPreviousMessageCounter--;
-                    }
+                    SearchText = selectedLog.Message;
+                    HighlightSearchText = SearchText;
                 }
-                catch (Exception e)
+                if (string.IsNullOrEmpty(SearchText)) return;
+
+                HighlightSearchText = SearchText;
+                if (prevFindPrevious != SearchText || filterChanged)
                 {
-                    logger.Warn(e, "An error occurred while FindNext");
+                    filterChanged = false;
+                    prevFindPrevious = SearchText;
+                    previousMessages = new List<LogMessage>();
+                    lastSelectedPreviousMessageCounter = -1;
                 }
-            }).ContinueWith(x =>
+
+                if (lastSelectedPreviousMessageCounter == -1 || findPrevousPrevSelectedLog != SelectedLog)
+                {
+                    var selectedLogIndex = Logs.IndexOf(SelectedLog);
+                    previousMessages = selectedLogIndex > 0 ? Logs.Take(selectedLogIndex).ToList() : new List<LogMessage>();
+
+                    if (previousMessages.Any())
+                        previousMessages = previousMessages.Filter(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions,
+                            IsMatchLogLevel ? SelectedMinLogLevel : eLogLevel.Trace).ToList();
+                    else
+                        return;
+
+                    lastSelectedPreviousMessageCounter = previousMessages.Count - 1;
+                    if (!previousMessages.Any() || lastSelectedPreviousMessageCounter < 0)
+                        return;
+                }
+
+                SelectedLog = previousMessages[lastSelectedPreviousMessageCounter];
+                findPrevousPrevSelectedLog = SelectedLog;
+                lastSelectedPreviousMessageCounter--;
+            }
+            catch (Exception e)
             {
-                IsVisibleLoader = false;
-            });
+                logger.Warn(e, "An error occurred while FindPrevious");
+            }
         }
 
         /// <summary>
-        /// Нажатие на чекбокс в списке классов (дереве)
+        /// Нажатие на чекбокс в списке классов (дереве). Обновляет исключённые логгеры в Core и запрашивает обновление списка через адаптер.
         /// </summary>
-        /// <param name="obj"></param>
         private void TreeViewElementCheck(object obj)
         {
             IsVisibleLoader = true;
@@ -1099,71 +1099,17 @@ namespace LogViewer.MVVM.ViewModels
                     exceptLoggers.Remove(node.Logger);
                     exceptLoggersWithBuffer.Remove(node.Logger);
                 }
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            IEnumerable<LogMessage> remainLogs;
-                            lock (logsLockObj)
-                                remainLogs = allLogs.Where(x => SelectedMinLogLevel.HasFlag(x.Level) && !exceptLoggers.Contains(x.FullPath));
-                            Logs = new AsyncObservableCollection<LogMessage>(remainLogs);
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        logger.Warn(e, "An error occurred while TreeViewElementCheck");
-                    }
-                    finally
-                    {
-                        IsVisibleLoader = false;
-                        SelectedLog = GetLastSelecterOrNearbyMessage();
-                    }
-                });
             }
             else
             {
                 UpdateAllChildInExceptLoggers(node);
                 currentExceptLoggers.Add(node.Logger);
                 exceptLoggers.Add(node.Logger);
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            if (node.Parent == null)
-                            {
-                                Logs.Clear();
-                                return;
-                            }
-
-                            if (node.IsRoot)
-                            {
-                                lock (logsLockObj)
-                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => x.Address != node.Source));
-                                return;
-                            }
-
-                            IEnumerable<LogMessage> messagesForShow;
-                            lock (logsLockObj)
-                                messagesForShow = Logs.Where(x => !currentExceptLoggers.Contains(x.FullPath));
-
-                            Logs = new AsyncObservableCollection<LogMessage>(messagesForShow);
-                        });
-                    }
-                    catch (Exception e)
-                    {
-                        logger.Warn(e, "An error occurred while TreeViewElementCheck");
-                    }
-                    finally
-                    {
-                        IsVisibleLoader = false;
-                        SelectedLog = GetLastSelecterOrNearbyMessage();
-                    }
-                });
             }
+
+            SyncFilterCriteriaToSession();
+            _treeCheckJustDone = true;
+            IsVisibleLoader = false;
         }
 
         /// <summary>
@@ -1177,114 +1123,66 @@ namespace LogViewer.MVVM.ViewModels
             var settingsDialog = new Views.SettingsWindow();
             if (settingsDialog.ShowDialog() == true)
             {
-                Task.Run(() =>
+                try
                 {
-                    try
+                    IsVisibleLoader = true;
+                    allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
+                    maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
+                    deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
+                    IsSourceVisible = Settings.Instance.IsShowSourceColumn;
+                    IsThreadVisible = Settings.Instance.IsShowThreadColumn;
+                    session.AllowMaxMessageBufferSize = allowMaxMessageBufferSize;
+                    session.MaxMessageBufferSize = maxMessageBufferSize;
+                    session.DeletedMessagesCount = deletedMessagesCount;
+                    FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
+                    if (Settings.Instance.CurrentTheme != null && !Equals(Settings.Instance.CurrentTheme.Color, IconColor))
+                        IconColor = Settings.Instance.CurrentTheme.Color;
+
+                    foreach (var receiver in Settings.Instance.Receivers)
                     {
-                        IsVisibleLoader = true;
-
-                        allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
-                        maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
-                        deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
-                        IsSourceVisible = Settings.Instance.IsShowSourceColumn;
-                        IsThreadVisible = Settings.Instance.IsShowThreadColumn;
-
-                        Application.Current.Dispatcher.Invoke(() =>
+                        var foundReceiver = receivers.FirstOrDefault(x => x.Port == receiver.Port);
+                        if (foundReceiver == null)
+                            receivers.Add(receiver);
+                        else
                         {
-                            FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
-                        });
-
-                        if (Settings.Instance.CurrentTheme != null && !Equals(Settings.Instance.CurrentTheme.Color, IconColor))
-                        {
-                            IconColor = Settings.Instance.CurrentTheme.Color;
-                        }
-
-                        // обновляем список игнорируемых IP в ресиверах
-                        foreach (var receiver in parsers)
-                        {
-                            receiver.IgnoredIPs = Settings.Instance.IgnoredIPs;
-                        }
-
-                        // добавляем в действующие ресиверы те, которые были добавлены в настройках
-                        foreach (var receiver in Settings.Instance.Receivers)
-                        {
-                            var foundReceiver = receivers.FirstOrDefault(x => x.Port == receiver.Port);
-                            if (foundReceiver == null)
+                            if (foundReceiver.Color.Color != receiver.Color.Color)
                             {
-                                receivers.Add(receiver);
-                                UDPPacketsParser parser = new UDPPacketsParser(receiver);
-                                parsers.Add(parser);
+                                foundReceiver.Color = receiver.Color;
+                                foreach (var logMessage in allLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                    logMessage.Receiver.Color = foundReceiver.Color;
+                                foreach (var logMessage in Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                    logMessage.Receiver.Color = foundReceiver.Color;
                             }
-                            else
+                            if (foundReceiver.Name != receiver.Name)
                             {
-                                // обновляем цвет ресивера
-                                Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                if (foundReceiver.Color.Color != receiver.Color.Color)
-                                {
-                                    foundReceiver.Color = receiver.Color;
-
-                                    lock (logsLockObj)
-                                    {
-                                        foreach (var logMessage in allLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
-                                        {
-                                            logMessage.Receiver.Color = foundReceiver.Color;
-                                        }
-
-                                        foreach (var logMessage in Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
-                                        {
-                                            logMessage.Receiver.Color = foundReceiver.Color;
-                                        }
-                                    }
-                                }
-                            });
-
-                                // обновляем название ресивера
-                                if (foundReceiver.Name != receiver.Name)
-                                {
-                                    foundReceiver.Name = receiver.Name;
-
-                                    Parallel.ForEach(allLogs, log =>
-                                    {
-                                        log.Receiver.Name = foundReceiver.Name;
-                                    });
-
-                                    Parallel.ForEach(Logs, log =>
-                                    {
-                                        log.Receiver.Name = foundReceiver.Name;
-                                    });
-                                }
+                                foundReceiver.Name = receiver.Name;
+                                foreach (var log in allLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                    log.Receiver.Name = foundReceiver.Name;
+                                foreach (var log in Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                                    log.Receiver.Name = foundReceiver.Name;
                             }
                         }
-
-                        // удаляем из действующих ресиверов те, которые были убраны в настройках
-                        foreach (var receiver in receivers.ToList())
-                        {
-                            var foundReceiver = Settings.Instance.Receivers.FirstOrDefault(x => x.Port == receiver.Port);
-                            if (foundReceiver == null)
-                            {
-                                receivers.Remove(receiver);
-                                var parcer = parsers.FirstOrDefault(x => x.Port == receiver.Port);
-                                parcer?.Dispose();
-                                parsers.Remove(parcer);
-                            }
-                        }
-
-                        CreateParsers();
-
-                        ColorReceiverColumnWidth = receivers.Count(res => res.IsActive) == 1 || receivers.Where(r => r.IsActive).All(x => x.ColorString == Colors.White.ToString())
-                                                   ? 0 : RECEIVER_COLUMN_WIDTH;
                     }
-                    catch (Exception e)
+
+                    foreach (var receiver in receivers.ToList())
                     {
-                        logger.Warn(e, "An error occurred while save settings");
+                        if (Settings.Instance.Receivers.All(x => x.Port != receiver.Port))
+                            receivers.Remove(receiver);
                     }
-                    finally
-                    {
-                        IsVisibleLoader = false;
-                        if (isProgress) Start();
-                    }
-                });
+
+                    CreateUdpSourcesFromFactory();
+                    ColorReceiverColumnWidth = receivers.Count(res => res.IsActive) == 1 || receivers.Where(r => r.IsActive).All(x => x.ColorString == Colors.White.ToString())
+                        ? 0 : RECEIVER_COLUMN_WIDTH;
+                }
+                catch (Exception e)
+                {
+                    logger.Warn(e, "An error occurred while save settings");
+                }
+                finally
+                {
+                    IsVisibleLoader = false;
+                    if (isProgress) Start();
+                }
             }
             else if (isProgress) Start();
         }
@@ -1378,64 +1276,50 @@ namespace LogViewer.MVVM.ViewModels
         private void ClearChildrenLoggers(object obj)
         {
             logger.Debug($"ClearChildrenLoggers with {obj}");
-            Task.Run(() =>
+            currentClearChildrenLoggers.Clear();
+            var node = obj as Node;
+            if (node == null) return;
+            try
             {
-                currentClearChildrenLoggers.Clear();
-                var node = obj as Node;
-                try
+                IsVisibleLoader = true;
+                var watched = FileWatchers.FirstOrDefault(x => x.FilePath.EndsWith(node.Text) || node.Logger != null && x.FilePath == node.Logger);
+                if (watched != null)
                 {
-                    IsVisibleLoader = true;
-
-                    if (node != null)
-                    {
-                        var currentFileWatcher = FileWatchers.FirstOrDefault(x => x.FilePath.EndsWith(node.Text));
-                        if (currentFileWatcher != null)
-                        {
-                            currentFileWatcher.StopWatch();
-                            currentFileWatcher.FileChanged -= FileWatcherOnFileChanged;
-                            FileWatchers.Remove(currentFileWatcher);
-                            OnPropertyChanged(nameof(FileWatchers));
-                        }
-
-                        if (node.Parent != null)
-                        {
-                            UpdateLoggersAfterClear(node);
-
-                            exceptLoggers = exceptLoggers.Except(currentClearChildrenLoggers).ToHashSet();
-                            exceptLoggersWithBuffer = exceptLoggersWithBuffer.Except(currentClearChildrenLoggers).ToHashSet();
-                            availableLoggers = availableLoggers.Except(currentClearChildrenLoggers).ToHashSet();
-
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                lock (logsLockObj)
-                                {
-                                    allLogs = new AsyncObservableCollection<LogMessage>(allLogs.Where(x => !x.FullPath.Contains(node.Logger)));
-                                    Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(x => !x.FullPath.Contains(node.Logger)));
-                                }
-                                var parentNode = node.Parent;
-                                parentNode.Children.Remove(node);
-                            });
-                        }
-                        else
-                        {
-                            ClearLoggers();
-                            Clean();
-                        }
-
-                        if (importData.ContainsKey(node.Logger))
-                            importData.Remove(node.Logger);
-                    }
+                    watched.Source?.Stop();
+                    processingService.RemoveSource(watched.Source);
+                    FileWatchers.Remove(watched);
+                    OnPropertyChanged(nameof(FileWatchers));
                 }
-                catch (Exception ex)
+
+                if (node.Parent != null)
                 {
-                    logger.Warn(ex, $"An error occurred while ClearChildrenLoggers with {node}");
+                    UpdateLoggersAfterClear(node);
+                    exceptLoggers = exceptLoggers.Except(currentClearChildrenLoggers).ToHashSet();
+                    exceptLoggersWithBuffer = exceptLoggersWithBuffer.Except(currentClearChildrenLoggers).ToHashSet();
+                    availableLoggers = availableLoggers.Except(currentClearChildrenLoggers).ToHashSet();
+                    session.RemoveEntriesByLogger(node.Logger);
+                    var parentNode = node.Parent;
+                    parentNode.Children.Remove(node);
                 }
-            }).ContinueWith(x =>
+                else
+                {
+                    ClearLoggers();
+                    Clean();
+                }
+
+                if (importData.ContainsKey(node.Logger))
+                    importData.Remove(node.Logger);
+            }
+            catch (Exception ex)
+            {
+                logger.Warn(ex, $"An error occurred while ClearChildrenLoggers with {node}");
+            }
+            finally
             {
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 IsVisibleLoader = false;
-            });
+            }
         }
 
         /// <summary>
@@ -1459,50 +1343,29 @@ namespace LogViewer.MVVM.ViewModels
         {
             logger.Debug($"ShowOnlyThisLogger with {obj}");
             var node = obj as Node;
-            if (node != null)
+            if (node == null) return;
+            try
             {
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        LastLogMessage = SelectedLog;
-                        IsVisibleLoader = true;
-
-                        exceptLoggers.Clear();
-                        exceptLoggersWithBuffer.Clear();
-                        CheckLoggers(node);
-
-                        if (node.Logger == "Root")
-                        {
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Logs = new AsyncObservableCollection<LogMessage>(allLogs);
-                            });
-                        }
-                        else
-                        {
-                            UncheckAllLoggers(Loggers.First(), node.Logger);
-
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                exceptLoggers = availableLoggers.Except(showOnlyThisLoggers).ToHashSet();
-                                lock (logsLockObj)
-                                    Logs = new AsyncObservableCollection<LogMessage>(allLogs.Where(x => x.FullPath.Contains(node.Logger)));
-                            });
-                        }
-
-                        showOnlyThisLoggers.Clear();
-                    }
-                    catch (Exception e)
-                    {
-                        logger.Warn(e, "An error occurred while ShowOnlyThisLogger.");
-                    }
-                    finally
-                    {
-                        IsVisibleLoader = false;
-                        SelectedLog = GetLastSelecterOrNearbyMessage();
-                    }
-                });
+                LastLogMessage = SelectedLog;
+                IsVisibleLoader = true;
+                exceptLoggers.Clear();
+                exceptLoggersWithBuffer.Clear();
+                CheckLoggers(node);
+                if (node.Logger != "Root")
+                    UncheckAllLoggers(Loggers.First(), node.Logger);
+                exceptLoggers = availableLoggers.Except(showOnlyThisLoggers).ToHashSet();
+                showOnlyThisLoggers.Clear();
+                SyncFilterCriteriaToSession();
+                _treeCheckJustDone = true;
+            }
+            catch (Exception e)
+            {
+                logger.Warn(e, "An error occurred while ShowOnlyThisLogger.");
+            }
+            finally
+            {
+                IsVisibleLoader = false;
+                SelectedLog = GetLastSelecterOrNearbyMessage();
             }
         }
 
@@ -1568,11 +1431,8 @@ namespace LogViewer.MVVM.ViewModels
                 });
             }
 
-            // обновляем список игнорируемых IP в ресиверах
-            foreach (var receiver in parsers)
-            {
-                receiver.IgnoredIPs = Settings.Instance.IgnoredIPs;
-            }
+            // обновляем список игнорируемых IP - пересоздаем UDP источники с новым списком
+            CreateUdpSourcesFromFactory();
             Settings.Instance.Save();
         }
 
@@ -1611,11 +1471,9 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     warnSearchCounter = 0;
                     var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                    lock (logsLockObj)
                         currentWarnLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Warn).ToList();
                 }
                 else
-                    lock (logsLockObj)
                         currentWarnLoggers = Logs.Where(x => x.Level == eLogLevel.Warn).ToList();
             }
 
@@ -1643,11 +1501,9 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     errorSearchCounter = 0;
                     var selectedLogIndex = Logs.IndexOf(SelectedLog);
-                    lock (logsLockObj)
                         currentErrorLoggers = Logs.TakeLast(Logs.Count - selectedLogIndex).Where(x => x.Level == eLogLevel.Error).ToList();
                 }
                 else
-                    lock (logsLockObj)
                         currentErrorLoggers = Logs.Where(x => x.Level == eLogLevel.Error).ToList();
             }
 
@@ -1663,16 +1519,12 @@ namespace LogViewer.MVVM.ViewModels
         private Dictionary<string, List<LogMessage>> importData = new Dictionary<string, List<LogMessage>>();
         private CancellationTokenSource cancelImportLogTokenSource = new CancellationTokenSource();
 
-        private SemaphoreSlim importLogSemaphoreSlim;
-
         /// <summary>
-        /// Загружает логи из файла
+        /// Загружает логи из файла (через Core ILogImportService). При отмене откатывает добавленные записи.
         /// </summary>
         /// <param name="obj">Файл, полученный через drag and drop</param>
-        public void ImportLogs(object obj)
+        public async void ImportLogs(object obj)
         {
-            // выбираем файл
-
             List<ImportLogFile> importLogFiles = new List<ImportLogFile>();
             cancelImportLogTokenSource = new CancellationTokenSource();
 
@@ -1696,188 +1548,93 @@ namespace LogViewer.MVVM.ViewModels
 
             if (!importLogFiles.Any()) return;
 
-            importLogSemaphoreSlim = new SemaphoreSlim(2, 2);
-
-            // выбираем шаблон парсинга
             LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
             logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             logImportTemplateDialogDialog.ShowDialog();
-            if (logImportTemplateDialogDialog.DialogResult.HasValue && logImportTemplateDialogDialog.DialogResult.Value)
+            if (!logImportTemplateDialogDialog.DialogResult.HasValue || !logImportTemplateDialogDialog.DialogResult.Value)
+                return;
+
+            var template = logImportTemplateDialogDialog.LogTemplate;
+            Pause();
+
+            List<WatchedFileInfo> currentFileWatchers = new List<WatchedFileInfo>();
+            if (logImportTemplateDialogDialog.NeedUpdateFile)
             {
-                var template = logImportTemplateDialogDialog.LogTemplate;
-
-                UpdateLogTypeArray(template);
-
-                Pause();
-
-                List<FileWatcher> currentFileWatchers = new List<FileWatcher>();
-
-                // если больше одного файла - показываем диалоговое окно с информацией о процессе импорта каждого файла
-                if (importLogFiles.Count > 1)
+                var dtoForTail = LogTemplateAdapter.ToDto(template);
+                if (dtoForTail != null)
                 {
-                    ImportLogsProcessDialog importLogsProcessDialog = new ImportLogsProcessDialog(importLogFiles);
-                    importLogsProcessDialog.Show();
-                    importLogsProcessDialog.ImportProcessDialogResult += (sender, result) =>
+                    foreach (var importLog in importLogFiles)
                     {
-                        if (!result) cancelImportLogTokenSource.Cancel();
-                    };
+                        if (FileWatchers.All(x => x.FilePath != importLog.FilePath))
+                        {
+                            try
+                            {
+                                var fileSource = new FileLogSource(importLog.FilePath, dtoForTail, template.Encoding ?? "UTF-8");
+                                processingService.AddSource(fileSource);
+                                fileSource.Start();
+                                var watched = new WatchedFileInfo { FilePath = importLog.FilePath, Source = fileSource };
+                                currentFileWatchers.Add(watched);
+                            }
+                            catch { }
+                        }
+                    }
                 }
+            }
 
-                List<Task> importLogTasks = new List<Task>();
-
-                IsVisibleProcessBar = true;
-
-                foreach (var importLog in importLogFiles)
+            if (importLogFiles.Count > 1)
+            {
+                ImportLogsProcessDialog importLogsProcessDialog = new ImportLogsProcessDialog(importLogFiles);
+                importLogsProcessDialog.Show();
+                importLogsProcessDialog.ImportProcessDialogResult += (sender, result) =>
                 {
-                    Task importLogTask = new Task(() =>
-                    {
-                        // считываем весь файл
-                        try
-                        {
-                            importLogSemaphoreSlim.Wait();
+                    if (!result) cancelImportLogTokenSource.Cancel();
+                };
+            }
 
-                            using (FileStream stream = File.Open(importLog.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                            {
-                                if (logImportTemplateDialogDialog.NeedUpdateFile &&
-                                    FileWatchers.All(x => x.FilePath != importLog.FilePath))
-                                {
-                                    FileWatcher fileWatcher = new FileWatcher();
-                                    fileWatcher.FilePath = importLog.FilePath;
-                                    fileWatcher.Position = stream.Length;
-                                    fileWatcher.Template = template;
-                                    currentFileWatchers.Add(fileWatcher);
-                                }
+            var paths = importLogFiles.Select(x => x.FilePath).ToList();
+            var dto = LogTemplateAdapter.ToDto(template);
+            if (dto == null) return;
 
-                                var sb = new StringBuilder();
-                                using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(template.Encoding)))
-                                {
-                                    string line;
-                                    while ((line = sr.ReadLine()) != null &&
-                                           !cancelImportLogTokenSource.IsCancellationRequested)
-                                    {
-                                        //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                                        if (line.ContainsAnyOf(LogTypeArray, true))
-                                        {
-                                            if (line.Length != 0)
-                                            {
-                                                try
-                                                {
-                                                    // парсим лог и добавляем в список
-                                                    LogParse(sb.ToString(), template, importLog.FilePath);
-                                                    importLog.Process =
-                                                        (int)((double)sr.BaseStream.Position / sr.BaseStream.Length *
-                                                               100);
-                                                    ProcessBarValue =
-                                                        (int)(importLogFiles.Sum(x => x.Process) / importLogFiles.Count
-                                                        );
-                                                }
-                                                catch (OutOfMemoryException ex)
-                                                {
-                                                    logger.Error(ex, "An error occured while LogParse");
-                                                    throw;
-                                                }
-                                                catch (Exception e)
-                                                {
-                                                    logger.Error(e, "An error occured while LogParse");
+            IsVisibleProcessBar = true;
+            var progress = new Progress<int>(p => ProcessBarValue = p);
 
-                                                    // удаляем инфу о лог-файле
-                                                    importData.Remove(importLog.FilePath);
-                                                    var currentNode =
-                                                        Loggers[0].Children
-                                                            .FirstOrDefault(l => l.Logger == importLog.FilePath);
-                                                    if (currentNode != null) ClearChildrenLoggers(currentNode);
-
-                                                    MessageBox.Show(
-                                                        $"{Locals.IncorrectLogMessageTemplateMessageBoxInfo}\n{importLog.FilePath}");
-                                                    throw;
-                                                }
-                                                sb = new StringBuilder();
-                                            }
-                                            sb.Append(line);
-                                        }
-                                        else
-                                        {
-                                            sb.AppendLine(line);
-                                        }
-                                    }
-                                    LogParse(sb.ToString(), template, importLog.FilePath);
-                                }
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            importLogSemaphoreSlim.Release();
-                            logger.Error(e, "An error occured while reading log file");
-                        }
-                        finally
-                        {
-                            importLogSemaphoreSlim.Release();
-                        }
-                    });
-
-                    importLogTasks.Add(importLogTask);
-                    importLogTask.Start();
+            try
+            {
+                await logImportService.ImportFromFilesAsync(paths, dto, progress, cancelImportLogTokenSource.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                foreach (var path in paths)
+                    session.RemoveEntriesBySource(path);
+                foreach (var importLogFile in importLogFiles)
+                {
+                    var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
+                    if (currentNode != null) ClearChildrenLoggers(currentNode);
                 }
-
-                Task.WhenAll(importLogTasks).ContinueWith(x =>
+                foreach (var path in paths)
                 {
-                    try
-                    {
-                        if (cancelImportLogTokenSource.IsCancellationRequested)
-                        {
-                            // удаляем из дерева логов все ветки, относящиеся к импортируемым файлам
-                            foreach (var importLogFile in importLogFiles)
-                            {
-                                var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
-                                if (currentNode != null) ClearChildrenLoggers(currentNode);
-                            }
-                            importData.Clear();
-                            return;
-                        }
+                    if (importData.ContainsKey(path)) importData.Remove(path);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "An error occurred while importing log files");
+                MessageBox.Show(string.Format("{0}\n{1}", Locals.IncorrectLogMessageTemplateMessageBoxInfo, ex.Message), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsVisibleProcessBar = false;
+                CleanIsEnabled = allLogs.Any();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
 
-                        var allLogsTemp = allLogs.ToList();
-                        var logsTemp = Logs.ToList();
-
-                        foreach (var importLog in importLogFiles)
-                        {
-                            if (!importData.ContainsKey(importLog.FilePath)) continue;
-                            allLogsTemp.AddRange(importData[importLog.FilePath]);
-                            logsTemp.AddRange(importData[importLog.FilePath].Where(l => SelectedMinLogLevel.HasFlag(l.Level) && !exceptLoggers.Contains(l.FullPath)));
-                        }
-
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            Logs = new AsyncObservableCollection<LogMessage>(logsTemp.OrderBy(l => l.Time));
-                            allLogs = new AsyncObservableCollection<LogMessage>(allLogsTemp.OrderBy(l => l.Time));
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "An error occured while add imported logs to list");
-                    }
-                    finally
-                    {
-                        foreach (var idata in importData)
-                            idata.Value.Clear();
-
-                        CleanIsEnabled = allLogs.Any();
-                        GC.Collect();
-                        GC.WaitForFullGCComplete();
-                        IsVisibleProcessBar = false;
-
-                        if (logImportTemplateDialogDialog.NeedUpdateFile)
-                        {
-                            StartReadFromFileIsEnabled = false;
-                            foreach (var fileWatcher in currentFileWatchers)
-                            {
-                                FileWatchers.Add(fileWatcher);
-                                fileWatcher.FileChanged += FileWatcherOnFileChanged;
-                                fileWatcher.StartWatch();
-                                OnPropertyChanged(nameof(FileWatchers));
-                            }
-                        }
-                    }
-                });
+                if (logImportTemplateDialogDialog.NeedUpdateFile)
+                {
+                    StartReadFromFileIsEnabled = false;
+                    foreach (var w in currentFileWatchers)
+                        FileWatchers.Add(w);
+                    OnPropertyChanged(nameof(FileWatchers));
+                }
             }
         }
 
@@ -1902,8 +1659,8 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Выгружает считанные логи в файл.
-        /// Если команда вызвана из контекстного меню дерева логгеров, то экспортирует в файл только логи данного логгера.
+        /// Выгружает в файл текущий отображаемый список логов (с учётом всех активных фильтров).
+        /// Если команда вызвана из контекстного меню дерева логгеров, то экспортирует только отображаемые логи данного логгера.
         /// </summary>
         private void ExportLogs(object obj)
         {
@@ -1922,22 +1679,20 @@ namespace LogViewer.MVVM.ViewModels
 
             if (saveDialog.ShowDialog() == true)
             {
-                Task.Run(() =>
+                try
                 {
                     IsVisibleLoader = true;
-
-                    // Если был выбран рут - то экспортим всё
-                    var logsToExport = node == null || node.Logger == "Root"
-                    ? allLogs
-                    : allLogs.Where(x => x.FullPath.Contains(node.Logger));
-
-                    List<string> txtLogs = logsToExport.Select(logMessage => $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Address};{logMessage.Logger};{logMessage.Message}").ToList();
-
+                    IEnumerable<LogMessage> logsToExport = Logs;
+                    if (node != null && node.Logger != "Root")
+                        logsToExport = Logs.Where(x => x.FullPath.Contains(node.Logger));
+                    var txtLogs = logsToExport.Select(logMessage => $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Logger};{logMessage.Message}").ToList();
                     File.WriteAllLines(saveDialog.FileName, txtLogs, Encoding.UTF8);
-                    IsVisibleLoader = false;
-
                     Process.Start(Path.GetDirectoryName(saveDialog.FileName));
-                });
+                }
+                finally
+                {
+                    IsVisibleLoader = false;
+                }
             }
         }
 
@@ -2038,13 +1793,13 @@ namespace LogViewer.MVVM.ViewModels
                 fromTimeInverval = selectTimeIntervalDialog.DateTimeFrom;
                 toTimeInverval = selectTimeIntervalDialog.DateTimeTo;
 
-                lock (logsLockObj)
                 {
                     Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(
                         x => x.Time >= fromTimeInverval &&
                              x.Time <= toTimeInverval));
                     IsSearchProcess = true;
                     isTimeIntervalProcess = true;
+                    SyncFilterCriteriaToSession();
                 }
             }
         }
@@ -2099,7 +1854,6 @@ namespace LogViewer.MVVM.ViewModels
 
                 node.ToggleMark = isSet ? currentColor : new SolidColorBrush(Colors.Transparent);
 
-                lock (logsLockObj)
                 {
                     foreach (var logMessage in Logs.Where(x => x.FullPath.Contains(node.Logger)))
                         logMessage.ToggleMark = currentColor;
@@ -2148,7 +1902,6 @@ namespace LogViewer.MVVM.ViewModels
         {
             node.IsChecked = false;
             exceptLoggers.Add(node.Logger);
-            lock (logsLockObj)
                 Logs = new AsyncObservableCollection<LogMessage>(Logs.Where(l => !exceptLoggers.Contains(l.FullPath)));
         }
 
@@ -2298,7 +2051,6 @@ namespace LogViewer.MVVM.ViewModels
                 UncheckAllLoggers(node);
                 DontReceiveThisLogger(node);
 
-                lock (logsLockObj)
                     Logs = node.Logger == "Root" ? new AsyncObservableCollection<LogMessage>() : new AsyncObservableCollection<LogMessage>(allLogs.Where(x => !exceptLoggers.Contains(x.FullPath)));
 
                 showOnlyThisLoggers.Clear();
@@ -2369,11 +2121,11 @@ namespace LogViewer.MVVM.ViewModels
                     if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !IsSearchProcess
                         && (!isTimeIntervalProcess || isTimeIntervalProcess && log.Time > fromTimeInverval && log.Time < toTimeInverval))
                     {
-                        lock (logsLockObj) Logs.Add(log);
+Logs.Add(log);
                     }
 
                     if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-                        lock (logsLockObj) allLogs.Add(log);
+allLogs.Add(log);
                 }
 
                 CleanIsEnabled = allLogs.Any();
@@ -2395,10 +2147,10 @@ namespace LogViewer.MVVM.ViewModels
             if (addLog)
             {
                 if (SelectedMinLogLevel.HasFlag(log.Level) && !exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath) && !IsSearchProcess)
-                    lock (logsLockObj) Logs.Add(log);
+Logs.Add(log);
 
                 if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-                    lock (logsLockObj) allLogs.Add(log);
+allLogs.Add(log);
             }
 
             CleanIsEnabled = allLogs.Any();
@@ -2558,220 +2310,53 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Остальные private методы
 
-        /// <summary>
-        /// Считывание логов
-        /// </summary>
-        private void ReadLogs(UDPPacketsParser parser)
+        private FilterCriteria CreateFilterCriteria(bool? isSearchActive = null)
         {
-            logger.Debug($"{nameof(ReadLogs)} from port '{parser.Port}'");
-            while (true)
+            return new FilterCriteria
             {
-                try
-                {
-                    if (cancellationToken.Token.IsCancellationRequested)
-                    {
-                        logger.Debug($"{nameof(ReadLogs)} from port '{parser.Port}' cancel requested");
-                        return;
-                    }
+                MinLevel = (LogLevel)(int)SelectedMinLogLevel,
+                ExcludedLoggerFullPaths = new HashSet<string>(exceptLoggers),
+                ExcludedLoggerFullPathsWithBuffer = new HashSet<string>(exceptLoggersWithBuffer),
+                SearchText = searchText,
+                MatchCase = isMatchCase,
+                MatchWholeWord = isMatchWholeWord,
+                UseRegex = useRegularExpressions,
+                MatchLogLevel = isMatchLogLevel,
+                IsSearchActive = isSearchActive ?? isSearchProcess,
+                IsTimeIntervalActive = isTimeIntervalProcess,
+                TimeRangeFrom = fromTimeInverval,
+                TimeRangeTo = toTimeInverval
+            };
+        }
 
-                    var log = parser.GetLog();
-
-                    // если учитывается максимальный буффер сообщений и он превыше - удаляем первое сообщение
-                    if (allowMaxMessageBufferSize && (allLogs.Count >= maxMessageBufferSize || Logs.Count >= maxMessageBufferSize))
-                    {
-                        LastLogMessage = SelectedLog;
-
-                        IsVisibleLoader = true;
-                        if (allLogs.Count >= maxMessageBufferSize)
-                        {
-                            var temp = allLogs.ToList();
-                            temp.RemoveRange(0, deletedMessagesCount);
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                allLogs = new AsyncObservableCollection<LogMessage>(temp);
-                            });
-                        }
-
-                        if (Logs.Count >= maxMessageBufferSize)
-                        {
-                            var temp = Logs.ToList();
-                            temp.RemoveRange(0, deletedMessagesCount);
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                Logs = new AsyncObservableCollection<LogMessage>(temp);
-
-                            });
-                        }
-                        GC.Collect();
-                        GC.WaitForPendingFinalizers();
-
-                        IsVisibleLoader = false;
-
-                        SelectedLog = GetLastSelecterOrNearbyMessage();
-                    }
-
-                    if (log != null)
-                    {
-                        var currentReceiver = receivers.FirstOrDefault(x => x.Port == log.Receiver.Port);
-                        if (currentReceiver != null)
-                        {
-                            Application.Current.Dispatcher.Invoke(() =>
-                            {
-                                log.Receiver.Color = currentReceiver.Color;
-                                log.Receiver.Name = currentReceiver.Name;
-                                if (Settings.Instance.ShowMessageHighlightByReceiverColor)
-                                {
-                                    var messageColor = log.Receiver.Color.Clone();
-                                    messageColor.Opacity = 0.1;
-                                    log.ToggleMark = messageColor;
-                                }
-                            });
-                        }
-
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            if (AddLogBySearchFilters(log)) return;
-
-                            BuildTreeByMessage(log);
-                        });
-                    }
-                }
-                catch (Exception e)
-                {
-                    logger.Warn(e, $"An error occurred while ReadLogs from port {parser.Port}");
-                }
-            }
+        private void SyncFilterCriteriaToSession()
+        {
+            if (session?.FilterCriteria == null) return;
+            processingService.SetFilterCriteria(CreateFilterCriteria());
         }
 
         /// <summary>
-        /// Добавление логов в список на отображения только если подходит по фильтрам
+        /// Create UDP log sources from factory and add to processing service.
         /// </summary>
-        /// <returns></returns>
-        private bool AddLogBySearchFilters(LogMessage log)
+        private void CreateUdpSourcesFromFactory()
         {
-            // если в конкретный момент идет процесс поиска, то добавляем в отображаемый список только то, что проходит условия поиска,
-            // а все кидаем в общий список
+            var results = udpSourceFactory.CreateFromSettings(receivers);
+            if (results == null || !results.Any()) return;
 
-            if (IsSearchProcess)
+            processingService.RemoveAllSources();
+            udpSources.Clear();
+
+            foreach (var result in results)
             {
-                lock (logsLockObj) allLogs.Add(log);
-
-                if (isTimeIntervalProcess)
+                string errorMessage;
+                if (!result.Source.TryInit(out errorMessage))
                 {
-                    if (log.Time > fromTimeInverval && log.Time < toTimeInverval && !exceptLoggers.Contains(log.FullPath))
-                        lock (logsLockObj) Logs.Add(log);
-                    return true;
+                    MessageBox.Show(string.Format(Locals.PortIsBusy, result.Receiver.Port), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                    continue;
                 }
-
-                if (toggledMarksCount > 0)
-                {
-                    var currentNode = GetNodeFromMessage(log);
-                    log.ToggleMark = currentNode.ToggleMark;
-                }
-
-                if (!IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                    && log.Message.ToUpper().Contains(currentSearch.ToUpper()) && !exceptLoggers.Contains(log.FullPath))
-                {
-                    lock (logsLockObj) Logs.Add(log);
-                    return true;
-                }
-                if (IsMatchCase && IsMatchLogLevel && SelectedMinLogLevel.HasFlag(log.Level)
-                    && log.Message.Contains(currentSearch) && !exceptLoggers.Contains(log.FullPath))
-                {
-                    lock (logsLockObj) Logs.Add(log);
-                    return true;
-                }
-                if (IsMatchCase && !IsMatchLogLevel && log.Message.Contains(currentSearch) &&
-                    !exceptLoggers.Contains(log.FullPath))
-                {
-                    lock (logsLockObj) Logs.Add(log);
-                    return true;
-                }
-                if (!IsMatchCase && !IsMatchLogLevel && log.Message.ToUpper().Contains(currentSearch.ToUpper()) &&
-                    !exceptLoggers.Contains(log.FullPath))
-                {
-                    lock (logsLockObj) Logs.Add(log);
-                    return true;
-                }
+                processingService.AddSource(result.Source);
+                udpSources.Add(result.Source);
             }
-            return false;
-        }
-
-        /// <summary>
-        /// Создаем экземпляры парсеров по текущим ресиверам
-        /// </summary>
-        private void CreateParsers()
-        {
-            if (!receivers.Any(r => r.IsActive)) return;
-
-            if (parsers.Any())
-            {
-                foreach (var udpPacketsParser in parsers)
-                {
-                    udpPacketsParser.Dispose();
-                }
-                parsers.Clear();
-            }
-
-            foreach (var receiver in receivers.Where(r => r.IsActive))
-            {
-                var parser = new UDPPacketsParser(receiver);
-                parsers.Add(parser);
-            }
-        }
-
-        /// <summary>
-        /// Считываем в конечный массив инфу из пришедших строк
-        /// </summary>
-        private void LogParse(String line, LogTemplate template, string importFilePath)
-        {
-            if (string.IsNullOrEmpty(line))
-                return;
-
-            var log = line.Split(new[] { template.Separator }, StringSplitOptions.None);
-            // собираем сообщение лога
-            StringBuilder message = new StringBuilder();
-            for (int i = template.TemplateParameterses[eImportTemplateParameters.message]; i < log.Length; i++)
-            {
-                if (!string.IsNullOrEmpty(log[i]))
-                    message.Append(log[i] + "");
-            }
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                eImportTemplateParameters dataFormat = eImportTemplateParameters.date;
-
-                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.longdate))
-                    dataFormat = eImportTemplateParameters.longdate;
-                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.shortdate))
-                    dataFormat = eImportTemplateParameters.shortdate;
-                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.time))
-                    dataFormat = eImportTemplateParameters.time;
-                if (template.TemplateParameterses.ContainsKey(eImportTemplateParameters.ticks))
-                    dataFormat = eImportTemplateParameters.ticks;
-
-                var date = dataFormat == eImportTemplateParameters.ticks
-                    ? new DateTime(long.Parse(log[template.TemplateParameterses[dataFormat]].Replace("\0", "")))
-                    : DateTime.TryParse(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""), out DateTime dt)
-                        ? dt
-                        : DateTime.TryParseExact(log[template.TemplateParameterses[dataFormat]].Replace("\0", ""),
-                            "yy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt2)
-                            ? dt2
-                            : DateTime.Now;
-
-                var lm = new LogMessage
-                {
-                    Address = importFilePath,
-                    Time = date,
-                    Level = LogLevelMapping[log[template.TemplateParameterses[eImportTemplateParameters.level]].ToPascalCase()],
-                    Thread = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.threadid) ? int.TryParse(log[template.TemplateParameterses[eImportTemplateParameters.threadid]], out int threadId) ? threadId : -1 : -1,
-                    Message = message.ToString(),
-                    Logger = log[template.TemplateParameterses[eImportTemplateParameters.logger]],
-                    ProcessID = template.TemplateParameterses.ContainsKey(eImportTemplateParameters.processid) ? int.TryParse(log[template.TemplateParameterses[eImportTemplateParameters.processid]], out int processId) ? processId : (int?)null : (int?)null,
-                };
-                BuildTreeByMessage(lm, false);
-                importData[importFilePath].Add(lm);
-            });
         }
 
         private string CheckNullableIntExists(int? value)
@@ -2812,114 +2397,13 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Обновляет массив с уровнем логгирования в зависимости от разделителя и от места, где пишется уровень лога
-        /// </summary>
-        private void UpdateLogTypeArray(LogTemplate template)
-        {
-            List<string> logTypeList = new List<string>();
-            foreach (var logLevel in LogLevelMapping)
-            {
-                if (template.TemplateParameterses[eImportTemplateParameters.level] == 0)
-                {
-                    logTypeList.Add($"{template.Separator}{logLevel.Key}");
-                }
-                else if (template.TemplateParameterses[eImportTemplateParameters.level] ==
-                         template.TemplateParameterses.Max(x => x.Value))
-                {
-                    logTypeList.Add($"{logLevel.Key}{template.Separator}");
-                }
-                else
-                {
-                    logTypeList.Add($"{template.Separator}{logLevel.Key}{template.Separator}");
-                }
-            }
-            LogTypeArray = logTypeList.ToArray();
-        }
-
-        /// <summary>
-        /// Добавляем новые логи из файла
-        /// </summary>
-        private void UpdateLogsFromFile(FileWatcher watcher)
-        {
-            // TODO: Объединить данный метод с методом ImportLogs (часть чтения логов данного метода)
-            try
-            {
-                using (FileStream stream = File.Open(watcher.FilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                {
-                    stream.Position = watcher.Position;
-
-                    var sb = new StringBuilder();
-                    using (StreamReader sr = new StreamReader(stream, Encoding.GetEncoding(watcher.Template.Encoding)))
-                    {
-                        string line;
-                        while ((line = sr.ReadLine()) != null)
-                        {
-                            //проверяем, текущая запись - это новая запись или продолжение предыдущей.
-                            if (line.ContainsAnyOf(LogTypeArray, true))
-                            {
-                                if (line.Length != 0)
-                                {
-                                    try
-                                    {
-                                        // парсим лог и добавляем в список
-                                        LogParse(sb.ToString(), watcher.Template, watcher.FilePath);
-                                    }
-                                    catch (OutOfMemoryException ex)
-                                    {
-                                        logger.Error(ex, "An error occured while LogParse");
-                                        throw;
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        logger.Error(e, "An error occured while LogParse");
-                                        MessageBox.Show(Locals.IncorrectLogMessageTemplateMessageBoxInfo);
-                                        throw;
-                                    }
-                                    sb = new StringBuilder();
-                                }
-                                sb.Append(line);
-                            }
-                            else
-                            {
-                                sb.Append(Environment.NewLine);
-                                sb.Append(line);
-                            }
-                        }
-                        LogParse(sb.ToString(), watcher.Template, watcher.FilePath);
-                    }
-
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        foreach (var logMessage in importData[watcher.FilePath])
-                        {
-                            if (AddLogBySearchFilters(logMessage)) continue;
-
-                            BuildTreeByMessage(logMessage);
-                        }
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Warn(ex, $"An error occurred while UpdateLogsFromFile file - {watcher.FilePath}, position - {watcher.Position}");
-            }
-            finally
-            {
-                importData[watcher.FilePath].Clear();
-                CleanIsEnabled = allLogs.Any();
-                GC.Collect();
-                GC.WaitForFullGCComplete();
-            }
-        }
-
-        /// <summary>
-        /// Проверяет, есть ли данный файл в дикшионари importData
+        /// Проверяет, есть ли данный файл в дикшионари importData или в наблюдаемых файлах
         /// </summary>
         /// <param name="filePath">Путь к файлу</param>
         /// <returns></returns>
         private bool CheckFileExistsInImportLogs(string filePath)
         {
-            if (importData.ContainsKey(filePath))
+            if (importData.ContainsKey(filePath) || FileWatchers.Any(x => x.FilePath == filePath))
             {
                 MessageBox.Show(string.Format(Locals.FileAlreadyAdded, filePath));
                 return true;
@@ -2931,20 +2415,15 @@ namespace LogViewer.MVVM.ViewModels
 
         #region Обработчики событий
 
-        private void FileWatcherOnFileChanged(object sender, FileWatcher e)
-        {
-            UpdateLogsFromFile(e);
-        }
-
         /// <summary>
-        /// Очищает список наблюдателей за файлами и отписывается от событий
+        /// Останавливает и удаляет все наблюдатели за файлами (Core FileLogSource).
         /// </summary>
         private void RemoveAllFileWatchers()
         {
-            foreach (var fileWatcher in FileWatchers)
+            foreach (var w in FileWatchers)
             {
-                fileWatcher.StopWatch();
-                fileWatcher.FileChanged -= FileWatcherOnFileChanged;
+                w.Source?.Stop();
+                processingService.RemoveSource(w.Source);
             }
             FileWatchers.Clear();
             OnPropertyChanged(nameof(FileWatchers));
@@ -2955,11 +2434,8 @@ namespace LogViewer.MVVM.ViewModels
         public void Dispose()
         {
             RemoveAllFileWatchers();
-
-            foreach (var udpPacketsParser in parsers)
-            {
-                udpPacketsParser?.Dispose();
-            }
+            coreToUiAdapter?.Unsubscribe();
+            processingService?.RemoveAllSources();
             cancellationToken?.Dispose();
         }
     }

@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
+		<Version>1.2.8.7 (30.07.2026)</Version>
+		<FixedBugs>
+			<string>Экспортирование только выбранных Loggers из дерева при экспорте в файл</string>
+			<string>Экспорт в файл (Ctrl+S) сохраняет только текущий отображаемый список логов с учётом всех фильтров</string>
+			<string>Из экспорта в файл убран путь к источнику (Address) из каждой строки лога</string>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
 		<Version>1.2.8.6 (11.06.2024)</Version>
 		<FixedBugs>
 			<string>Улучшено автоопределение шаблона лога при загрузке логов из файла</string>

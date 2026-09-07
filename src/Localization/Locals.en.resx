@@ -332,7 +332,7 @@
     <value>Export Current Logger to File</value>
   </data>
   <data name="ExportLogsToFileToolTip" xml:space="preserve">
-    <value>Export all logs to file (Ctrl+S)</value>
+    <value>Export displayed logs to file (Ctrl+S)</value>
   </data>
   <data name="FindAllHotKeys" xml:space="preserve">
     <value>Find All (Ctrl+F)</value>

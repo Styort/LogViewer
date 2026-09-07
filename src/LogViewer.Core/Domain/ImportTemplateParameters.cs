@@ -1,0 +1,31 @@
+namespace LogViewer.Core.Domain
+{
+    public enum ImportTemplateParameters
+    {
+        level,
+        logger,
+        message,
+        exception,
+        newline,
+        oneexception,
+        var,
+        date,
+        longdate,
+        shortdate,
+        ticks,
+        time,
+        сallsite,
+        callsitelinenumber,
+        stacktrace,
+        threadid,
+        threadname,
+        processid,
+        processinfo,
+        processname,
+        processtime,
+        appdomain,
+        hostname,
+        machinename,
+        other,
+    }
+}

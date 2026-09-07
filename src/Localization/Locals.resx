@@ -209,7 +209,7 @@
     <value>Экспорт выбранного логгера в файл</value>
   </data>
   <data name="ExportLogsToFileToolTip" xml:space="preserve">
-    <value>Экспорт логов в файл (Ctrl+S)</value>
+    <value>Экспорт отображаемых логов в файл (Ctrl+S)</value>
   </data>
   <data name="FeaturesStr1" xml:space="preserve">
     <value>- Считывание логов по UDP по шаблону log4j;</value>

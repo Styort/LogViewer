@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -135,10 +135,21 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="LogViewer.Core\LogViewer.Core.csproj">
+      <Project>{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}</Project>
+      <Name>LogViewer.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Adapters\CoreToUiAdapter.cs" />
+    <Compile Include="Adapters\LogEntryConverter.cs" />
+    <Compile Include="Adapters\LogTemplateAdapter.cs" />
+    <Compile Include="Adapters\ReceiverConfigAdapter.cs" />
+    <Compile Include="Factories\UdpSourceFactory.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Converters\DataConverter.cs" />
     <Compile Include="Converters\ProgressStateConverter.cs" />
@@ -164,6 +175,7 @@
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
     <Compile Include="Helpers\FileWatcher.cs" />
     <Compile Include="MVVM\Models\ImportLogFile.cs" />
+    <Compile Include="MVVM\Models\WatchedFileInfo.cs" />
     <Compile Include="MVVM\Models\LogTemplate.cs" />
     <Compile Include="MVVM\Models\LogTemplateItemInfo.cs" />
     <Compile Include="MVVM\Models\ReleaseNotes.cs" />
@@ -208,7 +220,6 @@
     </Compile>
     <Compile Include="MVVM\TreeView\CheckBoxId.cs" />
     <Compile Include="MVVM\TreeView\Node.cs" />
-    <Compile Include="UDPPacketsParser.cs" />
     <Page Include="MVVM\Views\ImportLogsProcessDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

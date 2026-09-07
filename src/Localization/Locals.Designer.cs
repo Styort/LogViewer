@@ -441,7 +441,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Экспорт логов в файл (Ctrl+S).
+        ///   Looks up a localized string similar to Экспорт отображаемых логов в файл (Ctrl+S).
         /// </summary>
         internal static string ExportLogsToFileToolTip {
             get {

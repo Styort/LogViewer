@@ -15,19 +15,22 @@ namespace LogViewer.Core.Abstractions
         /// Reads files, parses with template, adds entries to session. Reports progress 0-100.
         /// Cancel leaves partial state (entries from already-processed files remain).
         /// </summary>
-        void ImportFromFiles(
+        /// <returns>Number of entries added.</returns>
+        int ImportFromFiles(
             IEnumerable<string> filePaths,
             LogTemplateDto template,
             IProgress<int> progress,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken,
+            ImportRange range = null);
 
         /// <summary>
         /// Async wrapper for ImportFromFiles so UI can await without blocking.
         /// </summary>
-        Task ImportFromFilesAsync(
+        Task<int> ImportFromFilesAsync(
             IEnumerable<string> filePaths,
             LogTemplateDto template,
             IProgress<int> progress,
-            CancellationToken cancellationToken);
+            CancellationToken cancellationToken,
+            ImportRange range = null);
     }
 }

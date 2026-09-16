@@ -653,4 +653,16 @@
   <data name="SeparateIpLoggersByPortTooltip" xml:space="preserve">
     <value>Разделять UDP логгеры по портам</value>
   </data>
+  <data name="ImportRangeEntire" xml:space="preserve">
+    <value>Весь файл</value>
+  </data>
+  <data name="ImportRangeLastMegabytes" xml:space="preserve">
+    <value>Последние МБ</value>
+  </data>
+  <data name="ImportRangeLastHours" xml:space="preserve">
+    <value>Последние часы</value>
+  </data>
+  <data name="ImportRangeNoEntries" xml:space="preserve">
+    <value>В выбранном диапазоне не найдено ни одной полной записи лога.</value>
+  </data>
 </root>

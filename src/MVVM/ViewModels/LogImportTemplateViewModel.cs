@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
+using LogViewer.Core.Domain;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -33,6 +34,11 @@ namespace LogViewer.MVVM.ViewModels
         private string selectedEncoding = "UTF-8";
         private bool? dialogResult;
         private bool needUpdateFile;
+        private bool isEntireFileRange = true;
+        private bool isLastBytesRange;
+        private bool isLastHoursRange;
+        private int tailSizeMegabytes = 50;
+        private double tailHours = 2;
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
         #region Свойства
@@ -100,6 +106,85 @@ namespace LogViewer.MVVM.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        [XmlIgnore]
+        public bool IsEntireFileRange
+        {
+            get => isEntireFileRange;
+            set
+            {
+                isEntireFileRange = value;
+                if (value)
+                {
+                    isLastBytesRange = false;
+                    isLastHoursRange = false;
+                    OnPropertyChanged(nameof(IsLastBytesRange));
+                    OnPropertyChanged(nameof(IsLastHoursRange));
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsLastBytesRange
+        {
+            get => isLastBytesRange;
+            set
+            {
+                isLastBytesRange = value;
+                if (value)
+                {
+                    isEntireFileRange = false;
+                    isLastHoursRange = false;
+                    OnPropertyChanged(nameof(IsEntireFileRange));
+                    OnPropertyChanged(nameof(IsLastHoursRange));
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsLastHoursRange
+        {
+            get => isLastHoursRange;
+            set
+            {
+                isLastHoursRange = value;
+                if (value)
+                {
+                    isEntireFileRange = false;
+                    isLastBytesRange = false;
+                    OnPropertyChanged(nameof(IsEntireFileRange));
+                    OnPropertyChanged(nameof(IsLastBytesRange));
+                }
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public int TailSizeMegabytes
+        {
+            get => tailSizeMegabytes;
+            set
+            {
+                tailSizeMegabytes = value < 1 ? 1 : value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public double TailHours
+        {
+            get => tailHours;
+            set
+            {
+                tailHours = value <= 0 ? 0.01 : value;
+                OnPropertyChanged();
+            }
+        }
+
+        [XmlIgnore]
+        public ImportRange ImportRange => BuildImportRange();
 
         [XmlIgnore]
         public List<string> EncodingList { get; set; } =
@@ -288,6 +373,31 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             DialogResult = true;
+        }
+
+        private ImportRange BuildImportRange()
+        {
+            if (IsLastBytesRange)
+            {
+                return new ImportRange
+                {
+                    Mode = ImportRangeMode.LastBytes,
+                    LastBytes = (long)Math.Max(1, TailSizeMegabytes) * 1024L * 1024L,
+                    LastDuration = TimeSpan.FromHours(2)
+                };
+            }
+
+            if (IsLastHoursRange)
+            {
+                return new ImportRange
+                {
+                    Mode = ImportRangeMode.LastDuration,
+                    LastBytes = ImportRange.DefaultLastBytes,
+                    LastDuration = TimeSpan.FromHours(Math.Max(0.01, TailHours))
+                };
+            }
+
+            return new ImportRange();
         }
 
         private void AddTemplateItem()

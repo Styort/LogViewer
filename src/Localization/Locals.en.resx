@@ -654,4 +654,16 @@ Restart application?</value>
   <data name="SeparateIpLoggersByPortTooltip" xml:space="preserve">
     <value>Separate UDP loggers by ports</value>
   </data>
+  <data name="ImportRangeEntire" xml:space="preserve">
+    <value>Entire file</value>
+  </data>
+  <data name="ImportRangeLastMegabytes" xml:space="preserve">
+    <value>Last megabytes</value>
+  </data>
+  <data name="ImportRangeLastHours" xml:space="preserve">
+    <value>Last hours</value>
+  </data>
+  <data name="ImportRangeNoEntries" xml:space="preserve">
+    <value>No complete log records were found in the selected range.</value>
+  </data>
 </root>

@@ -23,22 +23,24 @@ namespace LogViewer.Core.Services
             _session = session ?? throw new ArgumentNullException(nameof(session));
         }
 
-        public void ImportFromFiles(
+        public int ImportFromFiles(
             IEnumerable<string> filePaths,
             LogTemplateDto template,
             IProgress<int> progress,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ImportRange range = null)
         {
-            if (filePaths == null || template == null) return;
+            if (filePaths == null || template == null) return 0;
 
             var paths = filePaths as IList<string> ?? filePaths.ToList();
-            if (paths.Count == 0) return;
+            if (paths.Count == 0) return 0;
 
             var layout = TemplateParseLayout.Create(template);
-            if (!layout.IsValid) return;
+            if (!layout.IsValid) return 0;
 
             var encoding = Encoding.GetEncoding(template.Encoding ?? "UTF-8");
             int completed = 0;
+            int totalEntries = 0;
 
             foreach (var filePath in paths)
             {
@@ -47,13 +49,27 @@ namespace LogViewer.Core.Services
                 var entries = new List<LogEntry>();
                 using (var stream = TemplateFileLogReader.OpenRead(filePath))
                 {
+                    var seek = TemplateFileLogReader.SeekToRange(
+                        stream, range, encoding, _parser, layout, cancellationToken);
+
+                    Action<LogEntry> onEntry = entries.Add;
+                    if (seek.FilterByMinTime)
+                    {
+                        var cutoff = seek.MinTime;
+                        onEntry = e =>
+                        {
+                            if (e.Time >= cutoff)
+                                entries.Add(e);
+                        };
+                    }
+
                     TemplateFileLogReader.Read(
                         stream,
                         encoding,
                         _parser,
                         layout,
                         filePath,
-                        entries.Add,
+                        onEntry,
                         cancellationToken,
                         (pos, len) =>
                         {
@@ -65,20 +81,26 @@ namespace LogViewer.Core.Services
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (entries.Count > 0)
+                {
                     _session.AddEntries(entries);
+                    totalEntries += entries.Count;
+                }
 
                 completed++;
                 progress?.Report((completed * 100) / paths.Count);
             }
+
+            return totalEntries;
         }
 
-        public Task ImportFromFilesAsync(
+        public Task<int> ImportFromFilesAsync(
             IEnumerable<string> filePaths,
             LogTemplateDto template,
             IProgress<int> progress,
-            CancellationToken cancellationToken)
+            CancellationToken cancellationToken,
+            ImportRange range = null)
         {
-            return Task.Run(() => ImportFromFiles(filePaths, template, progress, cancellationToken), cancellationToken);
+            return Task.Run(() => ImportFromFiles(filePaths, template, progress, cancellationToken, range), cancellationToken);
         }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using LogViewer.Core.Domain;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -21,6 +22,7 @@ namespace LogViewer.MVVM.Views
     {
         public LogTemplate LogTemplate { get; private set; }
         public bool NeedUpdateFile { get; private set; } = false;
+        public ImportRange ImportRange { get; private set; } = ImportRange.Entire;
  
         public LogImportTemplateDialog(string path)
         {
@@ -35,6 +37,7 @@ namespace LogViewer.MVVM.Views
             {
                 LogTemplate = logImportTemplateViewModel.LogTemplate;
                 NeedUpdateFile = logImportTemplateViewModel.NeedUpdateFile;
+                ImportRange = logImportTemplateViewModel.ImportRange ?? ImportRange.Entire;
             }
         }
     }

@@ -693,6 +693,42 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Весь файл.
+        /// </summary>
+        internal static string ImportRangeEntire {
+            get {
+                return ResourceManager.GetString("ImportRangeEntire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Последние часы.
+        /// </summary>
+        internal static string ImportRangeLastHours {
+            get {
+                return ResourceManager.GetString("ImportRangeLastHours", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Последние МБ.
+        /// </summary>
+        internal static string ImportRangeLastMegabytes {
+            get {
+                return ResourceManager.GetString("ImportRangeLastMegabytes", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В выбранном диапазоне не найдено ни одной полной записи лога.
+        /// </summary>
+        internal static string ImportRangeNoEntries {
+            get {
+                return ResourceManager.GetString("ImportRangeNoEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to В отдельном окне (Ctrl+Shift+F).
         /// </summary>
         internal static string InAnotherWindowHotKeys {

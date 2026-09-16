@@ -40,23 +40,9 @@ namespace LogViewer.Core.Services
                 message = string.Join(layout.Separator, parts, msgIdx, parts.Length - msgIdx);
 
             DateTime date = DateTime.Now;
-            if (layout.DateIndex >= 0 && layout.DateIndex < parts.Length)
-            {
-                string dateStr = parts[layout.DateIndex];
-                if (dateStr.IndexOf('\0') >= 0)
-                    dateStr = dateStr.Replace("\0", "");
-
-                if (layout.DateKind == ImportTemplateParameters.ticks)
-                {
-                    if (long.TryParse(dateStr, out long ticks))
-                        date = new DateTime(ticks);
-                }
-                else if (layout.DateFormats != null && layout.DateFormats.Length > 0)
-                {
-                    if (!DateTime.TryParseExact(dateStr, layout.DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
-                        date = DateTime.Now;
-                }
-            }
+            if (layout.DateIndex >= 0 && layout.DateIndex < parts.Length &&
+                !TryParseDate(parts[layout.DateIndex], layout, out date))
+                date = DateTime.Now;
 
             LogLevel level = LogLevel.Info;
             if (layout.LevelIndex < parts.Length)
@@ -87,6 +73,53 @@ namespace LogViewer.Core.Services
                 Thread = thread,
                 ProcessID = processId,
             };
+        }
+
+        /// <summary>
+        /// Parses the timestamp of a header line. Returns false if the line is not a header or the date cannot be parsed.
+        /// </summary>
+        public bool TryParseHeaderTime(string line, TemplateParseLayout layout, out DateTime time)
+        {
+            time = default(DateTime);
+            if (string.IsNullOrEmpty(line) || layout == null || !layout.IsValid || layout.DateIndex < 0)
+                return false;
+            if (!StringUtils.ContainsAnyOf(line, layout.LogTypeMarkers))
+                return false;
+
+            var parts = line.Split(layout.SeparatorAsArray, StringSplitOptions.None);
+            if (layout.DateIndex >= parts.Length)
+                return false;
+
+            return TryParseDate(parts[layout.DateIndex], layout, out time);
+        }
+
+        private static bool TryParseDate(string dateStr, TemplateParseLayout layout, out DateTime date)
+        {
+            date = default(DateTime);
+            if (string.IsNullOrEmpty(dateStr) || layout == null)
+                return false;
+            if (dateStr.IndexOf('\0') >= 0)
+                dateStr = dateStr.Replace("\0", "");
+
+            if (layout.DateKind == ImportTemplateParameters.ticks)
+            {
+                if (!long.TryParse(dateStr, out long ticks))
+                    return false;
+                try
+                {
+                    date = new DateTime(ticks);
+                    return true;
+                }
+                catch (ArgumentOutOfRangeException)
+                {
+                    return false;
+                }
+            }
+
+            if (layout.DateFormats != null && layout.DateFormats.Length > 0)
+                return DateTime.TryParseExact(dateStr, layout.DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
+
+            return DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.None, out date);
         }
     }
 }

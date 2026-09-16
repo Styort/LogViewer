@@ -1720,7 +1720,11 @@ namespace LogViewer.MVVM.ViewModels
 
                 try
                 {
-                    await logImportService.ImportFromFilesAsync(paths, dto, progress, cancelImportLogTokenSource.Token);
+                    var importRange = logImportTemplateDialogDialog.ImportRange ?? ImportRange.Entire;
+                    int importedCount = await logImportService.ImportFromFilesAsync(
+                        paths, dto, progress, cancelImportLogTokenSource.Token, importRange);
+                    if (importedCount == 0 && importRange.Mode != ImportRangeMode.EntireFile)
+                        MessageBox.Show(Locals.ImportRangeNoEntries, Locals.Information, MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
                 catch (OperationCanceledException)
                 {

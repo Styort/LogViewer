@@ -195,6 +195,7 @@
     <Compile Include="Enums\eImportTemplateParameters.cs" />
     <Compile Include="Enums\eLogLevel.cs" />
     <Compile Include="Helpers\ArchiveLogExtractor.cs" />
+    <Compile Include="Helpers\LoggerStatistics.cs" />
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
     <Compile Include="Helpers\DialogCloser.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
@@ -226,6 +227,7 @@
     </Compile>
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
+    <Compile Include="MVVM\Models\LoggerStatItem.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />
     <Compile Include="MVVM\Models\Theme.cs" />
@@ -251,6 +253,10 @@
       <DependentUpon>SearchResult.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\ViewModels\SearchResultViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\LoggerStatisticsViewModel.cs" />
+    <Compile Include="MVVM\Views\LoggerStatisticsWindow.xaml.cs">
+      <DependentUpon>LoggerStatisticsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\ViewModels\SettingsViewModel.cs" />
     <Compile Include="MVVM\Views\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
@@ -296,6 +302,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="MVVM\Views\LogImportTemplateDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\LoggerStatisticsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

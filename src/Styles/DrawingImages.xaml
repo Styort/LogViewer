@@ -348,6 +348,14 @@
         </DrawingImage.Drawing>
     </DrawingImage>
     
+    <DrawingImage x:Key="LoggerStatisticsDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="M30,170 L30,110 L55,110 L55,170 Z M70,170 L70,70 L95,70 L95,170 Z M110,170 L110,40 L135,40 L135,170 Z M150,170 L150,90 L175,90 L175,170 Z M20,175 L180,175 L180,185 L20,185 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <DrawingImage x:Key="ImportWhiteDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V330 H330 V0 H0 Z">

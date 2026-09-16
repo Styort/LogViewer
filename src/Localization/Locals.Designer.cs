@@ -873,6 +873,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Статистика по логгерам.
+        /// </summary>
+        internal static string LoggerStatistics {
+            get {
+                return ResourceManager.GetString("LoggerStatistics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Статистика по логгерам.
+        /// </summary>
+        internal static string LoggerStatisticsToolTip {
+            get {
+                return ResourceManager.GetString("LoggerStatisticsToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Основное.
         /// </summary>
         internal static string Main {
@@ -1491,6 +1509,114 @@ namespace LogViewer.Localization {
         internal static string StartReadingLogsFromUDP {
             get {
                 return ResourceManager.GetString("StartReadingLogsFromUDP", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Нет сообщений для статистики.
+        /// </summary>
+        internal static string StatisticsEmpty {
+            get {
+                return ResourceManager.GetString("StatisticsEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error+Fatal.
+        /// </summary>
+        internal static string StatisticsErrorFatal {
+            get {
+                return ResourceManager.GetString("StatisticsErrorFatal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Последняя запись.
+        /// </summary>
+        internal static string StatisticsLastTime {
+            get {
+                return ResourceManager.GetString("StatisticsLastTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Логгеров.
+        /// </summary>
+        internal static string StatisticsLoggers {
+            get {
+                return ResourceManager.GetString("StatisticsLoggers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to %.
+        /// </summary>
+        internal static string StatisticsPercent {
+            get {
+                return ResourceManager.GetString("StatisticsPercent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Обновить.
+        /// </summary>
+        internal static string StatisticsRefresh {
+            get {
+                return ResourceManager.GetString("StatisticsRefresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Доля.
+        /// </summary>
+        internal static string StatisticsShare {
+            get {
+                return ResourceManager.GetString("StatisticsShare", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показать.
+        /// </summary>
+        internal static string StatisticsShow {
+            get {
+                return ResourceManager.GetString("StatisticsShow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Интервал.
+        /// </summary>
+        internal static string StatisticsTimeRange {
+            get {
+                return ResourceManager.GetString("StatisticsTimeRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Всего.
+        /// </summary>
+        internal static string StatisticsTotal {
+            get {
+                return ResourceManager.GetString("StatisticsTotal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Все загруженные.
+        /// </summary>
+        internal static string StatisticsUseAllLogs {
+            get {
+                return ResourceManager.GetString("StatisticsUseAllLogs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Текущий список (фильтры).
+        /// </summary>
+        internal static string StatisticsUseFilteredList {
+            get {
+                return ResourceManager.GetString("StatisticsUseFilteredList", resourceCulture);
             }
         }
         

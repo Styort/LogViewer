@@ -666,4 +666,46 @@ Restart application?</value>
   <data name="ImportRangeNoEntries" xml:space="preserve">
     <value>No complete log records were found in the selected range.</value>
   </data>
+  <data name="LoggerStatistics" xml:space="preserve">
+    <value>Logger statistics</value>
+  </data>
+  <data name="LoggerStatisticsToolTip" xml:space="preserve">
+    <value>Logger statistics</value>
+  </data>
+  <data name="StatisticsEmpty" xml:space="preserve">
+    <value>No messages to summarize</value>
+  </data>
+  <data name="StatisticsErrorFatal" xml:space="preserve">
+    <value>Error+Fatal</value>
+  </data>
+  <data name="StatisticsLastTime" xml:space="preserve">
+    <value>Last message</value>
+  </data>
+  <data name="StatisticsLoggers" xml:space="preserve">
+    <value>Loggers</value>
+  </data>
+  <data name="StatisticsPercent" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="StatisticsRefresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="StatisticsShare" xml:space="preserve">
+    <value>Share</value>
+  </data>
+  <data name="StatisticsShow" xml:space="preserve">
+    <value>Show</value>
+  </data>
+  <data name="StatisticsTimeRange" xml:space="preserve">
+    <value>Range</value>
+  </data>
+  <data name="StatisticsTotal" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="StatisticsUseAllLogs" xml:space="preserve">
+    <value>All loaded</value>
+  </data>
+  <data name="StatisticsUseFilteredList" xml:space="preserve">
+    <value>Current list (filters)</value>
+  </data>
 </root>

@@ -665,4 +665,46 @@
   <data name="ImportRangeNoEntries" xml:space="preserve">
     <value>В выбранном диапазоне не найдено ни одной полной записи лога.</value>
   </data>
+  <data name="LoggerStatistics" xml:space="preserve">
+    <value>Статистика по логгерам</value>
+  </data>
+  <data name="LoggerStatisticsToolTip" xml:space="preserve">
+    <value>Статистика по логгерам</value>
+  </data>
+  <data name="StatisticsEmpty" xml:space="preserve">
+    <value>Нет сообщений для статистики</value>
+  </data>
+  <data name="StatisticsErrorFatal" xml:space="preserve">
+    <value>Error+Fatal</value>
+  </data>
+  <data name="StatisticsLastTime" xml:space="preserve">
+    <value>Последняя запись</value>
+  </data>
+  <data name="StatisticsLoggers" xml:space="preserve">
+    <value>Логгеров</value>
+  </data>
+  <data name="StatisticsPercent" xml:space="preserve">
+    <value>%</value>
+  </data>
+  <data name="StatisticsRefresh" xml:space="preserve">
+    <value>Обновить</value>
+  </data>
+  <data name="StatisticsShare" xml:space="preserve">
+    <value>Доля</value>
+  </data>
+  <data name="StatisticsShow" xml:space="preserve">
+    <value>Показать</value>
+  </data>
+  <data name="StatisticsTimeRange" xml:space="preserve">
+    <value>Интервал</value>
+  </data>
+  <data name="StatisticsTotal" xml:space="preserve">
+    <value>Всего</value>
+  </data>
+  <data name="StatisticsUseAllLogs" xml:space="preserve">
+    <value>Все загруженные</value>
+  </data>
+  <data name="StatisticsUseFilteredList" xml:space="preserve">
+    <value>Текущий список (фильтры)</value>
+  </data>
 </root>

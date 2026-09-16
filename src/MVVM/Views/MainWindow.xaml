@@ -147,6 +147,7 @@
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
                 <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=ImportCommand}"/>
                 <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=ExportCommand}"/>
+                <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">

@@ -829,6 +829,8 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand setTimeIntervalCommand;
         private RelayCommand toggleMarkCommand;
         private RelayCommand findInTreeCommand;
+        private RelayCommand openLoggerStatisticsCommand;
+        private LoggerStatisticsWindow loggerStatisticsWindow;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
@@ -862,6 +864,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand SetTimeIntervalCommand => setTimeIntervalCommand ?? (setTimeIntervalCommand = new RelayCommand(SetTimeInterval));
         public RelayCommand ToggleMarkCommand => toggleMarkCommand ?? (toggleMarkCommand = new RelayCommand(ToggleMark));
         public RelayCommand FindInTreeCommand => findInTreeCommand ?? (findInTreeCommand = new RelayCommand(FindLoggerInTreeByMessage));
+        public RelayCommand OpenLoggerStatisticsCommand => openLoggerStatisticsCommand ?? (openLoggerStatisticsCommand = new RelayCommand(OpenLoggerStatistics));
 
         #endregion
 
@@ -1826,6 +1829,43 @@ namespace LogViewer.MVVM.ViewModels
                     IsVisibleLoader = false;
                 }
             }
+        }
+
+        internal IReadOnlyList<LogMessage> GetStatisticsSource(bool filtered)
+        {
+            var source = filtered ? Logs : allLogs;
+            if (source == null || source.Count == 0)
+                return Array.Empty<LogMessage>();
+            return source.ToList();
+        }
+
+        private void OpenLoggerStatistics()
+        {
+            if (loggerStatisticsWindow != null)
+            {
+                if (loggerStatisticsWindow.WindowState == WindowState.Minimized)
+                    loggerStatisticsWindow.WindowState = WindowState.Normal;
+                loggerStatisticsWindow.Activate();
+                return;
+            }
+
+            var vm = new LoggerStatisticsViewModel(GetStatisticsSource);
+            loggerStatisticsWindow = new LoggerStatisticsWindow(vm);
+            loggerStatisticsWindow.Closed += (sender, args) => loggerStatisticsWindow = null;
+            loggerStatisticsWindow.ShowLogEvent += (sender, message) =>
+            {
+                if (message == null)
+                    return;
+                if (Logs.Contains(message))
+                {
+                    SelectedLog = message;
+                    return;
+                }
+
+                var fallback = Logs.LastOrDefault(x => x.FullPath == message.FullPath);
+                SelectedLog = fallback ?? message;
+            };
+            loggerStatisticsWindow.Show();
         }
 
         /// <summary>

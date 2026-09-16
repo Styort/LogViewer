@@ -1,0 +1,138 @@
+<Window x:Class="LogViewer.MVVM.Views.LoggerStatisticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
+        mc:Ignorable="d"
+        Title="{localization:LocBinding LoggerStatistics}" Height="640" Width="1180">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <DataTemplate x:Key="TotalWithBarTemplate">
+                <Grid Height="18" Margin="4,2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="56"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="{Binding Total}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,8,0"/>
+                    <Rectangle Grid.Column="1" Height="14" HorizontalAlignment="Left" VerticalAlignment="Center"
+                               Width="{Binding BarWidth}" Fill="{Binding IconColor}" RadiusX="2" RadiusY="2"/>
+                </Grid>
+            </DataTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <TextBlock Text="{Binding TotalMessagesText}" Margin="0,0,16,4" FontSize="14"/>
+                <TextBlock Text="{Binding LoggerCountText}" Margin="0,0,16,4" FontSize="14"/>
+                <TextBlock Text="{Binding ErrorFatalText}" Margin="0,0,16,4" FontSize="14"/>
+                <TextBlock Text="{Binding TimeRangeText}" Margin="0,0,16,4" FontSize="14"/>
+            </WrapPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                <RadioButton GroupName="StatisticsSource" Margin="0,0,12,0"
+                             Content="{localization:LocBinding StatisticsUseFilteredList}"
+                             IsChecked="{Binding UseFilteredList, Mode=TwoWay}"/>
+                <RadioButton GroupName="StatisticsSource"
+                             Content="{localization:LocBinding StatisticsUseAllLogs}"
+                             IsChecked="{Binding UseAllLogs, Mode=TwoWay}"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="0,0,0,8">
+            <StackPanel Orientation="Horizontal" Height="16">
+                <Rectangle Width="{Binding TraceBarWidth}" Fill="Gray" ToolTip="Trace"/>
+                <Rectangle Width="{Binding DebugBarWidth}" Fill="#FF333333" ToolTip="Debug"/>
+                <Rectangle Width="{Binding InfoBarWidth}" Fill="Green" ToolTip="Info"/>
+                <Rectangle Width="{Binding WarnBarWidth}" Fill="Orange" ToolTip="Warn"/>
+                <Rectangle Width="{Binding ErrorBarWidth}" Fill="Red" ToolTip="Error"/>
+                <Rectangle Width="{Binding FatalBarWidth}" Fill="DarkRed" ToolTip="Fatal"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                <TextBlock Text="Trace" Foreground="Gray" Margin="0,0,12,0"/>
+                <TextBlock Text="Debug" Margin="0,0,12,0"/>
+                <TextBlock Text="Info" Foreground="Green" Margin="0,0,12,0"/>
+                <TextBlock Text="Warn" Foreground="Orange" Margin="0,0,12,0"/>
+                <TextBlock Text="Error" Foreground="Red" Margin="0,0,12,0"/>
+                <TextBlock Text="Fatal" Foreground="DarkRed"/>
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <ListView x:Name="StatisticsListView" ItemsSource="{Binding Items}"
+                      SelectedItem="{Binding SelectedItem}"
+                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                      VirtualizingStackPanel.IsVirtualizing="True"
+                      VirtualizingStackPanel.VirtualizationMode="Recycling"
+                      GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="{localization:LocBinding Logger}" Width="280"
+                                        DisplayMemberBinding="{Binding Logger}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="{localization:LocBinding StatisticsTotal}" Width="280"
+                                        CellTemplate="{StaticResource TotalWithBarTemplate}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Trace" Width="55" DisplayMemberBinding="{Binding Trace}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Debug" Width="55" DisplayMemberBinding="{Binding Debug}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Info" Width="50" DisplayMemberBinding="{Binding Info}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Warn" Width="55" DisplayMemberBinding="{Binding Warn}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Error" Width="55" DisplayMemberBinding="{Binding Error}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="Fatal" Width="55" DisplayMemberBinding="{Binding Fatal}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="{localization:LocBinding StatisticsPercent}" Width="70"
+                                        DisplayMemberBinding="{Binding Percent, StringFormat={}{0:0.##}%}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                        <GridViewColumn Header="{localization:LocBinding StatisticsLastTime}" Width="160"
+                                        DisplayMemberBinding="{Binding LastTime, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}"
+                                        HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ToolTip" Value="{Binding FullPath}"/>
+                        <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <TextBlock Text="{localization:LocBinding StatisticsEmpty}" FontSize="16" Foreground="Gray"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Visibility="{Binding ShowEmptyPlaceholder, Converter={StaticResource BooleanToVisibility}}"/>
+
+            <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Height="50" Width="50"
+                         IsIndeterminate="True" HorizontalAlignment="Center" VerticalAlignment="Center"
+                         Visibility="{Binding ShowProgress, Converter={StaticResource BooleanToVisibility}}"/>
+        </Grid>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button MinWidth="120" Height="30" Margin="0,0,10,0"
+                    Content="{localization:LocBinding StatisticsShow}"
+                    Command="{Binding ShowSelectedCommand}"/>
+            <Button MinWidth="120" Height="30"
+                    Content="{localization:LocBinding StatisticsRefresh}"
+                    Command="{Binding RefreshCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>

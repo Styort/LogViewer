@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 using LogViewer.Core.Domain;
 
 namespace LogViewer.Core.Services
 {
     /// <summary>
-    /// Parses a single line from a file log using a template. No UI.
+    /// Parses a file-log header line using a cached template layout. Continuation lines are appended separately.
     /// </summary>
     public class TemplateLogParser
     {
@@ -22,75 +21,61 @@ namespace LogViewer.Core.Services
         };
 
         /// <summary>
-        /// Parses a line into a LogEntry. Returns null if line is empty or template is invalid for this line.
+        /// Parses the first line of a log record. Returns null if the line or layout is invalid.
         /// </summary>
-        public LogEntry ParseLine(string line, LogTemplateDto template, string address)
+        public LogEntry ParseHeaderLine(string line, TemplateParseLayout layout, string address)
         {
-            if (string.IsNullOrEmpty(line)) return null;
-            if (template?.TemplateParameterses == null) return null;
-            if (!template.TemplateParameterses.ContainsKey(ImportTemplateParameters.level) ||
-                !template.TemplateParameterses.ContainsKey(ImportTemplateParameters.logger) ||
-                !template.TemplateParameterses.ContainsKey(ImportTemplateParameters.message))
+            if (string.IsNullOrEmpty(line) || layout == null || !layout.IsValid)
                 return null;
 
-            var parts = line.Split(new[] { template.Separator }, StringSplitOptions.None);
-            int msgIdx = template.TemplateParameterses[ImportTemplateParameters.message];
-            var message = new StringBuilder();
-            for (int i = msgIdx; i < parts.Length; i++)
-            {
-                if (!string.IsNullOrEmpty(parts[i]))
-                    message.Append(parts[i]);
-            }
+            var parts = line.Split(layout.SeparatorAsArray, StringSplitOptions.None);
 
-            ImportTemplateParameters dateFormat = ImportTemplateParameters.date;
-            if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.longdate))
-                dateFormat = ImportTemplateParameters.longdate;
-            else if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.shortdate))
-                dateFormat = ImportTemplateParameters.shortdate;
-            else if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.time))
-                dateFormat = ImportTemplateParameters.time;
-            else if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.ticks))
-                dateFormat = ImportTemplateParameters.ticks;
+            string message;
+            int msgIdx = layout.MessageIndex;
+            if (msgIdx >= parts.Length)
+                message = string.Empty;
+            else if (msgIdx == parts.Length - 1)
+                message = parts[msgIdx];
+            else
+                message = string.Join(layout.Separator, parts, msgIdx, parts.Length - msgIdx);
 
             DateTime date = DateTime.Now;
-            if (template.TemplateParameterses.ContainsKey(dateFormat) && template.TemplateParameterses[dateFormat] < parts.Length)
+            if (layout.DateIndex >= 0 && layout.DateIndex < parts.Length)
             {
-                string dateStr = parts[template.TemplateParameterses[dateFormat]].Replace("\0", "");
-                if (dateFormat == ImportTemplateParameters.ticks)
+                string dateStr = parts[layout.DateIndex];
+                if (dateStr.IndexOf('\0') >= 0)
+                    dateStr = dateStr.Replace("\0", "");
+
+                if (layout.DateKind == ImportTemplateParameters.ticks)
                 {
                     if (long.TryParse(dateStr, out long ticks))
                         date = new DateTime(ticks);
                 }
-                else
+                else if (layout.DateFormats != null && layout.DateFormats.Length > 0)
                 {
-                    if (!DateTime.TryParse(dateStr, out date) &&
-                        !DateTime.TryParseExact(dateStr, "yy-MM-dd HH:mm:ss.ffff", CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
+                    if (!DateTime.TryParseExact(dateStr, layout.DateFormats, CultureInfo.InvariantCulture, DateTimeStyles.None, out date))
                         date = DateTime.Now;
                 }
             }
 
-            int levelIdx = template.TemplateParameterses[ImportTemplateParameters.level];
-            string levelStr = levelIdx < parts.Length ? StringUtils.ToPascalCase(parts[levelIdx]) : "Info";
-            LogLevel level = LogLevelMapping.TryGetValue(levelStr, out var lvl) ? lvl : LogLevel.Info;
+            LogLevel level = LogLevel.Info;
+            if (layout.LevelIndex < parts.Length)
+            {
+                string levelStr = parts[layout.LevelIndex];
+                if (!string.IsNullOrEmpty(levelStr) && !LogLevelMapping.TryGetValue(levelStr, out level))
+                    level = LogLevel.Info;
+            }
 
-            int loggerIdx = template.TemplateParameterses[ImportTemplateParameters.logger];
-            string logger = loggerIdx < parts.Length ? parts[loggerIdx] : string.Empty;
+            string logger = layout.LoggerIndex < parts.Length ? parts[layout.LoggerIndex] : string.Empty;
 
             int thread = -1;
-            if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.threadid))
-            {
-                int tidx = template.TemplateParameterses[ImportTemplateParameters.threadid];
-                if (tidx < parts.Length)
-                    int.TryParse(parts[tidx], out thread);
-            }
+            if (layout.ThreadIndex >= 0 && layout.ThreadIndex < parts.Length)
+                int.TryParse(parts[layout.ThreadIndex], out thread);
 
             int? processId = null;
-            if (template.TemplateParameterses.ContainsKey(ImportTemplateParameters.processid))
-            {
-                int pidx = template.TemplateParameterses[ImportTemplateParameters.processid];
-                if (pidx < parts.Length && int.TryParse(parts[pidx], out int pid))
-                    processId = pid;
-            }
+            if (layout.ProcessIdIndex >= 0 && layout.ProcessIdIndex < parts.Length &&
+                int.TryParse(parts[layout.ProcessIdIndex], out int pid))
+                processId = pid;
 
             return new LogEntry
             {
@@ -98,7 +83,7 @@ namespace LogViewer.Core.Services
                 Time = date,
                 Level = level,
                 Logger = logger,
-                Message = message.ToString(),
+                Message = message,
                 Thread = thread,
                 ProcessID = processId,
             };

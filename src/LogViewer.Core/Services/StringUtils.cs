@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Linq;
 
 namespace LogViewer.Core.Services
@@ -13,20 +12,16 @@ namespace LogViewer.Core.Services
             return input.First().ToString().ToUpperInvariant() + input.Substring(1);
         }
 
-        public static string ToPascalCase(string text)
-        {
-            if (string.IsNullOrEmpty(text)) return text;
-            var lower = text.ToLowerInvariant().Replace("_", " ");
-            var info = CultureInfo.CurrentCulture.TextInfo;
-            return info.ToTitleCase(lower).Replace(" ", string.Empty);
-        }
-
-        public static bool ContainsAnyOf(string line, string[] search, bool ignoreCase = false)
+        public static bool ContainsAnyOf(string line, string[] search)
         {
             if (line == null || search == null) return false;
-            return search.Any(x => ignoreCase
-                ? line.IndexOf(x, StringComparison.OrdinalIgnoreCase) >= 0
-                : line.Contains(x));
+            for (int i = 0; i < search.Length; i++)
+            {
+                string token = search[i];
+                if (token != null && token.Length > 0 && line.IndexOf(token, StringComparison.Ordinal) >= 0)
+                    return true;
+            }
+            return false;
         }
     }
 }

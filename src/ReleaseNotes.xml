@@ -2,6 +2,10 @@
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
 		<Version>1.2.8.7 (30.07.2026)</Version>
+		<NewFeatures>
+			<string>Импорт логов из архивов .zip и .rar (включая вложенные папки) с автоматической распаковкой рядом с архивом и удалением распакованных файлов после парсинга</string>
+			<string>Копирование выбранных логов в буфер обмена (контекстное меню списка и Ctrl+C), в том числе нескольких выделенных строк</string>
+		</NewFeatures>
 		<FixedBugs>
 			<string>Экспортирование только выбранных Loggers из дерева при экспорте в файл</string>
 			<string>Экспорт в файл (Ctrl+S) сохраняет только текущий отображаемый список логов с учётом всех фильтров</string>

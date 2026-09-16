@@ -115,6 +115,33 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не удалось распаковать архив {0}..
+        /// </summary>
+        internal static string ArchiveExtractFailed {
+            get {
+                return ResourceManager.GetString("ArchiveExtractFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to В архиве не найдено файлов логов (.log, .txt)..
+        /// </summary>
+        internal static string ArchiveHasNoLogFiles {
+            get {
+                return ResourceManager.GetString("ArchiveHasNoLogFiles", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Архив защищён паролем..
+        /// </summary>
+        internal static string ArchiveIsPasswordProtected {
+            get {
+                return ResourceManager.GetString("ArchiveIsPasswordProtected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Цветовое оформление приложения.
         /// </summary>
         internal static string ApplicationTheme {

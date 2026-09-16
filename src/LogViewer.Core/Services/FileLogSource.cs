@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using LogViewer.Core.Domain;
@@ -12,10 +10,9 @@ namespace LogViewer.Core.Services
     public class FileLogSource : ILogSource
     {
         private readonly string _filePath;
-        private readonly LogTemplateDto _template;
+        private readonly TemplateParseLayout _layout;
         private readonly TemplateLogParser _parser;
-        private readonly string[] _logTypeMarkers;
-        private readonly string _encoding;
+        private readonly Encoding _encoding;
         private volatile bool _running;
         private Thread _watchThread;
         private long _position;
@@ -23,33 +20,10 @@ namespace LogViewer.Core.Services
         public FileLogSource(string filePath, LogTemplateDto template, string encoding = "UTF-8")
         {
             _filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            _template = template ?? throw new ArgumentNullException(nameof(template));
-            _encoding = encoding ?? "UTF-8";
+            if (template == null) throw new ArgumentNullException(nameof(template));
+            _encoding = Encoding.GetEncoding(encoding ?? "UTF-8");
             _parser = new TemplateLogParser();
-            _logTypeMarkers = BuildLogTypeMarkers(template);
-        }
-
-        private static string[] BuildLogTypeMarkers(LogTemplateDto template)
-        {
-            var levels = new[] { "Trace", "Debug", "Info", "Warn", "Error", "Fatal" };
-            var list = new List<string>();
-            if (!template.TemplateParameterses.ContainsKey(ImportTemplateParameters.level))
-                return list.ToArray();
-
-            int levelIdx = template.TemplateParameterses[ImportTemplateParameters.level];
-            int maxIdx = template.TemplateParameterses.Values.Max();
-            string sep = template.Separator ?? ";";
-
-            foreach (var level in levels)
-            {
-                if (levelIdx == 0)
-                    list.Add(sep + level);
-                else if (levelIdx == maxIdx)
-                    list.Add(level + sep);
-                else
-                    list.Add(sep + level + sep);
-            }
-            return list.ToArray();
+            _layout = TemplateParseLayout.Create(template);
         }
 
         public void Start()
@@ -57,7 +31,7 @@ namespace LogViewer.Core.Services
             _position = 0;
             try
             {
-                using (var stream = File.Open(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var stream = TemplateFileLogReader.OpenRead(_filePath))
                     _position = stream.Length;
             }
             catch { }
@@ -80,12 +54,12 @@ namespace LogViewer.Core.Services
                 try
                 {
                     long currentLength;
-                    using (var stream = File.Open(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    using (var stream = TemplateFileLogReader.OpenRead(_filePath))
                         currentLength = stream.Length;
 
                     if (currentLength > _position)
                     {
-                        ReadNewContent(_position, currentLength);
+                        ReadNewContent(_position);
                         _position = currentLength;
                     }
                 }
@@ -98,43 +72,22 @@ namespace LogViewer.Core.Services
             }
         }
 
-        private void ReadNewContent(long fromPosition, long toLength)
+        private void ReadNewContent(long fromPosition)
         {
             try
             {
-                using (var stream = File.Open(_filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (var stream = TemplateFileLogReader.OpenRead(_filePath))
                 {
                     stream.Position = fromPosition;
-                    var enc = Encoding.GetEncoding(_encoding);
-                    using (var reader = new StreamReader(stream, enc))
-                    {
-                        var sb = new StringBuilder();
-                        string line;
-                        while ((line = reader.ReadLine()) != null)
-                        {
-                            if (StringUtils.ContainsAnyOf(line, _logTypeMarkers, true))
-                            {
-                                if (sb.Length > 0)
-                                {
-                                    var entry = _parser.ParseLine(sb.ToString(), _template, _filePath);
-                                    if (entry != null)
-                                        LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry });
-                                }
-                                sb.Clear();
-                            }
-                            else if (sb.Length > 0)
-                            {
-                                sb.Append(Environment.NewLine);
-                            }
-                            sb.Append(line);
-                        }
-                        if (sb.Length > 0)
-                        {
-                            var entry = _parser.ParseLine(sb.ToString(), _template, _filePath);
-                            if (entry != null)
-                                LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry });
-                        }
-                    }
+                    TemplateFileLogReader.Read(
+                        stream,
+                        _encoding,
+                        _parser,
+                        _layout,
+                        _filePath,
+                        entry => LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry }),
+                        CancellationToken.None,
+                        null);
                 }
             }
             catch (Exception)

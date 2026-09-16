@@ -83,6 +83,7 @@ namespace LogViewer.MVVM.ViewModels
         private bool isMatchLogLevel = true;
         private bool useRegularExpressions = false;
         private LogMessage selectedLog;
+        private List<LogMessage> selectedLogs = new List<LogMessage>();
         private eLogLevel selectedMinLogLevel = eLogLevel.Trace;
         private Node selectedNode;
         private int receiverColorColumnWidth = 0;
@@ -260,6 +261,16 @@ namespace LogViewer.MVVM.ViewModels
                 selectedLog = value;
                 IsEnableFindPrevious = !string.IsNullOrEmpty(searchText) && SelectedLog != null;
                 UpdateSelectedNode();
+                OnPropertyChanged();
+            }
+        }
+
+        public List<LogMessage> SelectedLogs
+        {
+            get => selectedLogs;
+            set
+            {
+                selectedLogs = value ?? new List<LogMessage>();
                 OnPropertyChanged();
             }
         }
@@ -672,40 +683,71 @@ namespace LogViewer.MVVM.ViewModels
         private void OnFilteredViewUpdated(object sender, FilteredViewUpdatedEventArgs e)
         {
             if (e?.Entries == null) return;
-            var filtered = e.Entries.Select(entry => LogEntryConverter.ToLogMessage(entry, receivers)).Where(m => m != null).ToList();
-            foreach (var msg in filtered)
-            {
-                var rec = receivers.FirstOrDefault(x => x.Port == msg.Receiver?.Port);
-                if (rec != null)
-                {
-                    msg.Receiver.Color = rec.Color;
-                    msg.Receiver.Name = rec.Name;
-                    if (Settings.Instance.ShowMessageHighlightByReceiverColor)
-                    {
-                        var mc = msg.Receiver.Color.Clone();
-                        mc.Opacity = 0.1;
-                        msg.ToggleMark = mc;
-                    }
-                }
-            }
-            Logs = new AsyncObservableCollection<LogMessage>(filtered);
+
+            List<LogMessage> filtered;
             if (e.AllEntries != null)
             {
-                var all = e.AllEntries.Select(entry => LogEntryConverter.ToLogMessage(entry, receivers)).Where(m => m != null).ToList();
-                foreach (var msg in all)
+                var all = new List<LogMessage>(e.AllEntries.Count);
+                var map = new Dictionary<LogEntry, LogMessage>(e.AllEntries.Count);
+                for (int i = 0; i < e.AllEntries.Count; i++)
                 {
-                    var rec = receivers.FirstOrDefault(x => x.Port == msg.Receiver?.Port);
-                    if (rec != null) { msg.Receiver.Color = rec.Color; msg.Receiver.Name = rec.Name; }
+                    var entry = e.AllEntries[i];
+                    var msg = ToUiMessage(entry);
+                    if (msg == null) continue;
+                    all.Add(msg);
+                    map[entry] = msg;
+                }
+                filtered = new List<LogMessage>(e.Entries.Count);
+                for (int i = 0; i < e.Entries.Count; i++)
+                {
+                    var entry = e.Entries[i];
+                    if (map.TryGetValue(entry, out var msg))
+                        filtered.Add(msg);
+                    else
+                    {
+                        msg = ToUiMessage(entry);
+                        if (msg != null) filtered.Add(msg);
+                    }
                 }
                 allLogs = new AsyncObservableCollection<LogMessage>(all);
                 BuildLoggersFromCore();
             }
+            else
+            {
+                filtered = new List<LogMessage>(e.Entries.Count);
+                for (int i = 0; i < e.Entries.Count; i++)
+                {
+                    var msg = ToUiMessage(e.Entries[i]);
+                    if (msg != null) filtered.Add(msg);
+                }
+            }
+
+            Logs = new AsyncObservableCollection<LogMessage>(filtered);
             CleanIsEnabled = allLogs.Any();
             if (_treeCheckJustDone)
             {
                 _treeCheckJustDone = false;
                 SelectedLog = GetLastSelecterOrNearbyMessage();
             }
+        }
+
+        private LogMessage ToUiMessage(LogEntry entry)
+        {
+            var msg = LogEntryConverter.ToLogMessage(entry, receivers);
+            if (msg == null) return null;
+            var rec = receivers.FirstOrDefault(x => x.Port == entry.ReceiverPort);
+            if (rec != null)
+            {
+                msg.Receiver.Color = rec.Color;
+                msg.Receiver.Name = rec.Name;
+                if (Settings.Instance.ShowMessageHighlightByReceiverColor)
+                {
+                    var mc = rec.Color.Clone();
+                    mc.Opacity = 0.1;
+                    msg.ToggleMark = mc;
+                }
+            }
+            return msg;
         }
 
         /// <summary>
@@ -766,6 +808,7 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand treeViewElementCheckCommand;
         private RelayCommand openSettingsCommand;
         private RelayCommand copyMessageCommand;
+        private RelayCommand copyLogCommand;
         private RelayCommand clearLoggersCommand;
         private RelayCommand collapsLoggersCommand;
         private RelayCommand expandChildrenCommand;
@@ -796,6 +839,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand FindNextCommand => findNextCommand ?? (findNextCommand = new RelayCommand(FindNext));
         public RelayCommand FindPreviousCommand => findPreviousCommand ?? (findPreviousCommand = new RelayCommand(FindPrevious));
         public RelayCommand CopyMessageCommand => copyMessageCommand ?? (copyMessageCommand = new RelayCommand(CopyMessage));
+        public RelayCommand CopyLogCommand => copyLogCommand ?? (copyLogCommand = new RelayCommand(CopyLogs));
         public RelayCommand ClearLoggersCommand => clearLoggersCommand ?? (clearLoggersCommand = new RelayCommand(ClearLoggers));
         public RelayCommand CollapseLoggersCommand => collapsLoggersCommand ?? (collapsLoggersCommand = new RelayCommand(CollapseAllLoggers));
         public RelayCommand TreeViewElementCheckCommand => treeViewElementCheckCommand ?? (treeViewElementCheckCommand = new RelayCommand(TreeViewElementCheck));
@@ -1197,6 +1241,35 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
+        /// Копирует выбранные логи (дата и все поля) в буфер обмена.
+        /// </summary>
+        private void CopyLogs()
+        {
+            var logsToCopy = GetLogsToCopy();
+            if (logsToCopy.Count == 0) return;
+            Clipboard.SetDataObject(string.Join("\r\n", logsToCopy.Select(FormatLogLineForClipboard)));
+        }
+
+        private List<LogMessage> GetLogsToCopy()
+        {
+            if (SelectedLogs != null && SelectedLogs.Count > 0)
+            {
+                var selected = new HashSet<LogMessage>(SelectedLogs);
+                return Logs.Where(l => selected.Contains(l)).ToList();
+            }
+
+            if (SelectedLog != null)
+                return new List<LogMessage> { SelectedLog };
+
+            return new List<LogMessage>();
+        }
+
+        private string FormatLogLineForClipboard(LogMessage logMessage)
+        {
+            return $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Logger};{logMessage.Message}";
+        }
+
+        /// <summary>
         /// Очистить все логгеры
         /// </summary>
         private void ClearLoggers()
@@ -1527,114 +1600,169 @@ namespace LogViewer.MVVM.ViewModels
         {
             List<ImportLogFile> importLogFiles = new List<ImportLogFile>();
             cancelImportLogTokenSource = new CancellationTokenSource();
-
-            if (obj is IEnumerable<string> filesPath && filesPath.All(x => !string.IsNullOrEmpty(x) && File.Exists(x)))
-            {
-                AddImportedLogFiles(filesPath, importLogFiles);
-            }
-            else if (obj is string logPath && !string.IsNullOrEmpty(logPath) && File.Exists(logPath))
-            {
-                if (CheckFileExistsInImportLogs(logPath)) return;
-                AddImportedLogFile(logPath, importLogFiles);
-            }
-            else
-            {
-                OpenFileDialog fileDialog = new OpenFileDialog { Filter = "Text files (*.txt;*.log)|*.txt;*.log| All files (*.*)|*.*", Multiselect = true };
-                if (fileDialog.ShowDialog() == true)
-                {
-                    AddImportedLogFiles(fileDialog.FileNames, importLogFiles);
-                }
-            }
-
-            if (!importLogFiles.Any()) return;
-
-            LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
-            logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            logImportTemplateDialogDialog.ShowDialog();
-            if (!logImportTemplateDialogDialog.DialogResult.HasValue || !logImportTemplateDialogDialog.DialogResult.Value)
-                return;
-
-            var template = logImportTemplateDialogDialog.LogTemplate;
-            Pause();
-
-            List<WatchedFileInfo> currentFileWatchers = new List<WatchedFileInfo>();
-            if (logImportTemplateDialogDialog.NeedUpdateFile)
-            {
-                var dtoForTail = LogTemplateAdapter.ToDto(template);
-                if (dtoForTail != null)
-                {
-                    foreach (var importLog in importLogFiles)
-                    {
-                        if (FileWatchers.All(x => x.FilePath != importLog.FilePath))
-                        {
-                            try
-                            {
-                                var fileSource = new FileLogSource(importLog.FilePath, dtoForTail, template.Encoding ?? "UTF-8");
-                                processingService.AddSource(fileSource);
-                                fileSource.Start();
-                                var watched = new WatchedFileInfo { FilePath = importLog.FilePath, Source = fileSource };
-                                currentFileWatchers.Add(watched);
-                            }
-                            catch { }
-                        }
-                    }
-                }
-            }
-
-            if (importLogFiles.Count > 1)
-            {
-                ImportLogsProcessDialog importLogsProcessDialog = new ImportLogsProcessDialog(importLogFiles);
-                importLogsProcessDialog.Show();
-                importLogsProcessDialog.ImportProcessDialogResult += (sender, result) =>
-                {
-                    if (!result) cancelImportLogTokenSource.Cancel();
-                };
-            }
-
-            var paths = importLogFiles.Select(x => x.FilePath).ToList();
-            var dto = LogTemplateAdapter.ToDto(template);
-            if (dto == null) return;
-
-            IsVisibleProcessBar = true;
-            var progress = new Progress<int>(p => ProcessBarValue = p);
+            var extractDirectories = new List<string>();
+            var extractedLogPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             try
             {
-                await logImportService.ImportFromFilesAsync(paths, dto, progress, cancelImportLogTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                foreach (var path in paths)
-                    session.RemoveEntriesBySource(path);
-                foreach (var importLogFile in importLogFiles)
+                var selectedPaths = new List<string>();
+                if (obj is IEnumerable<string> filesPath && filesPath.All(x => !string.IsNullOrEmpty(x) && File.Exists(x)))
                 {
-                    var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
-                    if (currentNode != null) ClearChildrenLoggers(currentNode);
+                    selectedPaths.AddRange(filesPath);
                 }
-                foreach (var path in paths)
+                else if (obj is string logPath && !string.IsNullOrEmpty(logPath) && File.Exists(logPath))
                 {
-                    if (importData.ContainsKey(path)) importData.Remove(path);
+                    selectedPaths.Add(logPath);
                 }
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "An error occurred while importing log files");
-                MessageBox.Show(string.Format("{0}\n{1}", Locals.IncorrectLogMessageTemplateMessageBoxInfo, ex.Message), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                else
+                {
+                    OpenFileDialog fileDialog = new OpenFileDialog
+                    {
+                        Filter = "Logs and archives (*.txt;*.log;*.zip;*.rar)|*.txt;*.log;*.zip;*.rar|All files (*.*)|*.*",
+                        Multiselect = true
+                    };
+                    if (fileDialog.ShowDialog() == true)
+                        selectedPaths.AddRange(fileDialog.FileNames);
+                }
+
+                if (!selectedPaths.Any()) return;
+
+                var hadArchive = false;
+                foreach (var path in selectedPaths)
+                {
+                    if (ArchiveLogExtractor.IsArchive(path))
+                    {
+                        hadArchive = true;
+                        var extractDir = ArchiveLogExtractor.CreateExtractDirectory(path);
+                        extractDirectories.Add(extractDir);
+                        try
+                        {
+                            var extracted = ArchiveLogExtractor.ExtractLogFiles(path, extractDir);
+                            foreach (var logFile in extracted.LogFiles)
+                            {
+                                extractedLogPaths.Add(logFile);
+                                if (CheckFileExistsInImportLogs(logFile)) continue;
+                                AddImportedLogFile(logFile, importLogFiles);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.Error(ex, "Failed to extract archive {0}", path);
+                            MessageBox.Show(string.Format(Locals.ArchiveExtractFailed, path, ex.Message), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                    else
+                    {
+                        if (CheckFileExistsInImportLogs(path)) continue;
+                        AddImportedLogFile(path, importLogFiles);
+                    }
+                }
+
+                if (!importLogFiles.Any())
+                {
+                    if (hadArchive)
+                        MessageBox.Show(Locals.ArchiveHasNoLogFiles, Locals.Error, MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                LogImportTemplateDialog logImportTemplateDialogDialog = new LogImportTemplateDialog(importLogFiles.First().FilePath);
+                logImportTemplateDialogDialog.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                logImportTemplateDialogDialog.ShowDialog();
+                if (!logImportTemplateDialogDialog.DialogResult.HasValue || !logImportTemplateDialogDialog.DialogResult.Value)
+                    return;
+
+                var template = logImportTemplateDialogDialog.LogTemplate;
+                Pause();
+
+                List<WatchedFileInfo> currentFileWatchers = new List<WatchedFileInfo>();
+                if (logImportTemplateDialogDialog.NeedUpdateFile)
+                {
+                    var dtoForTail = LogTemplateAdapter.ToDto(template);
+                    if (dtoForTail != null)
+                    {
+                        foreach (var importLog in importLogFiles)
+                        {
+                            if (extractedLogPaths.Contains(importLog.FilePath))
+                                continue;
+
+                            if (FileWatchers.All(x => x.FilePath != importLog.FilePath))
+                            {
+                                try
+                                {
+                                    var fileSource = new FileLogSource(importLog.FilePath, dtoForTail, template.Encoding ?? "UTF-8");
+                                    processingService.AddSource(fileSource);
+                                    fileSource.Start();
+                                    var watched = new WatchedFileInfo { FilePath = importLog.FilePath, Source = fileSource };
+                                    currentFileWatchers.Add(watched);
+                                }
+                                catch { }
+                            }
+                        }
+                    }
+                }
+
+                if (importLogFiles.Count > 1)
+                {
+                    ImportLogsProcessDialog importLogsProcessDialog = new ImportLogsProcessDialog(importLogFiles);
+                    importLogsProcessDialog.Show();
+                    importLogsProcessDialog.ImportProcessDialogResult += (sender, result) =>
+                    {
+                        if (!result) cancelImportLogTokenSource.Cancel();
+                    };
+                }
+
+                var paths = importLogFiles.Select(x => x.FilePath).ToList();
+                var dto = LogTemplateAdapter.ToDto(template);
+                if (dto == null) return;
+
+                IsVisibleProcessBar = true;
+                var progress = new Progress<int>(p => ProcessBarValue = p);
+
+                try
+                {
+                    await logImportService.ImportFromFilesAsync(paths, dto, progress, cancelImportLogTokenSource.Token);
+                }
+                catch (OperationCanceledException)
+                {
+                    foreach (var path in paths)
+                        session.RemoveEntriesBySource(path);
+                    foreach (var importLogFile in importLogFiles)
+                    {
+                        var currentNode = Loggers[0].Children.FirstOrDefault(l => l.Logger == importLogFile.FilePath);
+                        if (currentNode != null) ClearChildrenLoggers(currentNode);
+                    }
+                    foreach (var path in paths)
+                    {
+                        if (importData.ContainsKey(path)) importData.Remove(path);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Error(ex, "An error occurred while importing log files");
+                    MessageBox.Show(string.Format("{0}\n{1}", Locals.IncorrectLogMessageTemplateMessageBoxInfo, ex.Message), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                finally
+                {
+                    IsVisibleProcessBar = false;
+                    CleanIsEnabled = allLogs.Any();
+
+                    if (logImportTemplateDialogDialog.NeedUpdateFile)
+                    {
+                        StartReadFromFileIsEnabled = false;
+                        foreach (var w in currentFileWatchers)
+                            FileWatchers.Add(w);
+                        OnPropertyChanged(nameof(FileWatchers));
+                    }
+
+                    foreach (var path in extractedLogPaths)
+                    {
+                        if (importData.ContainsKey(path)) importData.Remove(path);
+                    }
+                }
             }
             finally
             {
-                IsVisibleProcessBar = false;
-                CleanIsEnabled = allLogs.Any();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-
-                if (logImportTemplateDialogDialog.NeedUpdateFile)
-                {
-                    StartReadFromFileIsEnabled = false;
-                    foreach (var w in currentFileWatchers)
-                        FileWatchers.Add(w);
-                    OnPropertyChanged(nameof(FileWatchers));
-                }
+                ArchiveLogExtractor.Cleanup(extractDirectories, logger);
             }
         }
 

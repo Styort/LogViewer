@@ -751,6 +751,14 @@
     </Style>
 
     <ContextMenu x:Key="ItemContextMenu" Style="{StaticResource BaseContextMenu}">
+        <MenuItem Header="{localization:LocBinding Copy}" InputGestureText="Ctrl+C" Margin="0" Command="{Binding Path=DataContext.CopyLogCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+            <MenuItem.Icon>
+                <Image Source="{StaticResource CopyDrawingImage}"/>
+            </MenuItem.Icon>
+        </MenuItem>
+
+        <Separator />
+
         <MenuItem Header="{localization:LocBinding DontShowThisLogger}"  Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource HiddenEyeImage}"/>

@@ -625,6 +625,16 @@
   <data name="FileAlreadyAdded" xml:space="preserve">
     <value>Файл {0} уже добавлен</value>
   </data>
+  <data name="ArchiveExtractFailed" xml:space="preserve">
+    <value>Не удалось распаковать архив {0}.
+{1}</value>
+  </data>
+  <data name="ArchiveHasNoLogFiles" xml:space="preserve">
+    <value>В архиве не найдено файлов логов (.log, .txt).</value>
+  </data>
+  <data name="ArchiveIsPasswordProtected" xml:space="preserve">
+    <value>Архив защищён паролем.</value>
+  </data>
   <data name="ImportLogsProcess" xml:space="preserve">
     <value>Процесс импорта логов</value>
   </data>

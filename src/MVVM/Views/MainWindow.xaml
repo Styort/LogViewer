@@ -270,7 +270,7 @@
         <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Path=Logs, IsAsync=True}" SelectedValue="{Binding Path=SelectedLog}" x:Name="LogsListView" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" DragOver="LogsListView_OnDragOver" Drop="LogsListView_OnDrop" AllowDrop="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.ScrollChanged="LogsListView_OnScrollChanged" 
-                  ItemContainerStyle="{StaticResource LogItemStyle}" SelectionChanged="OnSelectionChanged" 
+                  ItemContainerStyle="{StaticResource LogItemStyle}" SelectionChanged="OnSelectionChanged" SelectionMode="Extended"
                   VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling"
                   IsEnabled="{Binding Path=IsEnableLogList}" GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
             <ListView.ItemsPanel>
@@ -290,6 +290,7 @@
                 </GridView>
             </ListView.View>
             <ListView.InputBindings>
+                <KeyBinding Key="C" Modifiers="Control" Command="{Binding Path=CopyLogCommand}"/>
                 <KeyBinding Key="W" Modifiers="Control" Command="{Binding Path=FindNextWarningCommand}"/>
                 <KeyBinding Key="E" Modifiers="Control" Command="{Binding Path=FindNextErrorCommand}"/>
             </ListView.InputBindings>
@@ -332,7 +333,7 @@
 
                 <TextBlock Text="{localization:LocBinding Message, StringFormat={}{0}:}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,0,0,0"/>
                 <Button Grid.Row="0" Grid.Column="0" Width="70" VerticalAlignment="Bottom" ToolTip="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5" Style="{StaticResource BaseButtonStyle}">
-                    <Image Source="{StaticResource CopyDrawingImage}"/>
+                    <Image Source="{StaticResource CopyWhiteDrawingImage}"/>
                 </Button>
                 <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>

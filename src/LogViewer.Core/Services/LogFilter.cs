@@ -22,13 +22,19 @@ namespace LogViewer.Core.Services
 
             if (criteria.IsSearchActive)
             {
-                bool levelOk = !criteria.MatchLogLevel || criteria.MinLevel.HasFlag(entry.Level);
+                bool levelOk = !criteria.MatchLogLevel || LevelIncluded(criteria.MinLevel, entry.Level);
                 bool searchOk = string.IsNullOrEmpty(criteria.SearchText) || MessageMatchesSearch(
                     entry.Message, criteria.SearchText, criteria.MatchCase, criteria.UseRegex, criteria.MatchWholeWord);
                 return levelOk && searchOk;
             }
 
-            return criteria.MinLevel.HasFlag(entry.Level);
+            return LevelIncluded(criteria.MinLevel, entry.Level);
+        }
+
+        private static bool LevelIncluded(LogLevel minLevel, LogLevel entryLevel)
+        {
+            int entry = (int)entryLevel;
+            return ((int)minLevel & entry) == entry;
         }
 
         private static bool MessageMatchesSearch(string message, string searchText, bool matchCase, bool useRegex, bool matchWholeWord)

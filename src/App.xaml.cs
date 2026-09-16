@@ -48,7 +48,7 @@ namespace LogViewer
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
-            if (e.Args.Any(x => (x.EndsWith(".txt") || x.EndsWith(".log")) && File.Exists(x)))
+            if (e.Args.Any(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)))
             {
                 IsManualStartup = true;
 

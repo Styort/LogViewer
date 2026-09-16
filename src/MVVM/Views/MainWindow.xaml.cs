@@ -63,17 +63,16 @@ namespace LogViewer.MVVM.Views
             if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData != null)
             {
                 string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
-                foreach (var arg in activationData.Where(x => x.EndsWith(".txt") || x.EndsWith(".log")))
-                {
-                    ((LogViewModel)DataContext).ImportLogs(arg);
-                }
+                var files = activationData.Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
+                if (files.Any())
+                    ((LogViewModel)DataContext).ImportLogs(files);
                 return;
             }
 
-            var args = Environment.GetCommandLineArgs().Where(x => x.EndsWith(".txt") || x.EndsWith(".log")).ToList();
+            var args = Environment.GetCommandLineArgs().Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
             if (args.Any())
             {
-                ((LogViewModel)DataContext).ImportLogs(args.Where(x=>x.EndsWith(".txt") || x.EndsWith(".log")));
+                ((LogViewModel)DataContext).ImportLogs(args);
                 return;
             }
 
@@ -202,6 +201,11 @@ namespace LogViewer.MVVM.Views
             if (AutoScrollEnabled)
                 AutoScrollEnabled = false;
 
+            if (DataContext is LogViewModel viewModel)
+            {
+                viewModel.SelectedLogs = LogsListView.SelectedItems.Cast<LogMessage>().ToList();
+            }
+
             Task.Run(() =>
             {
                 Application.Current.Dispatcher.Invoke(() =>
@@ -319,8 +323,7 @@ namespace LogViewer.MVVM.Views
         private void LogsListView_OnDragOver(object sender, DragEventArgs e)
         {
             var file = ((string[])e.Data.GetData(DataFormats.FileDrop))?.FirstOrDefault(
-                x => Path.GetExtension(x) == ".txt" ||
-                     Path.GetExtension(x) == ".log");
+                x => ArchiveLogExtractor.IsImportableFile(x));
 
             e.Effects = file != null ? DragDropEffects.Copy : DragDropEffects.None;
 
@@ -335,8 +338,7 @@ namespace LogViewer.MVVM.Views
                 string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files != null && files.Any())
                 {
-                    var logFiles = files.Where(x => Path.GetExtension(x) == ".txt" ||
-                                                Path.GetExtension(x) == ".log");
+                    var logFiles = files.Where(x => ArchiveLogExtractor.IsImportableFile(x));
                     if (logFiles.Any())
                     {
                         ((LogViewModel)this.DataContext).ImportLogs(logFiles);
@@ -367,10 +369,11 @@ namespace LogViewer.MVVM.Views
 
         internal static void HandleParameter(string[] args)
         {
-            if (Application.Current?.MainWindow is MainWindow mainWindow &&
-                args != null && args.Length > 0 && args.All(x => x.EndsWith(".txt") || x.EndsWith(".log")))
+            if (Application.Current?.MainWindow is MainWindow mainWindow && args != null && args.Length > 0)
             {
-                ((LogViewModel)mainWindow.DataContext).ImportLogs(args.First());
+                var files = args.Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
+                if (files.Any())
+                    ((LogViewModel)mainWindow.DataContext).ImportLogs(files);
             }
         }
 

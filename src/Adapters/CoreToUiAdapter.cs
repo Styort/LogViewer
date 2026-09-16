@@ -88,8 +88,26 @@ namespace LogViewer.Adapters
 
         private void RaiseFilteredViewUpdated(bool includeAllEntries = false)
         {
-            var entries = _service.GetFilteredEntries();
-            var allEntries = includeAllEntries ? _service.Session.GetAllEntries() : null;
+            IReadOnlyList<LogEntry> allEntries = null;
+            IReadOnlyList<LogEntry> entries;
+            if (includeAllEntries)
+            {
+                allEntries = _service.Session.GetAllEntries();
+                var filter = _service.Filter;
+                var criteria = _service.Session.FilterCriteria;
+                var filtered = new List<LogEntry>(allEntries.Count);
+                for (int i = 0; i < allEntries.Count; i++)
+                {
+                    var e = allEntries[i];
+                    if (filter.ShouldInclude(e, criteria))
+                        filtered.Add(e);
+                }
+                entries = filtered;
+            }
+            else
+            {
+                entries = _service.GetFilteredEntries();
+            }
             FilteredViewUpdated?.Invoke(this, new FilteredViewUpdatedEventArgs { Entries = entries, AllEntries = allEntries });
         }
     }

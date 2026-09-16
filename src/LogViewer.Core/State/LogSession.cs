@@ -13,6 +13,7 @@ namespace LogViewer.Core.State
     {
         private readonly object _lock = new object();
         private readonly List<LogEntry> _allEntries = new List<LogEntry>();
+        private readonly HashSet<LoggerKey> _uniqueLoggers = new HashSet<LoggerKey>();
 
         public FilterCriteria FilterCriteria { get; } = new FilterCriteria();
 
@@ -47,8 +48,10 @@ namespace LogViewer.Core.State
                     int toRemove = Math.Min(DeletedMessagesCount, _allEntries.Count);
                     _allEntries.RemoveRange(0, toRemove);
                     removedCount = toRemove;
+                    RebuildUniqueLoggers();
                 }
                 _allEntries.Add(entry);
+                _uniqueLoggers.Add(LoggerKey.From(entry));
             }
 
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { AddedEntry = entry, RemovedCount = removedCount });
@@ -57,7 +60,7 @@ namespace LogViewer.Core.State
         public void AddEntries(IEnumerable<LogEntry> entries)
         {
             if (entries == null) return;
-            var list = entries.ToList();
+            var list = entries as List<LogEntry> ?? entries.ToList();
             if (list.Count == 0) return;
 
             int removedCount = 0;
@@ -70,7 +73,11 @@ namespace LogViewer.Core.State
                     _allEntries.RemoveRange(0, toRemove);
                     removedCount += toRemove;
                 }
+                if (removedCount > 0)
+                    RebuildUniqueLoggers();
                 _allEntries.AddRange(list);
+                for (int i = 0; i < list.Count; i++)
+                    _uniqueLoggers.Add(LoggerKey.From(list[i]));
             }
 
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { AddedEntries = list, RemovedCount = removedCount });
@@ -81,6 +88,7 @@ namespace LogViewer.Core.State
             lock (_lock)
             {
                 _allEntries.Clear();
+                _uniqueLoggers.Clear();
             }
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { Cleared = true });
         }
@@ -98,7 +106,14 @@ namespace LogViewer.Core.State
             if (filter == null) return new List<LogEntry>();
             lock (_lock)
             {
-                return _allEntries.Where(e => filter.ShouldInclude(e, FilterCriteria)).ToList();
+                var result = new List<LogEntry>();
+                for (int i = 0; i < _allEntries.Count; i++)
+                {
+                    var e = _allEntries[i];
+                    if (filter.ShouldInclude(e, FilterCriteria))
+                        result.Add(e);
+                }
+                return result;
             }
         }
 
@@ -107,6 +122,7 @@ namespace LogViewer.Core.State
             lock (_lock)
             {
                 _allEntries.RemoveAll(e => e.Address == sourceAddress);
+                RebuildUniqueLoggers();
             }
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { Cleared = false });
             FilterCriteriaChanged?.Invoke(this, EventArgs.Empty);
@@ -117,6 +133,7 @@ namespace LogViewer.Core.State
             lock (_lock)
             {
                 _allEntries.RemoveAll(e => e.FullPath != null && e.FullPath.Contains(loggerFullPathContains));
+                RebuildUniqueLoggers();
             }
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { Cleared = false });
             FilterCriteriaChanged?.Invoke(this, EventArgs.Empty);
@@ -144,44 +161,57 @@ namespace LogViewer.Core.State
         }
 
         /// <summary>
-        /// Builds logger hierarchy from current entries. One root per Address, then ExecutableName (if any), then logger path segments. Leaf nodes have FullPath set.
+        /// Builds logger hierarchy from unique loggers. One root per Address, then ExecutableName (if any), then logger path segments.
         /// </summary>
         public IReadOnlyList<LoggerTreeNode> GetLoggerHierarchy()
         {
-            List<LoggerTreeNode> roots;
+            List<LoggerKey> keys;
             lock (_lock)
             {
-                var byAddress = _allEntries.GroupBy(e => e.Address ?? "").OrderBy(g => g.Key).ToList();
-                roots = new List<LoggerTreeNode>();
-                foreach (var grp in byAddress)
+                keys = _uniqueLoggers.ToList();
+            }
+
+            var byAddress = keys
+                .GroupBy(k => k.Address ?? "")
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            var roots = new List<LoggerTreeNode>();
+            foreach (var grp in byAddress)
+            {
+                string address = grp.Key;
+                var root = new LoggerTreeNode { Name = address, FullPath = "" };
+                var exeGroups = grp.GroupBy(k => k.ExecutableName ?? "").ToList();
+                foreach (var exeGrp in exeGroups)
                 {
-                    string address = grp.Key;
-                    var root = new LoggerTreeNode { Name = address, FullPath = "" };
-                    var exeGroups = grp.GroupBy(e => e.ExecutableName ?? "").ToList();
-                    foreach (var exeGrp in exeGroups)
+                    string exe = exeGrp.Key;
+                    var loggerPaths = exeGrp.Select(k => k.Logger).Where(l => !string.IsNullOrEmpty(l)).Distinct().ToList();
+                    if (!string.IsNullOrEmpty(exe))
                     {
-                        string exe = exeGrp.Key;
-                        if (!string.IsNullOrEmpty(exe))
-                        {
-                            var exeNode = new LoggerTreeNode { Name = exe, FullPath = "" };
-                            AddLoggerPaths(exeNode, exeGrp.Select(e => e.Logger).Distinct().ToList(), address + "." + exe + ".");
-                            root.Children.Add(exeNode);
-                        }
-                        else
-                            AddLoggerPaths(root, exeGrp.Select(e => e.Logger).Distinct().ToList(), address + ".");
+                        var exeNode = new LoggerTreeNode { Name = exe, FullPath = "" };
+                        AddLoggerPaths(exeNode, loggerPaths, address + "." + exe + ".");
+                        root.Children.Add(exeNode);
                     }
-                    if (root.Children.Count > 0)
-                        roots.Add(root);
+                    else
+                        AddLoggerPaths(root, loggerPaths, address + ".");
                 }
+                if (root.Children.Count > 0)
+                    roots.Add(root);
             }
             return roots;
+        }
+
+        private void RebuildUniqueLoggers()
+        {
+            _uniqueLoggers.Clear();
+            for (int i = 0; i < _allEntries.Count; i++)
+                _uniqueLoggers.Add(LoggerKey.From(_allEntries[i]));
         }
 
         private static void AddLoggerPaths(LoggerTreeNode parent, List<string> loggerPaths, string prefix)
         {
             if (loggerPaths == null || loggerPaths.Count == 0) return;
             var byFirst = loggerPaths
-                .Where(l => !string.IsNullOrEmpty(l))
                 .Select(l => l.Split(new[] { '.' }, 2, StringSplitOptions.None))
                 .GroupBy(parts => parts[0])
                 .ToList();
@@ -195,6 +225,46 @@ namespace LogViewer.Core.State
                 if (rest.Count > 0)
                     AddLoggerPaths(node, rest, fullPath + ".");
                 parent.Children.Add(node);
+            }
+        }
+
+        private struct LoggerKey : IEquatable<LoggerKey>
+        {
+            public string Address;
+            public string ExecutableName;
+            public string Logger;
+
+            public static LoggerKey From(LogEntry entry)
+            {
+                return new LoggerKey
+                {
+                    Address = entry.Address ?? "",
+                    ExecutableName = entry.ExecutableName ?? "",
+                    Logger = entry.Logger ?? "",
+                };
+            }
+
+            public bool Equals(LoggerKey other)
+            {
+                return string.Equals(Address, other.Address, StringComparison.Ordinal)
+                    && string.Equals(ExecutableName, other.ExecutableName, StringComparison.Ordinal)
+                    && string.Equals(Logger, other.Logger, StringComparison.Ordinal);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is LoggerKey && Equals((LoggerKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    int h = Address != null ? Address.GetHashCode() : 0;
+                    h = (h * 397) ^ (ExecutableName != null ? ExecutableName.GetHashCode() : 0);
+                    h = (h * 397) ^ (Logger != null ? Logger.GetHashCode() : 0);
+                    return h;
+                }
             }
         }
     }

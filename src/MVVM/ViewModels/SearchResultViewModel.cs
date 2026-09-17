@@ -1,7 +1,7 @@
 ﻿using LogViewer.MVVM.Models;
+using LogViewer.MVVM.Commands;
 using System.Collections.ObjectModel;
 using System.Windows;
-using LogViewer.MVVM.Commands;
 
 namespace LogViewer.MVVM.ViewModels
 {
@@ -33,6 +33,10 @@ namespace LogViewer.MVVM.ViewModels
         /// Учитывать регистр
         /// </summary>
         public bool IsMatchCase { get; set; }
+
+        public string MessageFontFamily { get; } = Settings.Instance.MessageFontFamily;
+
+        public double MessageFontSize { get; } = Settings.Instance.MessageFontSize;
 
         private RelayCommand copyMessageCommand;
 

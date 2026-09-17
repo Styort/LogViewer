@@ -708,4 +708,10 @@ Restart application?</value>
   <data name="StatisticsUseFilteredList" xml:space="preserve">
     <value>Current list (filters)</value>
   </data>
+  <data name="MessageFont" xml:space="preserve">
+    <value>Message font:</value>
+  </data>
+  <data name="MessageFontSize" xml:space="preserve">
+    <value>Message font size:</value>
+  </data>
 </root>

@@ -707,4 +707,10 @@
   <data name="StatisticsUseFilteredList" xml:space="preserve">
     <value>Текущий список (фильтры)</value>
   </data>
+  <data name="MessageFont" xml:space="preserve">
+    <value>Шрифт сообщений:</value>
+  </data>
+  <data name="MessageFontSize" xml:space="preserve">
+    <value>Размер шрифта сообщений:</value>
+  </data>
 </root>

@@ -110,8 +110,11 @@
                 <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" ToolTip="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5">
                     <Image Source="{StaticResource CopyWhiteDrawingImage}"/>
                 </Button>
-                <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}" FontSize="14" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Margin="10,0" Background="White"
-                         BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True" VerticalScrollBarVisibility="Auto"/>
+                <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}"
+                         FontFamily="{Binding Path=MessageFontFamily}" FontSize="{Binding Path=MessageFontSize}"
+                         TextWrapping="Wrap" Grid.Column="1" VerticalAlignment="Stretch" Margin="10,0" Background="White"
+                         BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True"
+                         VerticalScrollBarVisibility="Auto"/>
 
 
                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,10,10,10">

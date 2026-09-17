@@ -97,6 +97,8 @@ namespace LogViewer.MVVM.ViewModels
         private string loggerHighlightText = string.Empty;
         private SolidColorBrush iconColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#3F51B5");
         private SolidColorBrush fontColor = new SolidColorBrush(Colors.White);
+        private string messageFontFamily = "Consolas";
+        private double messageFontSize = 14;
         private bool isSourceVisible = false;
         private bool isThreadVisible = true;
         private bool isEnableClearSearchLoggers;
@@ -520,6 +522,26 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public string MessageFontFamily
+        {
+            get => messageFontFamily;
+            set
+            {
+                messageFontFamily = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double MessageFontSize
+        {
+            get => messageFontSize;
+            set
+            {
+                messageFontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
         public int ProcessBarValue
         {
             get => processBarValue;
@@ -588,6 +610,7 @@ namespace LogViewer.MVVM.ViewModels
 
             IconColor = Settings.Instance.CurrentTheme.Color;
             FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
+            ApplyMessageDisplaySettings();
             allowMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
             maxMessageBufferSize = Settings.Instance.MaxMessageBufferSize;
             deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
@@ -1159,6 +1182,12 @@ namespace LogViewer.MVVM.ViewModels
             IsVisibleLoader = false;
         }
 
+        private void ApplyMessageDisplaySettings()
+        {
+            MessageFontFamily = Settings.Instance.MessageFontFamily;
+            MessageFontSize = Settings.Instance.MessageFontSize;
+        }
+
         /// <summary>
         /// Открыть окно настроек
         /// </summary>
@@ -1182,6 +1211,7 @@ namespace LogViewer.MVVM.ViewModels
                     session.MaxMessageBufferSize = maxMessageBufferSize;
                     session.DeletedMessagesCount = deletedMessagesCount;
                     FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
+                    ApplyMessageDisplaySettings();
                     if (Settings.Instance.CurrentTheme != null && !Equals(Settings.Instance.CurrentTheme.Color, IconColor))
                         IconColor = Settings.Instance.CurrentTheme.Color;
 

@@ -40,6 +40,8 @@ namespace LogViewer.MVVM.ViewModels
         private bool isShowTaskbarProgress;
         private bool showMessageHighlightByReceiverColor;
         private bool isSeparateIpLoggersByPort;
+        private string selectedMessageFontFamily = "Consolas";
+        private double messageFontSize = 14;
 
         #region Свойства
 
@@ -429,6 +431,35 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public List<string> MessageFontFamilies { get; } = GetAvailableMessageFontFamilies();
+
+        public List<double> MessageFontSizes { get; } = Enumerable.Range(10, 13).Select(x => (double)x).ToList();
+
+        public string SelectedMessageFontFamily
+        {
+            get => selectedMessageFontFamily;
+            set
+            {
+                selectedMessageFontFamily = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double MessageFontSize
+        {
+            get => messageFontSize;
+            set
+            {
+                if (value < 10)
+                    messageFontSize = 10;
+                else if (value > 22)
+                    messageFontSize = 22;
+                else
+                    messageFontSize = value;
+                OnPropertyChanged();
+            }
+        }
+
         public string Version { get; set; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public List<string> EncodingList { get; set; } =
@@ -472,6 +503,10 @@ namespace LogViewer.MVVM.ViewModels
                 ExampleDateTime = DateTime.Now.ToString(DisplayedDataFormat);
                 FontColor = FontColor.FromARGB(Settings.Instance.FontColor);
                 SelectedFontColor = SelectedFontColor.FromARGB(Settings.Instance.FontColor);
+                SelectedMessageFontFamily = MessageFontFamilies.Contains(Settings.Instance.MessageFontFamily)
+                    ? Settings.Instance.MessageFontFamily
+                    : "Consolas";
+                MessageFontSize = Settings.Instance.MessageFontSize;
                 IsShowSourceColumn = Settings.Instance.IsShowSourceColumn;
                 IsShowThreadColumn = Settings.Instance.IsShowThreadColumn;
                 IsShowTaskbarProgress = Settings.Instance.IsShowTaskbarProgress;
@@ -578,6 +613,8 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.IgnoredIPs = IgnoredIpAdresses.ToList();
             Settings.Instance.Receivers = Receivers.ToList();
             Settings.Instance.FontColor = SelectedFontColor.ToARGB();
+            Settings.Instance.MessageFontFamily = SelectedMessageFontFamily;
+            Settings.Instance.MessageFontSize = MessageFontSize;
             Settings.Instance.IsEnabledMaxMessageBufferSize = IsEnableMaxMessageBufferSize;
             Settings.Instance.MaxMessageBufferSize = MaxMessageBufferSize;
             Settings.Instance.DeletedMessagesCount = DeletedMessagesCount;
@@ -657,6 +694,33 @@ namespace LogViewer.MVVM.ViewModels
             {
                 logger.Warn(e, "An error occurred while ParseTheme");
             }
+        }
+
+        private static List<string> GetAvailableMessageFontFamilies()
+        {
+            var families = new List<string> { "Consolas" };
+            if (FontFamilyExists("Cascadia Mono"))
+                families.Add("Cascadia Mono");
+            families.Add("Courier New");
+            families.Add("Segoe UI");
+            return families;
+        }
+
+        private static bool FontFamilyExists(string familyName)
+        {
+            foreach (var family in Fonts.SystemFontFamilies)
+            {
+                if (string.Equals(family.Source, familyName, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                foreach (var name in family.FamilyNames.Values)
+                {
+                    if (string.Equals(name, familyName, StringComparison.OrdinalIgnoreCase))
+                        return true;
+                }
+            }
+
+            return false;
         }
     }
 }

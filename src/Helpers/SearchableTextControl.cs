@@ -145,6 +145,7 @@ namespace LogViewer.Helpers
             TextBlock displayTextBlock = this.Template.FindName("PART_TEXT", this) as TextBlock;
 
             displayTextBlock.TextWrapping = TextWrapping.NoWrap;
+            displayTextBlock.TextTrimming = TextTrimming.CharacterEllipsis;
 
             if (string.IsNullOrEmpty(this.Text))
             {

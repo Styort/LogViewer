@@ -963,6 +963,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Шрифт сообщений:.
+        /// </summary>
+        internal static string MessageFont {
+            get {
+                return ResourceManager.GetString("MessageFont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Размер шрифта сообщений:.
+        /// </summary>
+        internal static string MessageFontSize {
+            get {
+                return ResourceManager.GetString("MessageFontSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Выделять сообщения цветом приемника:.
         /// </summary>
         internal static string MessageHighlightByReceiverColor {

@@ -33,6 +33,8 @@ namespace LogViewer.MVVM.Models
         public int DeletedMessagesCount { get; set; } = 100000;
         public string DataFormat { get; set; } = "dd/MM/yyyy HH:mm:ss.fff";
         public string FontColor { get; set; } = "#FFFFFFFF";
+        public string MessageFontFamily { get; set; } = "Consolas";
+        public double MessageFontSize { get; set; } = 14;
         public string Language { get; set; } = "en";
         public Theme CurrentTheme { get; set; } = new Theme
         {
@@ -161,6 +163,8 @@ namespace LogViewer.MVVM.Models
                         Instance.IgnoredIPs = settings.IgnoredIPs;
                         Instance.Receivers = settings.Receivers;
                         Instance.FontColor = settings.FontColor;
+                        Instance.MessageFontFamily = settings.MessageFontFamily;
+                        Instance.MessageFontSize = settings.MessageFontSize;
                         Instance.OnlyOneAppInstance = settings.OnlyOneAppInstance;
                         Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
                         Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;

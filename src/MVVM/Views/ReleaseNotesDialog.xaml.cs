@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using LogViewer.MVVM.ViewModels;
 
 namespace LogViewer.MVVM.Views
 {
@@ -22,6 +12,13 @@ namespace LogViewer.MVVM.Views
         public ReleaseNotesDialog()
         {
             InitializeComponent();
+            ContentRendered += OnFirstContentRendered;
+        }
+
+        private void OnFirstContentRendered(object sender, EventArgs e)
+        {
+            ContentRendered -= OnFirstContentRendered;
+            DataContext = new ReleaseNotesViewModel();
         }
     }
 }

@@ -3,77 +3,88 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:LogViewer.MVVM.Views"
         mc:Ignorable="d"
         xmlns:localization="clr-namespace:LogViewer.Localization"
-        xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:converters="clr-namespace:LogViewer.Converters"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="{localization:LocBinding ReleaseNotes}" Height="350" Width="600">
 
     <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
+        <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
     </Window.Resources>
-
-    <Window.DataContext>
-        <viewModels:ReleaseNotesViewModel/>
-    </Window.DataContext>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="35"/>
         </Grid.RowDefinitions>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
-            <ItemsControl ItemsSource="{Binding ReleaseNotesList}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}">
-                            <Expander x:Name="Expander" IsExpanded="{Binding IsExpanded}">
-                                <Expander.HeaderTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Margin="-10,0,0,0" Text="{localization:LocBinding Version}"/>
-                                            <TextBlock Text="{Binding ElementName=Expander, Path=DataContext.Version}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </Expander.HeaderTemplate>
-                                <StackPanel Orientation="Vertical" Margin="14,-5,10,10">
-                                    <TextBlock Visibility="{Binding Path=NewFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Новые возможности:"/>
-                                    <ItemsControl ItemsSource="{Binding NewFeatures}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                    <TextBlock Visibility="{Binding Path=ChangedFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Измененный функционал:"/>
-                                    <ItemsControl ItemsSource="{Binding ChangedFeatures}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                    <TextBlock Visibility="{Binding Path=FixedBugs.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Исправления:"/>
-                                    <ItemsControl ItemsSource="{Binding FixedBugs}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </StackPanel>
-                            </Expander>
-                        </materialDesign:Card>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-        </ScrollViewer>
+        <ListBox ItemsSource="{Binding ReleaseNotesList}"
+                 BorderThickness="0"
+                 Background="Transparent"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"
+                 ScrollViewer.CanContentScroll="True"
+                 VirtualizingPanel.IsVirtualizing="True"
+                 VirtualizingPanel.VirtualizationMode="Recycling"
+                 VirtualizingPanel.ScrollUnit="Pixel">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="Margin" Value="0"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <ContentPresenter/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <materialDesign:Card Background="{DynamicResource MaterialDesignBackground}">
+                        <Expander IsExpanded="{Binding IsExpanded}" Header="{Binding}">
+                            <Expander.HeaderTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Margin="-10,0,0,0" Text="{localization:LocBinding Version}"/>
+                                        <TextBlock Text="{Binding Version}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </Expander.HeaderTemplate>
+                            <StackPanel Orientation="Vertical" Margin="14,-5,10,10">
+                                <TextBlock Visibility="{Binding Path=NewFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Новые возможности:"/>
+                                <ItemsControl ItemsSource="{Binding NewFeatures}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Visibility="{Binding Path=ChangedFeatures.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Измененный функционал:"/>
+                                <ItemsControl ItemsSource="{Binding ChangedFeatures}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                <TextBlock Visibility="{Binding Path=FixedBugs.Count, Converter={StaticResource CountToVisibilityConverter}}" FontWeight="Bold" Text="Исправления:"/>
+                                <ItemsControl ItemsSource="{Binding FixedBugs}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding StringFormat={}• {0}}" TextWrapping="Wrap" Margin="20,0"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Expander>
+                    </materialDesign:Card>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
         <Button Grid.Row="1" Content="OK" IsCancel="True"/>
     </Grid>
 </Window>
- 

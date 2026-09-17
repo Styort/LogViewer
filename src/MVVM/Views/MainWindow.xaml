@@ -148,6 +148,8 @@
                 <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=ImportCommand}"/>
                 <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=ExportCommand}"/>
                 <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
+                <Button Style="{StaticResource BookmarksButtonStyle}" Command="{Binding Path=OpenBookmarksCommand}"
+                        Visibility="{Binding Path=Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
@@ -282,6 +284,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}" />
+                    <GridViewColumn Width="{Binding Path=BookmarkColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource BookmarkColumnDataTemplate}" />
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
                     <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Width="{Binding Path=ThreadColumnWidth}" Header="{localization:LocBinding Thread}" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
@@ -292,6 +295,7 @@
             </ListView.View>
             <ListView.InputBindings>
                 <KeyBinding Key="C" Modifiers="Control" Command="{Binding Path=CopyLogCommand}"/>
+                <KeyBinding Key="B" Modifiers="Control" Command="{Binding Path=ToggleBookmarkCommand}"/>
                 <KeyBinding Key="W" Modifiers="Control" Command="{Binding Path=FindNextWarningCommand}"/>
                 <KeyBinding Key="E" Modifiers="Control" Command="{Binding Path=FindNextErrorCommand}"/>
             </ListView.InputBindings>

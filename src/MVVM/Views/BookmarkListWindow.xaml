@@ -1,0 +1,65 @@
+<Window x:Class="LogViewer.MVVM.Views.BookmarkListWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:localization="clr-namespace:LogViewer.Localization"
+        Title="{localization:LocBinding Bookmarks}" Height="520" Width="1100">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../../Styles/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListView x:Name="BookmarksListView" ItemsSource="{Binding Bookmarks}"
+                  SelectedItem="{Binding SelectedBookmark}"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  GridViewColumnHeader.Click="GridViewColumnHeaderClickedHandler">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="{localization:LocBinding Time}" Width="170"
+                                    DisplayMemberBinding="{Binding Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}"
+                                    HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Level}" Width="70"
+                                    DisplayMemberBinding="{Binding Level}"
+                                    HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Logger}" Width="180"
+                                    DisplayMemberBinding="{Binding Logger, Converter={StaticResource LoggerDisplayConverter}}"
+                                    HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding Message}" Width="360"
+                                    DisplayMemberBinding="{Binding MessagePreview}"
+                                    HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                    <GridViewColumn Header="{localization:LocBinding BookmarkComment}" Width="240"
+                                    DisplayMemberBinding="{Binding Comment}"
+                                    HeaderContainerStyle="{StaticResource SearchGridViewColumnHeaderStyle}"/>
+                </GridView>
+            </ListView.View>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <EventSetter Event="MouseDoubleClick" Handler="ListViewItem_MouseDoubleClick"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button MinWidth="120" Height="30" Margin="0,0,10,0"
+                    Content="{localization:LocBinding GoToThisLogMessage}"
+                    Command="{Binding GoToCommand}"/>
+            <Button MinWidth="160" Height="30" Margin="0,0,10,0"
+                    Content="{localization:LocBinding EditBookmarkComment}"
+                    Command="{Binding EditCommentCommand}"/>
+            <Button MinWidth="120" Height="30"
+                    Content="{localization:LocBinding RemoveBookmark}"
+                    Command="{Binding RemoveCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>

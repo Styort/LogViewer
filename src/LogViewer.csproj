@@ -227,6 +227,7 @@
     </Compile>
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
+    <Compile Include="MVVM\Models\LogBookmark.cs" />
     <Compile Include="MVVM\Models\LoggerStatItem.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />
@@ -254,8 +255,15 @@
     </Compile>
     <Compile Include="MVVM\ViewModels\SearchResultViewModel.cs" />
     <Compile Include="MVVM\ViewModels\LoggerStatisticsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\BookmarkListViewModel.cs" />
     <Compile Include="MVVM\Views\LoggerStatisticsWindow.xaml.cs">
       <DependentUpon>LoggerStatisticsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\Views\BookmarkCommentDialog.xaml.cs">
+      <DependentUpon>BookmarkCommentDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\Views\BookmarkListWindow.xaml.cs">
+      <DependentUpon>BookmarkListWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\ViewModels\SettingsViewModel.cs" />
     <Compile Include="MVVM\Views\SettingsWindow.xaml.cs">
@@ -306,6 +314,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\Views\LoggerStatisticsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\BookmarkCommentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\BookmarkListWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

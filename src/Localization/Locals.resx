@@ -713,4 +713,25 @@
   <data name="MessageFontSize" xml:space="preserve">
     <value>Размер шрифта сообщений:</value>
   </data>
+  <data name="AddBookmark" xml:space="preserve">
+    <value>Добавить закладку</value>
+  </data>
+  <data name="RemoveBookmark" xml:space="preserve">
+    <value>Удалить закладку</value>
+  </data>
+  <data name="EditBookmarkComment" xml:space="preserve">
+    <value>Изменить комментарий</value>
+  </data>
+  <data name="Bookmarks" xml:space="preserve">
+    <value>Закладки</value>
+  </data>
+  <data name="BookmarksToolTip" xml:space="preserve">
+    <value>Список закладок</value>
+  </data>
+  <data name="BookmarkComment" xml:space="preserve">
+    <value>Комментарий</value>
+  </data>
+  <data name="BookmarkNotVisible" xml:space="preserve">
+    <value>Сообщение скрыто фильтром</value>
+  </data>
 </root>

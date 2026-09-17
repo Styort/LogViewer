@@ -79,6 +79,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Добавить закладку.
+        /// </summary>
+        internal static string AddBookmark {
+            get {
+                return ResourceManager.GetString("AddBookmark", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Добавить текущий IP в список игнорируемых.
         /// </summary>
         internal static string AddCurrentIPtoIgnoreList {
@@ -202,6 +211,42 @@ namespace LogViewer.Localization {
         internal static string AutoStartReadingLogsAtStartupToolTip {
             get {
                 return ResourceManager.GetString("AutoStartReadingLogsAtStartupToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Комментарий.
+        /// </summary>
+        internal static string BookmarkComment {
+            get {
+                return ResourceManager.GetString("BookmarkComment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сообщение скрыто фильтром.
+        /// </summary>
+        internal static string BookmarkNotVisible {
+            get {
+                return ResourceManager.GetString("BookmarkNotVisible", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Закладки.
+        /// </summary>
+        internal static string Bookmarks {
+            get {
+                return ResourceManager.GetString("Bookmarks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Список закладок.
+        /// </summary>
+        internal static string BookmarksToolTip {
+            get {
+                return ResourceManager.GetString("BookmarksToolTip", resourceCulture);
             }
         }
         
@@ -409,6 +454,15 @@ namespace LogViewer.Localization {
         internal static string DontShowThisLogger {
             get {
                 return ResourceManager.GetString("DontShowThisLogger", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Изменить комментарий.
+        /// </summary>
+        internal static string EditBookmarkComment {
+            get {
+                return ResourceManager.GetString("EditBookmarkComment", resourceCulture);
             }
         }
         
@@ -1266,6 +1320,15 @@ namespace LogViewer.Localization {
         internal static string Remove {
             get {
                 return ResourceManager.GetString("Remove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Удалить закладку.
+        /// </summary>
+        internal static string RemoveBookmark {
+            get {
+                return ResourceManager.GetString("RemoveBookmark", resourceCulture);
             }
         }
         

@@ -356,6 +356,14 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="BookmarkDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="M7,2 L17,2 C18.1,2 19,2.9 19,4 L19,22 L12,18 L5,22 L5,4 C5,2.9 5.9,2 7,2 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+    
     <DrawingImage x:Key="ImportWhiteDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup ClipGeometry="M0,0 V330 H330 V0 H0 Z">

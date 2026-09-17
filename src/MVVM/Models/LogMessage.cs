@@ -54,6 +54,7 @@ namespace LogViewer.MVVM.Models
         public Receiver Receiver { get; set; } = new Receiver();
 
         private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
+        private bool hasBookmark;
 
         public SolidColorBrush ToggleMark
         {
@@ -62,6 +63,16 @@ namespace LogViewer.MVVM.Models
             {
                 toggleMark = value;
                 toggleMark.Freeze();
+                OnPropertyChanged();
+            }
+        }
+
+        public bool HasBookmark
+        {
+            get => hasBookmark;
+            set
+            {
+                hasBookmark = value;
                 OnPropertyChanged();
             }
         }

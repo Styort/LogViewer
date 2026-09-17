@@ -43,6 +43,7 @@ namespace LogViewer.MVVM.ViewModels
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         private const int RECEIVER_COLUMN_WIDTH = 15;
+        private const int BOOKMARK_COLUMN_WIDTH = 22;
         private const string TRANSPARENT_COLOR = "#00FFFFFF";
 
         private bool filterChanged = false;
@@ -149,6 +150,8 @@ namespace LogViewer.MVVM.ViewModels
         #region Свойства
 
         public List<WatchedFileInfo> FileWatchers { get; set; } = new List<WatchedFileInfo>();
+
+        public ObservableCollection<LogBookmark> Bookmarks { get; } = new ObservableCollection<LogBookmark>();
 
         public bool IsSearchProcess
         {
@@ -502,6 +505,11 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         public double ThreadColumnWidth => IsThreadVisible ? Double.NaN : 0;
 
+        /// <summary>
+        /// Ширина колонки с иконкой закладки — только если есть хотя бы одна закладка
+        /// </summary>
+        public double BookmarkColumnWidth => Bookmarks.Count > 0 ? BOOKMARK_COLUMN_WIDTH : 0;
+
         public SolidColorBrush IconColor
         {
             get => iconColor;
@@ -678,6 +686,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private void OnCoreSessionCleared(object sender, EventArgs e)
         {
+            ClearAllBookmarks();
             allLogs.Clear();
             Logs.Clear();
             availableLoggers.Clear();
@@ -700,6 +709,7 @@ namespace LogViewer.MVVM.ViewModels
             if (removeLogs > 0) logsList.RemoveRange(0, removeLogs);
             allLogs = new AsyncObservableCollection<LogMessage>(allList);
             Logs = new AsyncObservableCollection<LogMessage>(logsList);
+            SyncBookmarksWithAllLogs();
             SelectedLog = GetLastSelecterOrNearbyMessage();
         }
 
@@ -746,6 +756,7 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             Logs = new AsyncObservableCollection<LogMessage>(filtered);
+            SyncBookmarksWithAllLogs();
             CleanIsEnabled = allLogs.Any();
             if (_treeCheckJustDone)
             {
@@ -853,7 +864,13 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand toggleMarkCommand;
         private RelayCommand findInTreeCommand;
         private RelayCommand openLoggerStatisticsCommand;
+        private RelayCommand toggleBookmarkCommand;
+        private RelayCommand addBookmarkCommand;
+        private RelayCommand removeBookmarkCommand;
+        private RelayCommand editBookmarkCommentCommand;
+        private RelayCommand openBookmarksCommand;
         private LoggerStatisticsWindow loggerStatisticsWindow;
+        private BookmarkListWindow bookmarkListWindow;
 
         public RelayCommand StartCommand => startCommand ?? (startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => pauseCommand ?? (pauseCommand = new RelayCommand(Pause));
@@ -888,6 +905,11 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand ToggleMarkCommand => toggleMarkCommand ?? (toggleMarkCommand = new RelayCommand(ToggleMark));
         public RelayCommand FindInTreeCommand => findInTreeCommand ?? (findInTreeCommand = new RelayCommand(FindLoggerInTreeByMessage));
         public RelayCommand OpenLoggerStatisticsCommand => openLoggerStatisticsCommand ?? (openLoggerStatisticsCommand = new RelayCommand(OpenLoggerStatistics));
+        public RelayCommand ToggleBookmarkCommand => toggleBookmarkCommand ?? (toggleBookmarkCommand = new RelayCommand(ToggleBookmark));
+        public RelayCommand AddBookmarkCommand => addBookmarkCommand ?? (addBookmarkCommand = new RelayCommand(AddBookmark));
+        public RelayCommand RemoveBookmarkCommand => removeBookmarkCommand ?? (removeBookmarkCommand = new RelayCommand(RemoveBookmark));
+        public RelayCommand EditBookmarkCommentCommand => editBookmarkCommentCommand ?? (editBookmarkCommentCommand = new RelayCommand(EditBookmarkComment));
+        public RelayCommand OpenBookmarksCommand => openBookmarksCommand ?? (openBookmarksCommand = new RelayCommand(OpenBookmarks));
 
         #endregion
 
@@ -973,6 +995,7 @@ namespace LogViewer.MVVM.ViewModels
             prevSelectedErrorLog = null;
 
             RemoveAllFileWatchers();
+            ClearAllBookmarks();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -1896,6 +1919,235 @@ namespace LogViewer.MVVM.ViewModels
                 SelectedLog = fallback ?? message;
             };
             loggerStatisticsWindow.Show();
+        }
+
+        private void ToggleBookmark()
+        {
+            var targets = GetLogsToCopy();
+            if (targets.Count == 0)
+                return;
+
+            if (targets.All(x => x.HasBookmark))
+            {
+                foreach (var log in targets)
+                    RemoveBookmarkForLog(log);
+                return;
+            }
+
+            AddBookmarks(targets.Where(x => !x.HasBookmark).ToList());
+        }
+
+        private void AddBookmark(object obj)
+        {
+            var targets = obj is LogMessage log ? new List<LogMessage> { log } : GetLogsToCopy();
+            AddBookmarks(targets.Where(x => x != null && !x.HasBookmark).ToList());
+        }
+
+        private void RemoveBookmark(object obj)
+        {
+            if (obj is LogBookmark bookmark)
+            {
+                RemoveBookmarkItem(bookmark);
+                return;
+            }
+
+            var targets = obj is LogMessage log ? new List<LogMessage> { log } : GetLogsToCopy();
+            foreach (var target in targets)
+                RemoveBookmarkForLog(target);
+        }
+
+        private void EditBookmarkComment(object obj)
+        {
+            LogBookmark bookmark = obj as LogBookmark;
+            if (bookmark == null)
+            {
+                var log = obj as LogMessage ?? SelectedLog;
+                bookmark = FindBookmark(log);
+            }
+
+            if (bookmark == null)
+                return;
+
+            if (!TryPromptComment(bookmark.Comment, out var comment))
+                return;
+
+            bookmark.Comment = comment;
+        }
+
+        private void OpenBookmarks()
+        {
+            if (bookmarkListWindow != null)
+            {
+                if (bookmarkListWindow.WindowState == WindowState.Minimized)
+                    bookmarkListWindow.WindowState = WindowState.Normal;
+                bookmarkListWindow.Activate();
+                return;
+            }
+
+            var vm = new BookmarkListViewModel(Bookmarks);
+            vm.NavigateToLog += (sender, bookmark) => NavigateToBookmark(bookmark);
+            vm.EditCommentRequested += (sender, bookmark) => EditBookmarkComment(bookmark);
+            vm.RemoveRequested += (sender, bookmark) => RemoveBookmarkItem(bookmark);
+
+            bookmarkListWindow = new BookmarkListWindow(vm);
+            bookmarkListWindow.Closed += (sender, args) => bookmarkListWindow = null;
+            bookmarkListWindow.Show();
+        }
+
+        private void AddBookmarks(List<LogMessage> targets)
+        {
+            if (targets == null || targets.Count == 0)
+                return;
+
+            if (!TryPromptComment(string.Empty, out var comment))
+                return;
+
+            foreach (var log in targets)
+            {
+                if (log == null || log.HasBookmark || FindBookmark(log) != null)
+                    continue;
+
+                Bookmarks.Add(new LogBookmark
+                {
+                    Log = log,
+                    Comment = comment
+                });
+                log.HasBookmark = true;
+            }
+
+            NotifyBookmarksChanged();
+        }
+
+        private void RemoveBookmarkForLog(LogMessage log)
+        {
+            RemoveBookmarkItem(FindBookmark(log));
+        }
+
+        private void RemoveBookmarkItem(LogBookmark bookmark)
+        {
+            if (bookmark == null)
+                return;
+
+            if (bookmark.Log != null)
+                bookmark.Log.HasBookmark = false;
+
+            Bookmarks.Remove(bookmark);
+            NotifyBookmarksChanged();
+        }
+
+        private LogBookmark FindBookmark(LogMessage log)
+        {
+            if (log == null)
+                return null;
+            return Bookmarks.FirstOrDefault(x => x.Log == log);
+        }
+
+        private bool TryPromptComment(string initial, out string comment)
+        {
+            comment = initial ?? string.Empty;
+            var dialog = new BookmarkCommentDialog(comment)
+            {
+                Owner = Application.Current?.Windows.OfType<Window>().FirstOrDefault(x => x.IsActive)
+                        ?? Application.Current?.MainWindow
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                comment = dialog.Comment;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void NavigateToBookmark(LogBookmark bookmark)
+        {
+            var message = bookmark?.Log;
+            if (message == null)
+                return;
+
+            if (!Logs.Contains(message) && allLogs.Contains(message))
+            {
+                MessageBox.Show(Locals.BookmarkNotVisible, Locals.Information,
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+
+            Application.Current?.MainWindow?.Activate();
+            SelectedLog = message;
+        }
+
+        private void ClearAllBookmarks()
+        {
+            if (Bookmarks.Count == 0)
+                return;
+
+            foreach (var bookmark in Bookmarks)
+            {
+                if (bookmark.Log != null)
+                    bookmark.Log.HasBookmark = false;
+            }
+
+            Bookmarks.Clear();
+            NotifyBookmarksChanged();
+        }
+
+        private void SyncBookmarksWithAllLogs()
+        {
+            if (Bookmarks.Count == 0)
+                return;
+
+            var remaining = new HashSet<LogMessage>(allLogs);
+            var used = new HashSet<LogMessage>();
+
+            for (int i = Bookmarks.Count - 1; i >= 0; i--)
+            {
+                var bookmark = Bookmarks[i];
+                LogMessage match = null;
+
+                if (bookmark.Log != null && remaining.Contains(bookmark.Log) && used.Add(bookmark.Log))
+                    match = bookmark.Log;
+                else if (bookmark.Log != null)
+                {
+                    match = allLogs.FirstOrDefault(m => !used.Contains(m) && SameLogIdentity(m, bookmark.Log));
+                    if (match != null)
+                        used.Add(match);
+                }
+
+                if (match == null)
+                {
+                    if (bookmark.Log != null)
+                        bookmark.Log.HasBookmark = false;
+                    Bookmarks.RemoveAt(i);
+                    continue;
+                }
+
+                if (!ReferenceEquals(bookmark.Log, match) && bookmark.Log != null)
+                    bookmark.Log.HasBookmark = false;
+
+                bookmark.Log = match;
+                match.HasBookmark = true;
+            }
+
+            NotifyBookmarksChanged();
+        }
+
+        private static bool SameLogIdentity(LogMessage left, LogMessage right)
+        {
+            if (left == null || right == null)
+                return false;
+
+            return left.Time == right.Time
+                   && left.Level == right.Level
+                   && left.Thread == right.Thread
+                   && left.ProcessID == right.ProcessID
+                   && left.Logger == right.Logger
+                   && left.Address == right.Address
+                   && left.Message == right.Message;
+        }
+
+        private void NotifyBookmarksChanged()
+        {
+            OnPropertyChanged(nameof(Bookmarks));
+            OnPropertyChanged(nameof(BookmarkColumnWidth));
         }
 
         /// <summary>

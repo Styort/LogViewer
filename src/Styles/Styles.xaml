@@ -484,6 +484,25 @@
         <Setter Property="IsEnabled" Value="False"/>
     </Style>
 
+    <DataTemplate x:Key="BookmarkColumnDataTemplate">
+        <Image Source="{StaticResource BookmarkDrawingImage}" Width="14" Height="14"
+               Visibility="{Binding HasBookmark, Converter={StaticResource BooleanToVisibility}}"
+               ToolTip="{localization:LocBinding Bookmarks}">
+            <Image.Style>
+                <Style TargetType="{x:Type Image}">
+                    <Setter Property="Margin" Value="2,0"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding DataContext.BookmarkColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="0">
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Width" Value="0"/>
+                            <Setter Property="Height" Value="0"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Image.Style>
+        </Image>
+    </DataTemplate>
+
     <DataTemplate x:Key="LogLevelImagesDataTemplate">
         <StackPanel Orientation="Horizontal">
             <Image Height="20" Width="20">
@@ -761,6 +780,60 @@
             <MenuItem.Icon>
                 <Image Source="{StaticResource CopyDrawingImage}"/>
             </MenuItem.Icon>
+        </MenuItem>
+
+        <MenuItem Header="{localization:LocBinding AddBookmark}" InputGestureText="Ctrl+B" Margin="0"
+                  Command="{Binding Path=DataContext.AddBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  CommandParameter="{Binding}">
+            <MenuItem.Icon>
+                <Image Source="{StaticResource BookmarkDrawingImage}"/>
+            </MenuItem.Icon>
+            <MenuItem.Style>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasBookmark}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MenuItem.Style>
+        </MenuItem>
+
+        <MenuItem Header="{localization:LocBinding EditBookmarkComment}" Margin="0"
+                  Command="{Binding Path=DataContext.EditBookmarkCommentCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  CommandParameter="{Binding}">
+            <MenuItem.Icon>
+                <Image Source="{StaticResource BookmarkDrawingImage}"/>
+            </MenuItem.Icon>
+            <MenuItem.Style>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasBookmark}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MenuItem.Style>
+        </MenuItem>
+
+        <MenuItem Header="{localization:LocBinding RemoveBookmark}" InputGestureText="Ctrl+B" Margin="0"
+                  Command="{Binding Path=DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  CommandParameter="{Binding}">
+            <MenuItem.Icon>
+                <Image Source="{StaticResource BookmarkDrawingImage}"/>
+            </MenuItem.Icon>
+            <MenuItem.Style>
+                <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource {x:Type MenuItem}}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasBookmark}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </MenuItem.Style>
         </MenuItem>
 
         <Separator />
@@ -1153,6 +1226,30 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="RootGrid" Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BookmarksButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
+        <Setter Property="ToolTip" Value="{localization:LocBinding BookmarksToolTip}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                        <Image Source="{StaticResource BookmarkDrawingImage}" Cursor="Hand" Height="40"/>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="RootGrid" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                </Setter.Value>
+                            </Setter>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

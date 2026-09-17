@@ -747,4 +747,13 @@ Restart application?</value>
   <data name="ShowErrorTimelineToolTip" xml:space="preserve">
     <value>Warn/Error/Fatal density strip below the log list. Click to jump to messages in that interval.</value>
   </data>
+  <data name="NewFeatures" xml:space="preserve">
+    <value>New features:</value>
+  </data>
+  <data name="ChangedFeatures" xml:space="preserve">
+    <value>Changed:</value>
+  </data>
+  <data name="FixedBugs" xml:space="preserve">
+    <value>Fixes:</value>
+  </data>
 </root>

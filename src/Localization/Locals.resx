@@ -746,4 +746,13 @@
   <data name="ShowErrorTimelineToolTip" xml:space="preserve">
     <value>Полоса плотности Warn/Error/Fatal под списком логов. Клик переходит к сообщениям в выбранном интервале.</value>
   </data>
+  <data name="NewFeatures" xml:space="preserve">
+    <value>Новые возможности:</value>
+  </data>
+  <data name="ChangedFeatures" xml:space="preserve">
+    <value>Измененный функционал:</value>
+  </data>
+  <data name="FixedBugs" xml:space="preserve">
+    <value>Исправления:</value>
+  </data>
 </root>

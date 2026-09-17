@@ -3,340 +3,697 @@
 	<ReleaseNotes>
 		<Version>1.2.8.7 (30.07.2026)</Version>
 		<NewFeatures>
-			<string>Импорт логов из архивов .zip и .rar (включая вложенные папки) с автоматической распаковкой рядом с архивом и удалением распакованных файлов после парсинга</string>
-			<string>Копирование выбранных логов в буфер обмена (контекстное меню списка и Ctrl+C), в том числе нескольких выделенных строк</string>
-			<string>Импорт только хвоста большого файла: весь файл, последние N МБ или последние N часов относительно времени последней записи</string>
-			<string>Окно статистики по логгерам: счётчики, доли, уровни, время последней записи и переход к сообщению из таблицы</string>
-			<string>Настройки шрифта и размера для текста сообщения в панели деталей и в списке</string>
-			<string>Закладки на конкретные строки лога с комментарием, списком переходов и горячей клавишей Ctrl+B</string>
-			<string>Полоса плотности Warn/Error/Fatal над списком логов: клик по интервалу переходит к первому сообщению</string>
+			<Item>
+				<ru>Импорт логов из архивов .zip и .rar (включая вложенные папки) с автоматической распаковкой рядом с архивом и удалением распакованных файлов после парсинга</ru>
+				<en>Import logs from .zip and .rar archives (including nested folders), with automatic extraction next to the archive and cleanup of extracted files after parsing</en>
+			</Item>
+			<Item>
+				<ru>Копирование выбранных логов в буфер обмена (контекстное меню списка и Ctrl+C), в том числе нескольких выделенных строк</ru>
+				<en>Copy selected log entries to the clipboard (list context menu and Ctrl+C), including multiple selected rows</en>
+			</Item>
+			<Item>
+				<ru>Импорт только хвоста большого файла: весь файл, последние N МБ или последние N часов относительно времени последней записи</ru>
+				<en>Import only the tail of a large file: the whole file, the last N MB, or the last N hours relative to the last log entry</en>
+			</Item>
+			<Item>
+				<ru>Окно статистики по логгерам: счётчики, доли, уровни, время последней записи и переход к сообщению из таблицы</ru>
+				<en>Logger statistics window: counts, shares, levels, last write time, and jump to a message from the table</en>
+			</Item>
+			<Item>
+				<ru>Настройки шрифта и размера для текста сообщения в панели деталей и в списке</ru>
+				<en>Font family and size settings for message text in the details pane and in the list</en>
+			</Item>
+			<Item>
+				<ru>Закладки на конкретные строки лога с комментарием, списком переходов и горячей клавишей Ctrl+B</ru>
+				<en>Bookmarks on specific log lines with a comment, a jump list, and the Ctrl+B shortcut</en>
+			</Item>
+			<Item>
+				<ru>Полоса плотности Warn/Error/Fatal над списком логов: клик по интервалу переходит к первому сообщению</ru>
+				<en>Warn/Error/Fatal density strip above the log list: clicking an interval jumps to the first matching message</en>
+			</Item>
 		</NewFeatures>
 		<FixedBugs>
-			<string>Экспортирование только выбранных Loggers из дерева при экспорте в файл</string>
-			<string>Экспорт в файл (Ctrl+S) сохраняет только текущий отображаемый список логов с учётом всех фильтров</string>
-			<string>Из экспорта в файл убран путь к источнику (Address) из каждой строки лога</string>
+			<Item>
+				<ru>Экспортирование только выбранных Loggers из дерева при экспорте в файл</ru>
+				<en>Exporting only the selected loggers from the tree when exporting to a file</en>
+			</Item>
+			<Item>
+				<ru>Экспорт в файл (Ctrl+S) сохраняет только текущий отображаемый список логов с учётом всех фильтров</ru>
+				<en>Export to file (Ctrl+S) now saves only the currently displayed log list, including all filters</en>
+			</Item>
+			<Item>
+				<ru>Из экспорта в файл убран путь к источнику (Address) из каждой строки лога</ru>
+				<en>The source path (Address) is no longer written to each log line in the file export</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.6 (11.06.2024)</Version>
 		<FixedBugs>
-			<string>Улучшено автоопределение шаблона лога при загрузке логов из файла</string>
+			<Item>
+				<ru>Улучшено автоопределение шаблона лога при загрузке логов из файла</ru>
+				<en>Improved automatic log template detection when loading logs from a file</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.5 (01.03.2024)</Version>
 		<FixedBugs>
-			<string>Поправлена загрузка логов из файла при ручном вводе шаблона записи лога</string>
+			<Item>
+				<ru>Поправлена загрузка логов из файла при ручном вводе шаблона записи лога</ru>
+				<en>Fixed loading logs from a file when the log entry template is entered manually</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.4 (26.01.2023)</Version>
 		<FixedBugs>
-			<string>Исправлен баг с поиском логов с фильтрами</string>
+			<Item>
+				<ru>Исправлен баг с поиском логов с фильтрами</ru>
+				<en>Fixed a bug with searching logs when filters are applied</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.3 (25.06.2021)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность подсвечивания сообщений по цвету приёмника. Регулируется в настройках. По-умолчанию выключено.</string>
-			<string>Добавлено всплывающее окно с названием приёмника при наведении на цвет приёмника.</string>
-			<string>Разделение логерово портам приёмников.</string>
+			<Item>
+				<ru>Добавлена возможность подсвечивания сообщений по цвету приёмника. Регулируется в настройках. По-умолчанию выключено.</ru>
+				<en>Added highlighting messages by receiver color. Configurable in settings. Disabled by default.</en>
+			</Item>
+			<Item>
+				<ru>Добавлено всплывающее окно с названием приёмника при наведении на цвет приёмника.</ru>
+				<en>Added a tooltip with the receiver name when hovering over the receiver color.</en>
+			</Item>
+			<Item>
+				<ru>Разделение логерово портам приёмников.</ru>
+				<en>Split loggers by receiver ports.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>При подсвечивании сообщений из списка логгеров цвет подсвечивания теперь проставляется с прозрачностью 0.3.</string>
+			<Item>
+				<ru>При подсвечивании сообщений из списка логгеров цвет подсвечивания теперь проставляется с прозрачностью 0.3.</ru>
+				<en>When highlighting messages from the logger list, the highlight color is now applied with 0.3 opacity.</en>
+			</Item>
 		</ChangedFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.1 (04.12.2020)</Version>
 		<FixedBugs>
-			<string>Правка бага с фильтрацией добавляемых логов по уровню логгирования из подгружаемого файла</string>
+			<Item>
+				<ru>Правка бага с фильтрацией добавляемых логов по уровню логгирования из подгружаемого файла</ru>
+				<en>Fixed a bug with filtering imported file logs by logging level</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.8.0 (20.11.2020)</Version>
 		<FixedBugs>
-			<string>Правка бага при множественном поиске и не очистке результата поиска</string>
-			<string>Правка бага с добавлением логов при использовании фильтров для подгружаемых из файла логов</string>
-			<string>Правка бага с вылетом приложения при открытии окна с выбором интервала времени (Ctrl+T/Ctrl+Shift+T)</string>
+			<Item>
+				<ru>Правка бага при множественном поиске и не очистке результата поиска</ru>
+				<en>Fixed a bug with multiple searches when the previous search result was not cleared</en>
+			</Item>
+			<Item>
+				<ru>Правка бага с добавлением логов при использовании фильтров для подгружаемых из файла логов</ru>
+				<en>Fixed a bug with adding logs when filters are applied to logs loaded from a file</en>
+			</Item>
+			<Item>
+				<ru>Правка бага с вылетом приложения при открытии окна с выбором интервала времени (Ctrl+T/Ctrl+Shift+T)</ru>
+				<en>Fixed a crash when opening the time interval selection window (Ctrl+T / Ctrl+Shift+T)</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.7.4 (28.07.2020)</Version>
 		<FixedBugs>
-			<string>Правка багов в импорте сразу нескольких файлов лога</string>
+			<Item>
+				<ru>Правка багов в импорте сразу нескольких файлов лога</ru>
+				<en>Fixed bugs when importing multiple log files at once</en>
+			</Item>
 		</FixedBugs>
 		<NewFeatures>
-			<string>Добавлена возможность импорта сразу нескольких лог-файлов при драг-энд-дропе файлов на иконку приложения (или через командную строку)</string>
+			<Item>
+				<ru>Добавлена возможность импорта сразу нескольких лог-файлов при драг-энд-дропе файлов на иконку приложения (или через командную строку)</ru>
+				<en>Added importing multiple log files at once by dropping files onto the application icon (or via the command line)</en>
+			</Item>
 		</NewFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.7.3 (26.02.2020)</Version>
 		<FixedBugs>
-			<string>Исправлен баг с загрузкой даты экспортируемых логов</string>
-			<string>Исправлен баг с повторным импортом лог файла после неудачного парсинга из-за неверного формата шаблона</string>
+			<Item>
+				<ru>Исправлен баг с загрузкой даты экспортируемых логов</ru>
+				<en>Fixed a bug with loading the date of exported logs</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг с повторным импортом лог файла после неудачного парсинга из-за неверного формата шаблона</ru>
+				<en>Fixed a bug with re-importing a log file after a failed parse caused by an invalid template format</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.7.2 (08.30.2019)</Version>
 		<FixedBugs>
-			<string>Поправлены баги с проверкой обновлений</string>
-			<string>Исправлен баг с открытием лога через 'Открыть с помощью'</string>
+			<Item>
+				<ru>Поправлены баги с проверкой обновлений</ru>
+				<en>Fixed bugs with the update check</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг с открытием лога через 'Открыть с помощью'</ru>
+				<en>Fixed a bug with opening a log via 'Open with'</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.7.1 (08.30.2019)</Version>
 		<FixedBugs>
-			<string>Хотфикс падения приложения версии 1.2.7.0 при старте</string>
+			<Item>
+				<ru>Хотфикс падения приложения версии 1.2.7.0 при старте</ru>
+				<en>Hotfix for the 1.2.7.0 application crash on startup</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.7.0 (08.30.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность импорта сразу нескольких лог-файлов с отображением процесса импорта файлов в отдельном окне</string>
-			<string>Добавлена кнопка проверки наличия новых обновлений в настройках</string>
+			<Item>
+				<ru>Добавлена возможность импорта сразу нескольких лог-файлов с отображением процесса импорта файлов в отдельном окне</ru>
+				<en>Added importing multiple log files at once, with import progress shown in a separate window</en>
+			</Item>
+			<Item>
+				<ru>Добавлена кнопка проверки наличия новых обновлений в настройках</ru>
+				<en>Added a button in settings to check for new updates</en>
+			</Item>
 		</NewFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.6.0 (08.22.2019)</Version>
 		<FixedBugs>
-			<string>Исправлен баг с добавлением сообщений, которые удовлетворяют условиям поиска, но не выбраны в списке логгеров</string>
-			<string>Исправлено не копирование сообщения лога в отдельном окне поиска при нажатии на кнопку "Copy"</string>
-			<string>Исправлен баг с поиском предыдущего/следующего сообщения в списке, если стоит флаг учитывать только слово целиком</string>
-			<string>Исправлен баг с поиском сообщений по интервалу времени (Ctrl+Shift+T), либо просто по конкретному времени (Ctrl+T)</string>
+			<Item>
+				<ru>Исправлен баг с добавлением сообщений, которые удовлетворяют условиям поиска, но не выбраны в списке логгеров</ru>
+				<en>Fixed a bug where messages matching the search were added even if they were not selected in the logger list</en>
+			</Item>
+			<Item>
+				<ru>Исправлено не копирование сообщения лога в отдельном окне поиска при нажатии на кнопку "Copy"</ru>
+				<en>Fixed log messages not being copied in the separate search window when clicking "Copy"</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг с поиском предыдущего/следующего сообщения в списке, если стоит флаг учитывать только слово целиком</ru>
+				<en>Fixed a bug with finding the previous/next message in the list when the match-whole-word option is enabled</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг с поиском сообщений по интервалу времени (Ctrl+Shift+T), либо просто по конкретному времени (Ctrl+T)</ru>
+				<en>Fixed a bug with searching messages by time interval (Ctrl+Shift+T) or by a specific timestamp (Ctrl+T)</en>
+			</Item>
 		</FixedBugs>
 		<ChangedFeatures>
-			<string>Убрана возможность выполнения команд горячих клавиш во время какого-либо процесса (когда крутится лоадер)</string>
+			<Item>
+				<ru>Убрана возможность выполнения команд горячих клавиш во время какого-либо процесса (когда крутится лоадер)</ru>
+				<en>Disabled hotkey commands while a process is running (when the loader is spinning)</en>
+			</Item>
 		</ChangedFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.5.0 (05.30.2019)</Version>
 		<FixedBugs>
-			<string>Исправлен ряд багов</string>
+			<Item>
+				<ru>Исправлен ряд багов</ru>
+				<en>Fixed several bugs</en>
+			</Item>
 		</FixedBugs>
 		<NewFeatures>
-			<string>Добавлена возможность поиска по регулярному выражению</string>
-			<string>При открытии лога через 'Открыть с помощью' он открывается в уже существующем приложении (если есть)</string>
+			<Item>
+				<ru>Добавлена возможность поиска по регулярному выражению</ru>
+				<en>Added search by regular expression</en>
+			</Item>
+			<Item>
+				<ru>При открытии лога через 'Открыть с помощью' он открывается в уже существующем приложении (если есть)</ru>
+				<en>Opening a log via 'Open with' now uses an already running application instance, if one exists</en>
+			</Item>
 		</NewFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.4.1 (04.23.2019)</Version>
 		<NewFeatures>
-			<string>Добавлен прогресс-бар на иконку приложения при считывании логов из файла.</string>
+			<Item>
+				<ru>Добавлен прогресс-бар на иконку приложения при считывании логов из файла.</ru>
+				<en>Added a progress bar on the application icon while reading logs from a file.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>При запуске приложения через 'Открыть файл с помощью...' не начитает считывать логи с UDP автоматом, если стояла такая настройка.</string>
+			<Item>
+				<ru>При запуске приложения через 'Открыть файл с помощью...' не начитает считывать логи с UDP автоматом, если стояла такая настройка.</ru>
+				<en>Starting the application via 'Open with...' no longer starts reading UDP logs automatically, even if that setting is enabled.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Пофикшена (вроде) неактивность кнопки очистки логов (в редких случаях такое случалось), когда они есть.</string>
+			<Item>
+				<ru>Пофикшена (вроде) неактивность кнопки очистки логов (в редких случаях такое случалось), когда они есть.</ru>
+				<en>Fixed the Clear logs button sometimes staying disabled even when logs were present.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.4.0 (04.17.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность выбора кодировки импортируемого файла;</string>
-			<string>Добавлена возможность выбора кодировки у UDP ресивера.</string>
+			<Item>
+				<ru>Добавлена возможность выбора кодировки импортируемого файла;</ru>
+				<en>Added encoding selection for the imported file;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность выбора кодировки у UDP ресивера.</ru>
+				<en>Added encoding selection for the UDP receiver.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>При запуске приложения через 'Открыть файл с помощью...' не начитает считывать логи с UDP автоматом, если стояла такая настройка.</string>
+			<Item>
+				<ru>При запуске приложения через 'Открыть файл с помощью...' не начитает считывать логи с UDP автоматом, если стояла такая настройка.</ru>
+				<en>Starting the application via 'Open with...' no longer starts reading UDP logs automatically, even if that setting is enabled.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Пофикшена активность кнопки добавить IP адрес в игнор, если введено некорректное значение.</string>
+			<Item>
+				<ru>Пофикшена активность кнопки добавить IP адрес в игнор, если введено некорректное значение.</ru>
+				<en>Fixed the Add IP to ignore list button staying enabled when an invalid value is entered.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.3.0 (04.08.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена ассоциация с файлами .txt и .log</string>
-			<string>Добавлена подсветка искомого фрагмента текста при поиске сообщений и логгеров</string>
+			<Item>
+				<ru>Добавлена ассоциация с файлами .txt и .log</ru>
+				<en>Added file association for .txt and .log files</en>
+			</Item>
+			<Item>
+				<ru>Добавлена подсветка искомого фрагмента текста при поиске сообщений и логгеров</ru>
+				<en>Added highlighting of the searched text fragment when searching messages and loggers</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Уменьшена частота считывания изменений из файла лога (каждую секунду), т.к. сильно сьедало CPU.</string>
+			<Item>
+				<ru>Уменьшена частота считывания изменений из файла лога (каждую секунду), т.к. сильно сьедало CPU.</ru>
+				<en>Reduced how often log file changes are read (once per second), because it was consuming too much CPU.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен баг с перезагрузкой приложения после установки обновления;</string>
-			<string>Исправлен баг при смене уровня лога в процессе поиска.</string>
+			<Item>
+				<ru>Исправлен баг с перезагрузкой приложения после установки обновления;</ru>
+				<en>Fixed a bug with restarting the application after installing an update;</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг при смене уровня лога в процессе поиска.</ru>
+				<en>Fixed a bug when changing the log level during a search.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.2.2 (04.04.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность автоматического добавления логов при изменении импортируемого файла (необходимо проставить соответствующую галочку на окне выборе шаблона для лога).</string>
+			<Item>
+				<ru>Добавлена возможность автоматического добавления логов при изменении импортируемого файла (необходимо проставить соответствующую галочку на окне выборе шаблона для лога).</ru>
+				<en>Added automatically appending logs when the imported file changes (enable the corresponding checkbox on the log template selection window).</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Убрана кнопка остановки считывания логов по UDP. Теперь кнопка запуска считывания логов меняется в зависимости от состояния.</string>
+			<Item>
+				<ru>Убрана кнопка остановки считывания логов по UDP. Теперь кнопка запуска считывания логов меняется в зависимости от состояния.</ru>
+				<en>Removed the Stop UDP reading button. The start button now changes depending on the current state.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен баг с вылетанием приложения при очистки корневого логгера;</string>
-			<string>Исправлен баг при нажатии на логгер с именем файла (снятии галочки) - не скрывались сообщения.</string>
+			<Item>
+				<ru>Исправлен баг с вылетанием приложения при очистки корневого логгера;</ru>
+				<en>Fixed a crash when clearing the root logger;</en>
+			</Item>
+			<Item>
+				<ru>Исправлен баг при нажатии на логгер с именем файла (снятии галочки) - не скрывались сообщения.</ru>
+				<en>Fixed a bug where unchecking a logger named after a file did not hide its messages.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.2.1 (04.03.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность просмотра ReleaseNotes в настройках приложения (вкладка About).</string>
+			<Item>
+				<ru>Добавлена возможность просмотра ReleaseNotes в настройках приложения (вкладка About).</ru>
+				<en>Added viewing Release Notes in application settings (About tab).</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Изменена логика поведения приложения после установки обновления. Появилась возможность перезапустить приложение сразу после успешной установки.</string>
+			<Item>
+				<ru>Изменена логика поведения приложения после установки обновления. Появилась возможность перезапустить приложение сразу после успешной установки.</ru>
+				<en>Changed application behavior after installing an update. It is now possible to restart the application immediately after a successful install.</en>
+			</Item>
 		</ChangedFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.2.0 (04.02.2019)</Version>
 		<NewFeatures>
-			<string>Добавлено окно с изменениями в версиях при первой загрузке программы;</string>
-			<string>Добавлена возможность поиска только слова целиком.</string>
+			<Item>
+				<ru>Добавлено окно с изменениями в версиях при первой загрузке программы;</ru>
+				<en>Added a changelog window on the first launch of the application;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность поиска только слова целиком.</ru>
+				<en>Added match-whole-word search.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Файлы настроек теперь сохраняются в документы пользователя в папку LogViewer;</string>
+			<Item>
+				<ru>Файлы настроек теперь сохраняются в документы пользователя в папку LogViewer;</ru>
+				<en>Settings files are now saved to the user's Documents folder, in a LogViewer directory;</en>
+			</Item>
 		</ChangedFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.1.0 (03.27.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность сохранять настройки конфигурации импорта логов;</string>
-			<string>Добавлена возможность импорта лога по шаблону из конфиг-файла (layout);</string>
-			<string>Добавлены кнопки в всплывающем окне таскбара при наведении на иконку приложения;</string>
-			<string>Добавлен прогресс-бар на иконке приложения при чтении логов с UDP (можно отключить в настройках);</string>
-			<string>Добавлен функционал проверки обновлений в фоновом режиме;</string>
+			<Item>
+				<ru>Добавлена возможность сохранять настройки конфигурации импорта логов;</ru>
+				<en>Added saving log import configuration settings;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность импорта лога по шаблону из конфиг-файла (layout);</ru>
+				<en>Added importing a log using a template from a config file (layout);</en>
+			</Item>
+			<Item>
+				<ru>Добавлены кнопки в всплывающем окне таскбара при наведении на иконку приложения;</ru>
+				<en>Added buttons to the taskbar thumbnail popup when hovering over the application icon;</en>
+			</Item>
+			<Item>
+				<ru>Добавлен прогресс-бар на иконке приложения при чтении логов с UDP (можно отключить в настройках);</ru>
+				<en>Added a progress bar on the application icon while reading UDP logs (can be disabled in settings);</en>
+			</Item>
+			<Item>
+				<ru>Добавлен функционал проверки обновлений в фоновом режиме;</ru>
+				<en>Added background update checking;</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Улучшен функционал создания собственного шаблона импорта (добавлены дополнительные лейаут рендеры).</string>
+			<Item>
+				<ru>Улучшен функционал создания собственного шаблона импорта (добавлены дополнительные лейаут рендеры).</ru>
+				<en>Improved creating a custom import template (added extra layout renderers).</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен ряд багов.</string>
+			<Item>
+				<ru>Исправлен ряд багов.</ru>
+				<en>Fixed several bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.2.0.0 (03.18.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность смена языка приложения;</string>
-			<string>Добавлена возможность перехода к выбранному сообщению в общем списке логов из окна результата поиска (контекстное меню у выбранного сообщения или двойнок клик по сообщению);</string>
-			<string>Добавлена функция поиска логгера в дереве из контекстного меню выбранного сообщения;</string>
-			<string>Добавлена возможность скрывать колонку с № потока (в настройках);</string>
-			<string>Добавлен вариант (по-умолчанию) автоматического подбора шаблона для импорта логов (работает не всегда стабильно, но в большинстве случаев норм).</string>
+			<Item>
+				<ru>Добавлена возможность смена языка приложения;</ru>
+				<en>Added application language switching;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность перехода к выбранному сообщению в общем списке логов из окна результата поиска (контекстное меню у выбранного сообщения или двойнок клик по сообщению);</ru>
+				<en>Added jumping to the selected message in the main log list from the search results window (context menu or double-click);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена функция поиска логгера в дереве из контекстного меню выбранного сообщения;</ru>
+				<en>Added finding a logger in the tree from the selected message context menu;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность скрывать колонку с № потока (в настройках);</ru>
+				<en>Added an option to hide the thread number column (in settings);</en>
+			</Item>
+			<Item>
+				<ru>Добавлен вариант (по-умолчанию) автоматического подбора шаблона для импорта логов (работает не всегда стабильно, но в большинстве случаев норм).</ru>
+				<en>Added automatic log import template detection as the default option (not always reliable, but works in most cases).</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Изменен вид полей ввода поиска.</string>
+			<Item>
+				<ru>Изменен вид полей ввода поиска.</ru>
+				<en>Changed the appearance of the search input fields.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен ряд багов.</string>
+			<Item>
+				<ru>Исправлен ряд багов.</ru>
+				<en>Fixed several bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.6.0 (03.13.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность перехода к выбранному времени в списке логов (Ctrl + T или ПКМ на выбранном логе и Go to Timestamp);</string>
-			<string>Добавлена возможность показа сообщений только в определенно заданный интервал времени (Ctrl + Shift + T или ПКМ на выбранном логе и Set Time Interval);</string>
-			<string>Добавлена возможность маркировки сообщений другим цветом от выбранного логгера (в контекстном меню логгеров Toggle Marking).</string>
+			<Item>
+				<ru>Добавлена возможность перехода к выбранному времени в списке логов (Ctrl + T или ПКМ на выбранном логе и Go to Timestamp);</ru>
+				<en>Added jumping to a selected time in the log list (Ctrl+T, or right-click a log and Go to Timestamp);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность показа сообщений только в определенно заданный интервал времени (Ctrl + Shift + T или ПКМ на выбранном логе и Set Time Interval);</ru>
+				<en>Added showing messages only within a specified time interval (Ctrl+Shift+T, or right-click a log and Set Time Interval);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность маркировки сообщений другим цветом от выбранного логгера (в контекстном меню логгеров Toggle Marking).</ru>
+				<en>Added marking messages with a different color from the selected logger (Toggle Marking in the logger context menu).</en>
+			</Item>
 		</NewFeatures>
 		<FixedBugs>
-			<string>Исправлен ряд багов.</string>
+			<Item>
+				<ru>Исправлен ряд багов.</ru>
+				<en>Fixed several bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.5.0 (02.26.2019)</Version>
 		<NewFeatures>
-			<string>Добавлены горячие клавиши для тех кнопок, которые используются чаще всего (при наведении на кнопки показывается подсказка с сочетанием горячих клавиш);</string>
-			<string>Добавлена возможность поиска предыдущего сообщения;</string>
-			<string>Добавлена функция поиска логгера в дереве из контекстного меню выбранного сообщения;</string>
-			<string>Добавлена возможность поиска логгеров в дереве.</string>
+			<Item>
+				<ru>Добавлены горячие клавиши для тех кнопок, которые используются чаще всего (при наведении на кнопки показывается подсказка с сочетанием горячих клавиш);</ru>
+				<en>Added keyboard shortcuts for the most frequently used buttons (hovering a button shows the shortcut tooltip);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность поиска предыдущего сообщения;</ru>
+				<en>Added finding the previous message;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена функция поиска логгера в дереве из контекстного меню выбранного сообщения;</ru>
+				<en>Added finding a logger in the tree from the selected message context menu;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность поиска логгеров в дереве.</ru>
+				<en>Added searching loggers in the tree.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Изменен вид кнопок в столбце сообщения лога на более компактный вид с иконками.</string>
+			<Item>
+				<ru>Изменен вид кнопок в столбце сообщения лога на более компактный вид с иконками.</ru>
+				<en>Changed the log message column buttons to a more compact icon layout.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен ряд багов.</string>
+			<Item>
+				<ru>Исправлен ряд багов.</ru>
+				<en>Fixed several bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.4.3 (02.19.2019)</Version>
 		<FixedBugs>
-			<string>При смене уровня лога или исключения/добавления логгеров в дереве не сбрасывается текущая выбранная позиция.</string>
+			<Item>
+				<ru>При смене уровня лога или исключения/добавления логгеров в дереве не сбрасывается текущая выбранная позиция.</ru>
+				<en>Changing the log level or checking/unchecking loggers in the tree no longer resets the currently selected position.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.4.2 (02.15.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена кнопка очистки результатов поиска (раньше можно было очистить лишь очистив строку поиска и нажав Enter);</string>
-			<string>Добавил возможность экспорта логов выбранного логгера из дерева через контекстное меню (Export Current Logger to File).</string>
+			<Item>
+				<ru>Добавлена кнопка очистки результатов поиска (раньше можно было очистить лишь очистив строку поиска и нажав Enter);</ru>
+				<en>Added a button to clear search results (previously you had to clear the search box and press Enter);</en>
+			</Item>
+			<Item>
+				<ru>Добавил возможность экспорта логов выбранного логгера из дерева через контекстное меню (Export Current Logger to File).</ru>
+				<en>Added exporting logs of the selected logger from the tree via the context menu (Export Current Logger to File).</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Команды Go to Next Warning и Go To Next Error теперь осуществляют поиск от выбранного лога.</string>
+			<Item>
+				<ru>Команды Go to Next Warning и Go To Next Error теперь осуществляют поиск от выбранного лога.</ru>
+				<en>Go to Next Warning and Go To Next Error now search starting from the selected log entry.</en>
+			</Item>
 		</ChangedFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.4.1 (02.12.2019)</Version>
 		<NewFeatures>
-			<string>Добавлен прогресс-бар при импорте лог-файла;</string>
-			<string>Добавлена возможность быстрого импорта лога через drag and drop (можно закидывать сразу несколько файлов, допускаются только файлы с расширением .txt и .log);</string>
-			<string>Добавлен функционал быстрого добавления IP логгера в игнор лист через контектное меню в дереве логгеров.</string>
+			<Item>
+				<ru>Добавлен прогресс-бар при импорте лог-файла;</ru>
+				<en>Added a progress bar when importing a log file;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность быстрого импорта лога через drag and drop (можно закидывать сразу несколько файлов, допускаются только файлы с расширением .txt и .log);</ru>
+				<en>Added quick log import via drag and drop (multiple files are allowed; only .txt and .log files);</en>
+			</Item>
+			<Item>
+				<ru>Добавлен функционал быстрого добавления IP логгера в игнор лист через контектное меню в дереве логгеров.</ru>
+				<en>Added quickly adding an IP logger to the ignore list from the logger tree context menu.</en>
+			</Item>
 		</NewFeatures>
 		<FixedBugs>
-			<string>Исправления по экспорту/испорту логов;</string>
-			<string>Исправления общей логики работы после глобальных изменений в версии 1.1.4.0.</string>
+			<Item>
+				<ru>Исправления по экспорту/испорту логов;</ru>
+				<en>Fixes for log export/import;</en>
+			</Item>
+			<Item>
+				<ru>Исправления общей логики работы после глобальных изменений в версии 1.1.4.0.</ru>
+				<en>Fixes to overall behavior after the major changes in version 1.1.4.0.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.4.0 (02.06.2019)</Version>
 		<NewFeatures>
-			<string>Импорт логов из файла;</string>
-			<string>Экспорт считанных логов в файл.</string>
+			<Item>
+				<ru>Импорт логов из файла;</ru>
+				<en>Import logs from a file;</en>
+			</Item>
+			<Item>
+				<ru>Экспорт считанных логов в файл.</ru>
+				<en>Export received logs to a file.</en>
+			</Item>
 		</NewFeatures>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.3.0 (01.28.2019)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность показа столбца с IP адресом. Добавляется в настройках.</string>
+			<Item>
+				<ru>Добавлена возможность показа столбца с IP адресом. Добавляется в настройках.</ru>
+				<en>Added an option to show the IP address column. Enabled in settings.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Соединены два первых столбца - картинка уровня лога и название уровня лога, что позволило убрать пустое пространство между столбцом Level и Time.</string>
+			<Item>
+				<ru>Соединены два первых столбца - картинка уровня лога и название уровня лога, что позволило убрать пустое пространство между столбцом Level и Time.</ru>
+				<en>Merged the first two columns — the log level icon and the log level name — to remove the empty space between the Level and Time columns.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Пофикшен баг с поиском. После поиска появлялись новые сообщения, не относящиеся к результатам поиска. После очистки поля поиска появлялись все логи, даже те, которые не выбраны в дереве логгеров;</string>
-			<string>Пофикшен баг с нерабочими кнопками контектного меню сообщения Go to Next Warning/Error (работало только через горячие клавиши).</string>
+			<Item>
+				<ru>Пофикшен баг с поиском. После поиска появлялись новые сообщения, не относящиеся к результатам поиска. После очистки поля поиска появлялись все логи, даже те, которые не выбраны в дереве логгеров;</ru>
+				<en>Fixed a search bug. After a search, new unrelated messages appeared in the results. Clearing the search box showed all logs, including those not selected in the logger tree;</en>
+			</Item>
+			<Item>
+				<ru>Пофикшен баг с нерабочими кнопками контектного меню сообщения Go to Next Warning/Error (работало только через горячие клавиши).</ru>
+				<en>Fixed the message context menu items Go to Next Warning/Error not working (they only worked via keyboard shortcuts).</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.2.0 (11.28.2018)</Version>
 		<NewFeatures>
-			<string>Добавлена возможность поиска следующего Warning-а в списке через контекстное меню или горячию главишу Ctrl+W;</string>
-			<string>Добавлена возможность поиска следующего Error-ра в списке через контекстное меню или горячию главишу Ctrl+E.</string>
+			<Item>
+				<ru>Добавлена возможность поиска следующего Warning-а в списке через контекстное меню или горячию главишу Ctrl+W;</ru>
+				<en>Added finding the next Warning in the list via the context menu or the Ctrl+W shortcut;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность поиска следующего Error-ра в списке через контекстное меню или горячию главишу Ctrl+E.</ru>
+				<en>Added finding the next Error in the list via the context menu or the Ctrl+E shortcut.</en>
+			</Item>
 		</NewFeatures>
 		<FixedBugs>
-			<string>Исправлена часть багов.</string>
+			<Item>
+				<ru>Исправлена часть багов.</ru>
+				<en>Fixed some bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.1.1 (10.08.2018)</Version>
 		<NewFeatures>
-			<string>Добавлены иконки типов логов в выпадающем списке LogLevel. Так же, теперь там сортировка по уровню важности логов;</string>
-			<string>Добавлена возможность смены цвета шрифта;</string>
-			<string>Добавлена возможность сворачивать приложение в трей (настройка);</string>
-			<string>Добавлена возможность задания максимального количества сообщений, которое можно принять (после чего, сообщения начнут удалятся пачками - все в настройках). По умолчанию - отключено;</string>
-			<string>Добавлена возможность задания в настройках запуска только одного экземпляра приложения;</string>
-			<string>Добавлена возможность активации/деактивации ресиверов (без удаления);</string>
-			<string>Добавлен новый пункт контекстного меню логгера в дереве - Don't Receive this Logger. Больше не получать сообщения от данного логгера (совсем, не добавляет сообщения в буфер).</string>
+			<Item>
+				<ru>Добавлены иконки типов логов в выпадающем списке LogLevel. Так же, теперь там сортировка по уровню важности логов;</ru>
+				<en>Added log type icons in the LogLevel dropdown. The list is now also sorted by severity;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность смены цвета шрифта;</ru>
+				<en>Added font color selection;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность сворачивать приложение в трей (настройка);</ru>
+				<en>Added minimizing the application to the tray (setting);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность задания максимального количества сообщений, которое можно принять (после чего, сообщения начнут удалятся пачками - все в настройках). По умолчанию - отключено;</ru>
+				<en>Added a maximum received message count (after that, messages are deleted in batches — all in settings). Disabled by default;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность задания в настройках запуска только одного экземпляра приложения;</ru>
+				<en>Added a setting to allow only one application instance;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность активации/деактивации ресиверов (без удаления);</ru>
+				<en>Added enabling/disabling receivers without deleting them;</en>
+			</Item>
+			<Item>
+				<ru>Добавлен новый пункт контекстного меню логгера в дереве - Don't Receive this Logger. Больше не получать сообщения от данного логгера (совсем, не добавляет сообщения в буфер).</ru>
+				<en>Added a new logger tree context menu item — Don't Receive this Logger. Messages from this logger are no longer received at all (they are not added to the buffer).</en>
+			</Item>
 		</NewFeatures>
 		<FixedBugs>
-			<string>Исправлена часть багов.</string>
+			<Item>
+				<ru>Исправлена часть багов.</ru>
+				<en>Fixed some bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 	<ReleaseNotes>
 		<Version>1.1.1.0 (01.08.2018)</Version>
 		<NewFeatures>
-			<string>Добавлена кнопка Set Default в настройках цвета ресивера, устанавливающая дефолтный цвет отображения ресивера;</string>
-			<string>Добавлено контекстное меню выбранному сообщению в списке логов. (Don't Receive this Logger и Find in Tree);</string>
-			<string>Добавлен новый пункт в контекстном меню логгера в дереве - Show Only this Logger - показывает только текущий выбранный логгер;</string>
-			<string>При поиске элементов теперь в реалтайме добавляются новые элементы в список, которые содержат текст запроса;</string>
-			<string>Добавлена возможность изменения темы в настройках;</string>
-			<string>Добавлен список игнорируемых IP-Адресов (сообщения от них приходить не будут);</string>
-			<string>Добавлена возможность открытия результата поиска в отдельном окне - правой кнопкой мыши на Find All - Result in new window;</string>
+			<Item>
+				<ru>Добавлена кнопка Set Default в настройках цвета ресивера, устанавливающая дефолтный цвет отображения ресивера;</ru>
+				<en>Added a Set Default button in receiver color settings to restore the default receiver color;</en>
+			</Item>
+			<Item>
+				<ru>Добавлено контекстное меню выбранному сообщению в списке логов. (Don't Receive this Logger и Find in Tree);</ru>
+				<en>Added a context menu for the selected message in the log list (Don't Receive this Logger and Find in Tree);</en>
+			</Item>
+			<Item>
+				<ru>Добавлен новый пункт в контекстном меню логгера в дереве - Show Only this Logger - показывает только текущий выбранный логгер;</ru>
+				<en>Added a new logger tree context menu item — Show Only this Logger — which shows only the currently selected logger;</en>
+			</Item>
+			<Item>
+				<ru>При поиске элементов теперь в реалтайме добавляются новые элементы в список, которые содержат текст запроса;</ru>
+				<en>During search, new matching items are now added to the list in real time;</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность изменения темы в настройках;</ru>
+				<en>Added theme selection in settings;</en>
+			</Item>
+			<Item>
+				<ru>Добавлен список игнорируемых IP-Адресов (сообщения от них приходить не будут);</ru>
+				<en>Added an ignored IP address list (messages from these addresses will not be received);</en>
+			</Item>
+			<Item>
+				<ru>Добавлена возможность открытия результата поиска в отдельном окне - правой кнопкой мыши на Find All - Result in new window;</ru>
+				<en>Added opening search results in a separate window — right-click Find All — Result in new window;</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
-			<string>Все настройки теперь сохраняются в файле settings.xml;</string>
-			<string>Изменены иконки с png на векторные.</string>
+			<Item>
+				<ru>Все настройки теперь сохраняются в файле settings.xml;</ru>
+				<en>All settings are now saved to settings.xml;</en>
+			</Item>
+			<Item>
+				<ru>Изменены иконки с png на векторные.</ru>
+				<en>Changed icons from PNG to vector.</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
-			<string>Исправлен ряд багов.</string>
+			<Item>
+				<ru>Исправлен ряд багов.</ru>
+				<en>Fixed several bugs.</en>
+			</Item>
 		</FixedBugs>
 	</ReleaseNotes>
 </ArrayOfReleaseNotes>

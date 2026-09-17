@@ -32,7 +32,17 @@
 				<en>Warn/Error/Fatal density strip above the log list: clicking an interval jumps to the first matching message</en>
 			</Item>
 		</NewFeatures>
+		<ChangedFeatures>
+			<Item>
+				<ru>Оптимизировано открытие окна Release Notes: содержимое кэшируется, добавлена локализация заголовков и пунктов</ru>
+				<en>Faster Release Notes window: notes are cached, and section headings and items are localized</en>
+			</Item>
+		</ChangedFeatures>
 		<FixedBugs>
+			<Item>
+				<ru>Исправлены и улучшены английские переводы интерфейса</ru>
+				<en>Fixed and improved English UI translations</en>
+			</Item>
 			<Item>
 				<ru>Экспортирование только выбранных Loggers из дерева при экспорте в файл</ru>
 				<en>Exporting only the selected loggers from the tree when exporting to a file</en>

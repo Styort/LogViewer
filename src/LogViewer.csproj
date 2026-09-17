@@ -196,6 +196,8 @@
     <Compile Include="Enums\eLogLevel.cs" />
     <Compile Include="Helpers\ArchiveLogExtractor.cs" />
     <Compile Include="Helpers\LoggerStatistics.cs" />
+    <Compile Include="Helpers\ErrorTimelineBuilder.cs" />
+    <Compile Include="Helpers\ErrorTimelineControl.cs" />
     <Compile Include="Helpers\AsyncObservableCollection.cs" />
     <Compile Include="Helpers\DialogCloser.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
@@ -228,6 +230,7 @@
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
     <Compile Include="MVVM\Models\LogBookmark.cs" />
+    <Compile Include="MVVM\Models\ErrorTimelineBucket.cs" />
     <Compile Include="MVVM\Models\LoggerStatItem.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />

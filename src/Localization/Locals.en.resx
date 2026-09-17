@@ -735,4 +735,16 @@ Restart application?</value>
   <data name="BookmarkNotVisible" xml:space="preserve">
     <value>The message is hidden by the current filter</value>
   </data>
+  <data name="ErrorTimelineHint" xml:space="preserve">
+    <value>Click to jump to errors in this interval</value>
+  </data>
+  <data name="ErrorTimelineToolTip" xml:space="preserve">
+    <value>{0} – {1}: Warn {2}, Error {3}, Fatal {4}</value>
+  </data>
+  <data name="ShowErrorTimeline" xml:space="preserve">
+    <value>Show error timeline:</value>
+  </data>
+  <data name="ShowErrorTimelineToolTip" xml:space="preserve">
+    <value>Warn/Error/Fatal density strip below the log list. Click to jump to messages in that interval.</value>
+  </data>
 </root>

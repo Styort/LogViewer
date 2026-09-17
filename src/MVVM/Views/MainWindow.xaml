@@ -270,7 +270,12 @@
         <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Height="3" Grid.Row="2" ResizeDirection="Rows" Background="Gray"
                       HorizontalAlignment="Stretch"/>
 
-        <ListView Grid.Column="0" Grid.Row="1" ItemsSource="{Binding Path=Logs, IsAsync=True}" SelectedValue="{Binding Path=SelectedLog}" x:Name="LogsListView" 
+        <Grid Grid.Column="0" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ListView Grid.Row="0" ItemsSource="{Binding Path=Logs, IsAsync=True}" SelectedValue="{Binding Path=SelectedLog}" x:Name="LogsListView" 
                   ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" DragOver="LogsListView_OnDragOver" Drop="LogsListView_OnDrop" AllowDrop="True"
                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.ScrollChanged="LogsListView_OnScrollChanged" 
                   ItemContainerStyle="{StaticResource LogItemStyle}" SelectionChanged="OnSelectionChanged" SelectionMode="Extended"
@@ -301,11 +306,21 @@
             </ListView.InputBindings>
         </ListView>
 
-        <ProgressBar Grid.Column="0"  Grid.Row="1" Style="{StaticResource MaterialDesignCircularProgressBar}" Height="50" Width="50"
+            <ProgressBar Grid.Row="0" Style="{StaticResource MaterialDesignCircularProgressBar}" Height="50" Width="50"
                      VerticalAlignment="Center" HorizontalAlignment="Center" IsIndeterminate="True" 
                      Visibility="{Binding Path=IsVisibleLoader, Converter={StaticResource BooleanToVisibility}}"/>
 
-        <ProgressBar  Grid.Column="0"  Grid.Row="1" Height="10" VerticalAlignment="Bottom" Value="{Binding ProcessBarValue}" Visibility="{Binding IsVisibleProcessBar, Converter={StaticResource BooleanToVisibility}}" Maximum="100"/>
+            <ProgressBar Grid.Row="0" Height="10" VerticalAlignment="Bottom" Value="{Binding ProcessBarValue}" Visibility="{Binding IsVisibleProcessBar, Converter={StaticResource BooleanToVisibility}}" Maximum="100"/>
+
+            <StackPanel Grid.Row="1" Visibility="{Binding Path=IsErrorTimelineVisible, Converter={StaticResource BooleanToVisibility}}">
+                <Border Height="1" Background="Gray" Margin="0,2,0,0"/>
+                <helpers:ErrorTimelineControl Margin="0,3,0,0"
+                                              Items="{Binding Path=ErrorTimelineBuckets}"
+                                              NavigateCommand="{Binding Path=JumpToTimelineBucketCommand}"
+                                              BucketCountChangedCommand="{Binding Path=SetErrorTimelineBucketCountCommand}"
+                                              ToolTip="{localization:LocBinding ErrorTimelineHint}"/>
+            </StackPanel>
+        </Grid>
 
 
         <GroupBox Grid.Row="3" Padding="0,5" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth3" BorderThickness="0">

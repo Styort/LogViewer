@@ -494,6 +494,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Кликните, чтобы перейти к ошибкам в этом интервале.
+        /// </summary>
+        internal static string ErrorTimelineHint {
+            get {
+                return ResourceManager.GetString("ErrorTimelineHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} – {1}: Warn {2}, Error {3}, Fatal {4}.
+        /// </summary>
+        internal static string ErrorTimelineToolTip {
+            get {
+                return ResourceManager.GetString("ErrorTimelineToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Произошла ошибка при подключении к порту {0}.
         ///{1}&quot;.
         /// </summary>
@@ -1464,6 +1482,24 @@ namespace LogViewer.Localization {
         internal static string SettingsSaveErrorSamePortNumber {
             get {
                 return ResourceManager.GetString("SettingsSaveErrorSamePortNumber", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Показывать таймлайн ошибок:.
+        /// </summary>
+        internal static string ShowErrorTimeline {
+            get {
+                return ResourceManager.GetString("ShowErrorTimeline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Полоса плотности Warn/Error/Fatal под списком логов.
+        /// </summary>
+        internal static string ShowErrorTimelineToolTip {
+            get {
+                return ResourceManager.GetString("ShowErrorTimelineToolTip", resourceCulture);
             }
         }
         

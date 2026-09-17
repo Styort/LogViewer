@@ -38,6 +38,7 @@ namespace LogViewer.MVVM.ViewModels
         private bool isShowSourceColumn;
         private bool isShowThreadColumn;
         private bool isShowTaskbarProgress;
+        private bool isShowErrorTimeline;
         private bool showMessageHighlightByReceiverColor;
         private bool isSeparateIpLoggersByPort;
         private string selectedMessageFontFamily = "Consolas";
@@ -411,6 +412,16 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public bool IsShowErrorTimeline
+        {
+            get => isShowErrorTimeline;
+            set
+            {
+                isShowErrorTimeline = value;
+                OnPropertyChanged();
+            }
+        }
+
         public bool ShowMessageHighlightByReceiverColor
         {
             get => showMessageHighlightByReceiverColor;
@@ -510,6 +521,7 @@ namespace LogViewer.MVVM.ViewModels
                 IsShowSourceColumn = Settings.Instance.IsShowSourceColumn;
                 IsShowThreadColumn = Settings.Instance.IsShowThreadColumn;
                 IsShowTaskbarProgress = Settings.Instance.IsShowTaskbarProgress;
+                IsShowErrorTimeline = Settings.Instance.IsShowErrorTimeline;
                 ShowMessageHighlightByReceiverColor = Settings.Instance.ShowMessageHighlightByReceiverColor;
                 IsSeparateIpLoggersByPort = Settings.Instance.IsSeparateIpLoggersByPort;
                 SelectedLanguage = TranslationSource.Instance.CurrentCulture;
@@ -607,6 +619,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.IsShowSourceColumn = IsShowSourceColumn;
             Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;
             Settings.Instance.IsShowTaskbarProgress = IsShowTaskbarProgress;
+            Settings.Instance.IsShowErrorTimeline = IsShowErrorTimeline;
             Settings.Instance.ShowMessageHighlightByReceiverColor = ShowMessageHighlightByReceiverColor;
             Settings.Instance.CurrentTheme = SelectedTheme;
             Settings.Instance.DataFormat = SelectedDataFormat;

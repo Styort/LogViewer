@@ -60,6 +60,11 @@ namespace LogViewer.MVVM.Models
         public bool IsShowTaskbarProgress { get; set; } = true;
 
         /// <summary>
+        /// Показывать ли полосу плотности Warn/Error/Fatal
+        /// </summary>
+        public bool IsShowErrorTimeline { get; set; } = true;
+
+        /// <summary>
         /// Подсвечивать сообщение тем же цветом, что и цвет ресивера, но только с прозрачностью
         /// </summary>
         public bool ShowMessageHighlightByReceiverColor { get; set; } = false;
@@ -172,6 +177,7 @@ namespace LogViewer.MVVM.Models
                         Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
                         Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
                         Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
+                        Instance.IsShowErrorTimeline = settings.IsShowErrorTimeline;
                         Instance.ShowMessageHighlightByReceiverColor = settings.ShowMessageHighlightByReceiverColor;
                         Instance.IsSeparateIpLoggersByPort = settings.IsSeparateIpLoggersByPort;
                         Instance.Language = settings.Language;

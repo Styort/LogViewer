@@ -734,4 +734,16 @@
   <data name="BookmarkNotVisible" xml:space="preserve">
     <value>Сообщение скрыто фильтром</value>
   </data>
+  <data name="ErrorTimelineHint" xml:space="preserve">
+    <value>Кликните, чтобы перейти к ошибкам в этом интервале</value>
+  </data>
+  <data name="ErrorTimelineToolTip" xml:space="preserve">
+    <value>{0} – {1}: Warn {2}, Error {3}, Fatal {4}</value>
+  </data>
+  <data name="ShowErrorTimeline" xml:space="preserve">
+    <value>Показывать таймлайн ошибок:</value>
+  </data>
+  <data name="ShowErrorTimelineToolTip" xml:space="preserve">
+    <value>Полоса плотности Warn/Error/Fatal под списком логов. Клик переходит к сообщениям в выбранном интервале.</value>
+  </data>
 </root>

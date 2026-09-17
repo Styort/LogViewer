@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using LogViewer.Adapters;
 using LogViewer.Factories;
 using LogViewer.Core.Domain;
@@ -111,6 +112,11 @@ namespace LogViewer.MVVM.ViewModels
         private bool isShowTaskbarProgress = false;
         private List<LogMessage> nearbyLastLogMessages = new List<LogMessage>();
         private LogMessage lastLogMessage;
+        private ObservableCollection<ErrorTimelineBucket> errorTimelineBuckets = new ObservableCollection<ErrorTimelineBucket>();
+        private bool isErrorTimelineVisible;
+        private int errorTimelineBucketCount = 120;
+        private bool errorTimelineDirty;
+        private DispatcherTimer errorTimelineTimer;
         private LogMessage LastLogMessage
         {
             get => lastLogMessage;
@@ -152,6 +158,28 @@ namespace LogViewer.MVVM.ViewModels
         public List<WatchedFileInfo> FileWatchers { get; set; } = new List<WatchedFileInfo>();
 
         public ObservableCollection<LogBookmark> Bookmarks { get; } = new ObservableCollection<LogBookmark>();
+
+        public ObservableCollection<ErrorTimelineBucket> ErrorTimelineBuckets
+        {
+            get => errorTimelineBuckets;
+            private set
+            {
+                errorTimelineBuckets = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsErrorTimelineVisible
+        {
+            get => isErrorTimelineVisible;
+            private set
+            {
+                if (isErrorTimelineVisible == value)
+                    return;
+                isErrorTimelineVisible = value;
+                OnPropertyChanged();
+            }
+        }
 
         public bool IsSearchProcess
         {
@@ -247,6 +275,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 logs = value;
                 OnPropertyChanged();
+                RebuildErrorTimeline();
             }
         }
 
@@ -682,6 +711,7 @@ namespace LogViewer.MVVM.ViewModels
                 Logs.Add(msg);
             BuildTreeByMessage(msg, true);
             CleanIsEnabled = allLogs.Any();
+            ScheduleErrorTimelineRebuild();
         }
 
         private void OnCoreSessionCleared(object sender, EventArgs e)
@@ -695,6 +725,7 @@ namespace LogViewer.MVVM.ViewModels
             var root = Loggers[0];
             root.Children.Clear();
             CleanIsEnabled = false;
+            RebuildErrorTimeline();
         }
 
         private void OnCoreEntriesRemoved(int count)
@@ -869,6 +900,8 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand removeBookmarkCommand;
         private RelayCommand editBookmarkCommentCommand;
         private RelayCommand openBookmarksCommand;
+        private RelayCommand jumpToTimelineBucketCommand;
+        private RelayCommand setErrorTimelineBucketCountCommand;
         private LoggerStatisticsWindow loggerStatisticsWindow;
         private BookmarkListWindow bookmarkListWindow;
 
@@ -910,6 +943,8 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand RemoveBookmarkCommand => removeBookmarkCommand ?? (removeBookmarkCommand = new RelayCommand(RemoveBookmark));
         public RelayCommand EditBookmarkCommentCommand => editBookmarkCommentCommand ?? (editBookmarkCommentCommand = new RelayCommand(EditBookmarkComment));
         public RelayCommand OpenBookmarksCommand => openBookmarksCommand ?? (openBookmarksCommand = new RelayCommand(OpenBookmarks));
+        public RelayCommand JumpToTimelineBucketCommand => jumpToTimelineBucketCommand ?? (jumpToTimelineBucketCommand = new RelayCommand(JumpToTimelineBucket));
+        public RelayCommand SetErrorTimelineBucketCountCommand => setErrorTimelineBucketCountCommand ?? (setErrorTimelineBucketCountCommand = new RelayCommand(SetErrorTimelineBucketCount));
 
         #endregion
 
@@ -996,6 +1031,7 @@ namespace LogViewer.MVVM.ViewModels
 
             RemoveAllFileWatchers();
             ClearAllBookmarks();
+            RebuildErrorTimeline();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -1230,6 +1266,7 @@ namespace LogViewer.MVVM.ViewModels
                     deletedMessagesCount = Settings.Instance.DeletedMessagesCount;
                     IsSourceVisible = Settings.Instance.IsShowSourceColumn;
                     IsThreadVisible = Settings.Instance.IsShowThreadColumn;
+                    RebuildErrorTimeline();
                     session.AllowMaxMessageBufferSize = allowMaxMessageBufferSize;
                     session.MaxMessageBufferSize = maxMessageBufferSize;
                     session.DeletedMessagesCount = deletedMessagesCount;
@@ -2150,6 +2187,82 @@ namespace LogViewer.MVVM.ViewModels
             OnPropertyChanged(nameof(BookmarkColumnWidth));
         }
 
+        private void JumpToTimelineBucket(object obj)
+        {
+            var bucket = obj as ErrorTimelineBucket;
+            if (bucket?.FirstHit == null)
+                return;
+            SelectedLog = bucket.FirstHit;
+        }
+
+        private void SetErrorTimelineBucketCount(object obj)
+        {
+            if (!(obj is int count))
+                return;
+            count = Math.Max(40, Math.Min(200, count));
+            if (count == errorTimelineBucketCount)
+                return;
+            errorTimelineBucketCount = count;
+            RebuildErrorTimeline();
+        }
+
+        private void ScheduleErrorTimelineRebuild()
+        {
+            errorTimelineDirty = true;
+            if (errorTimelineTimer == null)
+            {
+                errorTimelineTimer = new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromMilliseconds(1500)
+                };
+                errorTimelineTimer.Tick += (sender, args) =>
+                {
+                    errorTimelineTimer.Stop();
+                    if (errorTimelineDirty)
+                        RebuildErrorTimeline();
+                };
+            }
+
+            if (!errorTimelineTimer.IsEnabled)
+                errorTimelineTimer.Start();
+        }
+
+        private void RebuildErrorTimeline()
+        {
+            errorTimelineDirty = false;
+            if (errorTimelineTimer != null && errorTimelineTimer.IsEnabled)
+                errorTimelineTimer.Stop();
+
+            if (!Settings.Instance.IsShowErrorTimeline)
+            {
+                ErrorTimelineBuckets = new ObservableCollection<ErrorTimelineBucket>();
+                IsErrorTimelineVisible = false;
+                return;
+            }
+
+            var source = Logs;
+            if (source == null || source.Count == 0)
+            {
+                ErrorTimelineBuckets = new ObservableCollection<ErrorTimelineBucket>();
+                IsErrorTimelineVisible = false;
+                return;
+            }
+
+            var buckets = ErrorTimelineBuilder.Build(source, errorTimelineBucketCount);
+            bool visible = false;
+            for (int i = 0; i < buckets.Count; i++)
+            {
+                if (buckets[i].Warn > 0 || buckets[i].Error > 0 || buckets[i].Fatal > 0)
+                {
+                    visible = true;
+                    break;
+                }
+            }
+
+            ErrorTimelineBuckets = new ObservableCollection<ErrorTimelineBucket>(buckets);
+            IsErrorTimelineVisible = visible;
+        }
+
         /// <summary>
         /// Очищает результаты поиска
         /// </summary>
@@ -2887,6 +3000,11 @@ allLogs.Add(log);
 
         public void Dispose()
         {
+            if (errorTimelineTimer != null)
+            {
+                errorTimelineTimer.Stop();
+                errorTimelineTimer = null;
+            }
             RemoveAllFileWatchers();
             coreToUiAdapter?.Unsubscribe();
             processingService?.RemoveAllSources();

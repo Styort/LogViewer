@@ -91,6 +91,9 @@ namespace LogViewer.Core.Services
         private void OnSourceLogReceived(object sender, LogEntryReceivedEventArgs e)
         {
             if (e?.Entry == null) return;
+            // Store vs display: skip AddEntry and EntryProcessed when Don't Receive matches FullPath.
+            if (!_session.ShouldStoreInBuffer(e.Entry))
+                return;
             _session.AddEntry(e.Entry);
             bool includedInFilter = _filter.ShouldInclude(e.Entry, _session.FilterCriteria);
             EntryProcessed?.Invoke(this, new LogEntryProcessedEventArgs

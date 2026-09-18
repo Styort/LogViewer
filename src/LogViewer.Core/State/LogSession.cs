@@ -36,9 +36,19 @@ namespace LogViewer.Core.State
             get { lock (_lock) return _allEntries.Count; }
         }
 
+        /// <summary>
+        /// Whether the entry should be stored. Delegates to <see cref="FilterCriteria.ShouldStoreInBuffer(LogEntry)"/>.
+        /// </summary>
+        public bool ShouldStoreInBuffer(LogEntry entry)
+        {
+            return FilterCriteria.ShouldStoreInBuffer(entry);
+        }
+
         public void AddEntry(LogEntry entry)
         {
             if (entry == null) return;
+            if (!FilterCriteria.ShouldStoreInBuffer(entry))
+                return;
 
             int removedCount = 0;
             lock (_lock)
@@ -61,6 +71,8 @@ namespace LogViewer.Core.State
         {
             if (entries == null) return;
             var list = entries as List<LogEntry> ?? entries.ToList();
+            if (list.Count == 0) return;
+            list = list.FindAll(e => FilterCriteria.ShouldStoreInBuffer(e));
             if (list.Count == 0) return;
 
             int removedCount = 0;
@@ -137,6 +149,25 @@ namespace LogViewer.Core.State
             }
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { Cleared = false });
             FilterCriteriaChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Removes entries that <see cref="FilterCriteria.ShouldStoreInBuffer(LogEntry)"/> would now reject
+        /// after Don't Receive was added to <see cref="FilterCriteria"/>.
+        /// Does not raise <see cref="SessionChanged"/> with <c>RemovedCount</c> (that path trims the UI from the start).
+        /// </summary>
+        public int RemoveEntriesExcludedFromBuffer()
+        {
+            int removed;
+            lock (_lock)
+            {
+                removed = _allEntries.RemoveAll(e => !FilterCriteria.ShouldStoreInBuffer(e));
+                if (removed > 0)
+                    RebuildUniqueLoggers();
+            }
+            if (removed > 0)
+                FilterCriteriaChanged?.Invoke(this, EventArgs.Empty);
+            return removed;
         }
 
         /// <summary>

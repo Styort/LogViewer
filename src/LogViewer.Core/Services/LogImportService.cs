@@ -82,8 +82,13 @@ namespace LogViewer.Core.Services
 
                 if (entries.Count > 0)
                 {
-                    _session.AddEntries(entries);
-                    totalEntries += entries.Count;
+                    // Import respects Don't Receive the same way live UDP does (before session storage).
+                    entries.RemoveAll(e => !_session.ShouldStoreInBuffer(e));
+                    if (entries.Count > 0)
+                    {
+                        _session.AddEntries(entries);
+                        totalEntries += entries.Count;
+                    }
                 }
 
                 completed++;

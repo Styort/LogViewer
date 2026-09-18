@@ -10,6 +10,8 @@ namespace LogViewer.Core.Services
         public bool ShouldInclude(LogEntry entry, FilterCriteria criteria)
         {
             if (entry == null || criteria == null) return false;
+            // Display only. Don't Receive (ExcludedLoggerFullPathsWithBuffer) is applied in
+            // FilterCriteria.ShouldStoreInBuffer before the session stores the entry.
             if (criteria.ExcludedLoggerFullPaths != null && criteria.ExcludedLoggerFullPaths.Contains(entry.FullPath))
                 return false;
 

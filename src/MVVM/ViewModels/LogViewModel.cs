@@ -706,10 +706,12 @@ namespace LogViewer.MVVM.ViewModels
                     msg.ToggleMark = messageColor;
                 }
             }
+            // TODO: полный отказ от allLogs (биндинг к сессии) — задача 05; здесь только один Add на событие Core.
             allLogs.Add(msg);
             if (e.IncludedInFilter)
                 Logs.Add(msg);
-            BuildTreeByMessage(msg, true);
+            // Дерево больше не добавляет в allLogs/Logs: иначе live UDP даёт дубли строк.
+            BuildTreeByMessage(msg);
             CleanIsEnabled = allLogs.Any();
             ScheduleErrorTimelineRebuild();
         }
@@ -721,7 +723,7 @@ namespace LogViewer.MVVM.ViewModels
             Logs.Clear();
             availableLoggers.Clear();
             exceptLoggers.Clear();
-            exceptLoggersWithBuffer.Clear();
+            // Don't Receive остаётся после Clear: новые сообщения этих логгеров снова не попадают в сессию.
             var root = Loggers[0];
             root.Children.Clear();
             CleanIsEnabled = false;
@@ -1010,7 +1012,6 @@ namespace LogViewer.MVVM.ViewModels
             currentErrorLoggers.Clear();
             importData.Clear();
             currentExceptLoggers.Clear();
-            exceptLoggersWithBuffer.Clear();
 
             allLogs.Clear();
 
@@ -1547,17 +1548,28 @@ namespace LogViewer.MVVM.ViewModels
 
             if (node == null) return;
 
+            DontReceiveThisLoggerRecursive(node);
+            // Исключение действует на будущие записи в сессии (ShouldStoreInBuffer), не только на UI.
+            SyncFilterCriteriaToSession();
+            session.RemoveEntriesExcludedFromBuffer();
+            allLogs = new AsyncObservableCollection<LogMessage>(
+                allLogs.Where(m => session.FilterCriteria.ShouldStoreInBuffer(m.FullPath)));
+            Logs = new AsyncObservableCollection<LogMessage>(
+                Logs.Where(m => session.FilterCriteria.ShouldStoreInBuffer(m.FullPath)));
+            CleanIsEnabled = allLogs.Any();
+            ScheduleErrorTimelineRebuild();
+        }
+
+        private void DontReceiveThisLoggerRecursive(Node node)
+        {
+            if (node == null) return;
+
             node.IsChecked = false;
             exceptLoggers.Add(node.Logger);
             exceptLoggersWithBuffer.Add(node.Logger);
 
-            if (node.Children.Any())
-            {
-                foreach (var nodeChild in node.Children)
-                {
-                    DontReceiveThisLogger(nodeChild);
-                }
-            }
+            foreach (var nodeChild in node.Children)
+                DontReceiveThisLoggerRecursive(nodeChild);
         }
 
         /// <summary>
@@ -2654,9 +2666,9 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Строит дерево логгеров по месседжу
+        /// Строит дерево логгеров по месседжу. Не трогает allLogs/Logs — запись уже добавлена в OnCoreEntryProcessed.
         /// </summary>
-        private void BuildTreeByMessage(LogMessage log, bool addLog = true)
+        private void BuildTreeByMessage(LogMessage log)
         {
             // Если с таким IP не найден корневой элемент - создаем новое дерево.
             var root = Loggers[0].Children.FirstOrDefault(x => x.Text == log.Address);
@@ -2683,18 +2695,6 @@ namespace LogViewer.MVVM.ViewModels
 
             if (availableLoggers.Contains(log.FullPath))
             {
-                if (addLog)
-                {
-                    if (SelectedMinLogLevel.HasFlag(log.Level) && (!exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath)) && !IsSearchProcess
-                        && (!isTimeIntervalProcess || isTimeIntervalProcess && log.Time > fromTimeInverval && log.Time < toTimeInverval))
-                    {
-Logs.Add(log);
-                    }
-
-                    if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-allLogs.Add(log);
-                }
-
                 CleanIsEnabled = allLogs.Any();
                 return;
             }
@@ -2705,20 +2705,11 @@ allLogs.Add(log);
                 currentParent.IsChecked.HasValue && !currentParent.IsChecked.Value || !currentParent.IsChecked.HasValue)
             {
                 exceptLoggers.Add(log.FullPath);
-                if (exceptLoggersWithBuffer.Contains(root.Parent.Logger))
+                if (!session.FilterCriteria.ShouldStoreInBuffer(log.FullPath))
                     exceptLoggersWithBuffer.Add(log.FullPath);
             }
 
             availableLoggers.Add(log.FullPath);
-
-            if (addLog)
-            {
-                if (SelectedMinLogLevel.HasFlag(log.Level) && !exceptLoggers.Contains(log.FullPath) && !exceptLoggersWithBuffer.Contains(log.FullPath) && !IsSearchProcess)
-Logs.Add(log);
-
-                if (!exceptLoggersWithBuffer.Contains(log.FullPath))
-allLogs.Add(log);
-            }
 
             CleanIsEnabled = allLogs.Any();
 

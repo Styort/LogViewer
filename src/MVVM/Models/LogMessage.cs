@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Media;
 using LogViewer.Enums;
 using LogViewer.MVVM.ViewModels;
@@ -51,6 +52,16 @@ namespace LogViewer.MVVM.Models
 
         public int? ProcessID { get; set; }
 
+        /// <summary>
+        /// Текст исключения. Пока парсер (задача 04) не заполняет поле — пустая строка; поиск уже смотрит сюда.
+        /// </summary>
+        public string Throwable { get; set; }
+
+        /// <summary>
+        /// MDC/свойства события. Пустой словарь до задачи 04; поиск идёт по значениям.
+        /// </summary>
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
         public Receiver Receiver { get; set; } = new Receiver();
 
         private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
@@ -93,6 +104,10 @@ namespace LogViewer.MVVM.Models
                 Message = this.Message,
                 Thread = this.Thread,
                 Time = this.Time,
+                Throwable = this.Throwable,
+                Properties = this.Properties != null
+                    ? new Dictionary<string, string>(this.Properties)
+                    : new Dictionary<string, string>(),
                 Receiver = (Receiver)this.Receiver.Clone()
             };
         }

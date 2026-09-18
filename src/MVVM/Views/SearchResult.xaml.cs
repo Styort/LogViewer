@@ -18,13 +18,15 @@ namespace LogViewer.MVVM.Views
     {
         public event EventHandler<LogMessage> ShowLogEvent;
 
-        public SearchResult(List<LogMessage> searchResult, string searchText, bool isMatchCase)
+        public SearchResult(List<LogMessage> searchResult, string searchText, bool isMatchCase, bool useRegex = false, bool matchWholeWord = false)
         {
             InitializeComponent();
             this.DataContext = new SearchResultViewModel();
             ((SearchResultViewModel)DataContext).SearchResult = new ObservableCollection<LogMessage>(searchResult);
             ((SearchResultViewModel)DataContext).HighlightSearchText = searchText;
             ((SearchResultViewModel)DataContext).IsMatchCase = isMatchCase;
+            ((SearchResultViewModel)DataContext).UseRegularExpressions = useRegex;
+            ((SearchResultViewModel)DataContext).IsMatchWholeWord = matchWholeWord;
         }
 
         #region Сортировка по нажатию на заголовок таблицы

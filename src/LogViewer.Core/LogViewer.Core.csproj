@@ -53,6 +53,7 @@
     <Compile Include="Services\TemplateLogParser.cs" />
     <Compile Include="Services\TemplateFileLogReader.cs" />
     <Compile Include="Services\LogFilter.cs" />
+    <Compile Include="Services\SearchMatcher.cs" />
     <Compile Include="Services\UdpLogSource.cs" />
     <Compile Include="Services\FileLogSource.cs" />
     <Compile Include="Services\LogProcessingService.cs" />

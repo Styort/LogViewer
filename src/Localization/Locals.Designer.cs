@@ -828,6 +828,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Некорректное регулярное выражение. Поиск не применяется, пока шаблон не исправлен.
+        /// </summary>
+        internal static string InvalidRegularExpression {
+            get {
+                return ResourceManager.GetString("InvalidRegularExpression", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IP Адрес.
         /// </summary>
         internal static string IPAddress {

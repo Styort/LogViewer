@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.ServiceModel.Dispatcher;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using LogViewer.Enums;
@@ -105,41 +104,17 @@ namespace LogViewer.Helpers
         }
 
         /// <summary>
-        /// Осуществляет фильтр переданного списка сообщений логов по переданным параметрам
+        /// Фильтр списка UI-сообщений той же функцией совпадения, что и Core (<see cref="LogViewer.Core.Services.SearchMatcher"/>).
         /// </summary>
-        /// <param name="messages">Список сообщений</param>
-        /// <param name="text">Искомый текст</param>
-        /// <param name="matchCase">Учитывать ли регистр</param>
-        /// <param name="matchWholeWord">Учитывать только слово целиком</param>
-        /// <param name="useRegularExp">Использовать регулярные выражения</param>
-        /// <param name="level">Минимальный уровень лога</param>
-        /// <returns></returns>
         public static IEnumerable<LogMessage> Filter(this IEnumerable<LogMessage> messages, string text, bool matchCase, bool matchWholeWord, bool useRegularExp, eLogLevel level = eLogLevel.Trace)
         {
-            IEnumerable<LogMessage> searchResult = messages.ToList();
+            var matcher = LogViewer.Core.Services.SearchMatcher.Create(text, matchCase, useRegularExp, matchWholeWord);
+            if (matcher.IsPatternInvalid || matcher.IsEmpty)
+                return Enumerable.Empty<LogMessage>();
 
-            if (!matchCase && !matchWholeWord)
-                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.ToUpper().Contains(text, StringComparison.OrdinalIgnoreCase) || useRegularExp && Regex.IsMatch(x.Message.ToUpper(), text, RegexOptions.IgnoreCase)));
-
-            if (matchCase && !matchWholeWord)
-                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains(text) || useRegularExp && Regex.IsMatch(x.Message, text)));
-
-            if (matchCase && matchWholeWord)
-                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains($" {text} ") ||
-                                                                      x.Message.StartsWith($"{text} ") ||
-                                                                      x.Message.EndsWith($" {text}") ||
-                                                                      x.Message.StartsWith(text) && x.Message.EndsWith(text) ||
-                                                                      useRegularExp && Regex.IsMatch(x.Message, text)));
-
-            if (!matchCase && matchWholeWord)
-                return searchResult.Where(x => level.HasFlag(x.Level) && (x.Message.Contains($" {text} ", StringComparison.OrdinalIgnoreCase) ||
-                                                                      x.Message.StartsWith($"{text} ", StringComparison.OrdinalIgnoreCase) ||
-                                                                      x.Message.EndsWith($" {text}", StringComparison.OrdinalIgnoreCase) ||
-                                                                      x.Message.StartsWith(text, StringComparison.OrdinalIgnoreCase) &&
-                                                                      x.Message.EndsWith(text, StringComparison.OrdinalIgnoreCase)) || 
-                                                                      useRegularExp && Regex.IsMatch(x.Message.ToUpper(), text, RegexOptions.IgnoreCase));
-
-            return searchResult;
+            return messages.Where(x =>
+                level.HasFlag(x.Level)
+                && LogViewer.Core.Services.LogFilter.MatchesSearch(LogViewer.Adapters.LogEntryConverter.ToLogEntry(x), matcher));
         }
 
         public static string ToPascalCase(this string text)

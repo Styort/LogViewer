@@ -185,6 +185,7 @@ namespace LogViewer.Core.State
             FilterCriteria.UseRegex = criteria.UseRegex;
             FilterCriteria.MatchLogLevel = criteria.MatchLogLevel;
             FilterCriteria.IsSearchActive = criteria.IsSearchActive;
+            FilterCriteria.IsSearchPatternInvalid = criteria.IsSearchPatternInvalid;
             FilterCriteria.IsTimeIntervalActive = criteria.IsTimeIntervalActive;
             FilterCriteria.TimeRangeFrom = criteria.TimeRangeFrom;
             FilterCriteria.TimeRangeTo = criteria.TimeRangeTo;

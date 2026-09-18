@@ -84,6 +84,7 @@ namespace LogViewer.MVVM.ViewModels
         private bool isMatchWholeWord = false;
         private bool isMatchLogLevel = true;
         private bool useRegularExpressions = false;
+        private bool isSearchPatternInvalid;
         private LogMessage selectedLog;
         private List<LogMessage> selectedLogs = new List<LogMessage>();
         private eLogLevel selectedMinLogLevel = eLogLevel.Trace;
@@ -396,8 +397,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isMatchCase = value;
-                prevFindNext = String.Empty;
-                filterChanged = true;
+                OnSearchOptionsChanged();
                 OnPropertyChanged();
             }
         }
@@ -411,8 +411,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isMatchWholeWord = value;
-                prevFindNext = String.Empty;
-                filterChanged = true;
+                OnSearchOptionsChanged();
                 OnPropertyChanged();
             }
         }
@@ -426,7 +425,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 isMatchLogLevel = value;
-                filterChanged = true;
+                OnSearchOptionsChanged();
                 OnPropertyChanged();
             }
         }
@@ -440,7 +439,7 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 useRegularExpressions = value;
-                filterChanged = true;
+                OnSearchOptionsChanged();
                 OnPropertyChanged();
             }
         }
@@ -469,6 +468,22 @@ namespace LogViewer.MVVM.ViewModels
                 searchText = value;
                 ClearSearchResultIsEnabled = IsSearchProcess || SearchText.Length > 0;
                 IsEnableFindPrevious = !string.IsNullOrEmpty(searchText) && SelectedLog != null;
+                RefreshSearchPatternValidity();
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Некорректный regex: иконка у поля поиска, фильтр поиска не применяется (список не пустеет).
+        /// </summary>
+        public bool IsSearchPatternInvalid
+        {
+            get => isSearchPatternInvalid;
+            private set
+            {
+                if (isSearchPatternInvalid == value)
+                    return;
+                isSearchPatternInvalid = value;
                 OnPropertyChanged();
             }
         }
@@ -1051,6 +1066,10 @@ namespace LogViewer.MVVM.ViewModels
             logger.Debug($"Search with {SearchText}");
             if (IsVisibleLoader) return;
 
+            RefreshSearchPatternValidity();
+            if (IsSearchPatternInvalid)
+                return;
+
             if (string.IsNullOrEmpty(SearchText))
             {
                 ClearSearchResult();
@@ -1076,7 +1095,7 @@ namespace LogViewer.MVVM.ViewModels
                 }
                 if (logMessages.Any())
                 {
-                    var sr = new SearchResult(logMessages, SearchText, IsMatchCase);
+                    var sr = new SearchResult(logMessages, SearchText, IsMatchCase, UseRegularExpressions, IsMatchWholeWord);
                     sr.Show();
                     sr.ShowLogEvent += (sender, message) => SelectedLog = message;
                 }
@@ -1104,6 +1123,10 @@ namespace LogViewer.MVVM.ViewModels
             if (IsVisibleLoader) return;
             try
             {
+                RefreshSearchPatternValidity();
+                if (IsSearchPatternInvalid)
+                    return;
+
                 if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
                 {
                     SearchText = selectedLog.Message;
@@ -1164,6 +1187,10 @@ namespace LogViewer.MVVM.ViewModels
             if (IsVisibleLoader) return;
             try
             {
+                RefreshSearchPatternValidity();
+                if (IsSearchPatternInvalid)
+                    return;
+
                 if (string.IsNullOrEmpty(SearchText) && SelectedLog != null)
                 {
                     SearchText = selectedLog.Message;
@@ -2871,6 +2898,8 @@ namespace LogViewer.MVVM.ViewModels
 
         private FilterCriteria CreateFilterCriteria(bool? isSearchActive = null)
         {
+            RefreshSearchPatternValidity();
+            bool searchActive = (isSearchActive ?? isSearchProcess) && !isSearchPatternInvalid;
             return new FilterCriteria
             {
                 MinLevel = (LogLevel)(int)SelectedMinLogLevel,
@@ -2881,11 +2910,36 @@ namespace LogViewer.MVVM.ViewModels
                 MatchWholeWord = isMatchWholeWord,
                 UseRegex = useRegularExpressions,
                 MatchLogLevel = isMatchLogLevel,
-                IsSearchActive = isSearchActive ?? isSearchProcess,
+                IsSearchActive = searchActive,
+                IsSearchPatternInvalid = isSearchPatternInvalid,
                 IsTimeIntervalActive = isTimeIntervalProcess,
                 TimeRangeFrom = fromTimeInverval,
                 TimeRangeTo = toTimeInverval
             };
+        }
+
+        /// <summary>
+        /// Компилирует regex в Core. Пока шаблон битый — поиск не активируется (список остаётся от остальных AND-фильтров).
+        /// </summary>
+        private void RefreshSearchPatternValidity()
+        {
+            if (!useRegularExpressions || string.IsNullOrEmpty(searchText))
+            {
+                IsSearchPatternInvalid = false;
+                return;
+            }
+
+            var matcher = SearchMatcher.Create(searchText, isMatchCase, true, isMatchWholeWord);
+            IsSearchPatternInvalid = matcher.IsPatternInvalid;
+        }
+
+        private void OnSearchOptionsChanged()
+        {
+            prevFindNext = string.Empty;
+            filterChanged = true;
+            RefreshSearchPatternValidity();
+            if (isSearchProcess)
+                SyncFilterCriteriaToSession();
         }
 
         private void SyncFilterCriteriaToSession()

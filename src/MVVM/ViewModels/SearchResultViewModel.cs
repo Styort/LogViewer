@@ -34,6 +34,10 @@ namespace LogViewer.MVVM.ViewModels
         /// </summary>
         public bool IsMatchCase { get; set; }
 
+        public bool UseRegularExpressions { get; set; }
+
+        public bool IsMatchWholeWord { get; set; }
+
         public string MessageFontFamily { get; } = Settings.Instance.MessageFontFamily;
 
         public double MessageFontSize { get; } = Settings.Instance.MessageFontSize;

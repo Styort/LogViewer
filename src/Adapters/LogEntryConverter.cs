@@ -25,6 +25,10 @@ namespace LogViewer.Adapters
                 ExecutableName = entry.ExecutableName,
                 Address = entry.Address,
                 ProcessID = entry.ProcessID,
+                Throwable = entry.Throwable,
+                Properties = entry.Properties != null
+                    ? new Dictionary<string, string>(entry.Properties)
+                    : new Dictionary<string, string>(),
                 Receiver = (Receiver)receiver.Clone()
             };
             return msg;
@@ -41,10 +45,15 @@ namespace LogViewer.Adapters
                 Time = message.Time,
                 Level = (LogLevel)(int)message.Level,
                 Logger = message.Logger,
+                Thread = message.Thread,
                 Message = message.Message,
                 ExecutableName = message.ExecutableName,
                 Address = message.Address,
-                ReceiverPort = message.Receiver?.Port ?? 0
+                ReceiverPort = message.Receiver?.Port ?? 0,
+                Throwable = message.Throwable,
+                Properties = message.Properties != null
+                    ? new Dictionary<string, string>(message.Properties)
+                    : new Dictionary<string, string>()
             };
         }
     }

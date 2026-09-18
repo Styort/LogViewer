@@ -557,6 +557,8 @@
         <helpers:SearchableTextControl Text="{Binding Path=Message, Converter={StaticResource LengthConverter}, ConverterParameter=140}"
                        ToolTip="{Binding Path=Message}" IsHighlight="True" SearchText="{Binding Path=DataContext.HighlightSearchText, RelativeSource={RelativeSource AncestorType=Window}}"
                        VerticalAlignment="Center" IsMatchCase="{Binding Path=DataContext.IsMatchCase, RelativeSource={RelativeSource AncestorType=Window}}"
+                       UseRegex="{Binding Path=DataContext.UseRegularExpressions, RelativeSource={RelativeSource AncestorType=Window}}"
+                       IsMatchWholeWord="{Binding Path=DataContext.IsMatchWholeWord, RelativeSource={RelativeSource AncestorType=Window}}"
                        FontFamily="{Binding Path=DataContext.MessageFontFamily, RelativeSource={RelativeSource AncestorType=Window}}"
                        FontSize="{Binding Path=DataContext.MessageFontSize, RelativeSource={RelativeSource AncestorType=Window}}"/>
     </DataTemplate>
@@ -626,6 +628,7 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" x:Name="SearchTextBox"
                                          materialDesign:HintAssist.Hint="{localization:LocBinding Search}"
@@ -635,8 +638,12 @@
                                                      CommandParameter="{StaticResource False}" Key="Return" />
                                     </TextBox.InputBindings>
                                 </TextBox>
+                                <Image Grid.Column="1" Source="{StaticResource WarnImage}" Width="16" Height="16" Margin="0,0,2,0"
+                                       Stretch="Uniform"
+                                       ToolTip="{localization:LocBinding InvalidRegularExpression}"
+                                       Visibility="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid, Converter={StaticResource BooleanToVisibility}}"/>
 
-                                <Button Grid.Column="1" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearSearchAndSearchResult}"
+                                <Button Grid.Column="2" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearSearchAndSearchResult}"
                                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
                                         Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
                                         Visibility="{Binding ElementName=LogsListView, Path= DataContext.ClearSearchResultIsEnabled, Converter={StaticResource BooleanToVisibility}}">
@@ -677,6 +684,9 @@
                                         <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid}" Value="True">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
                             </Button.Style>
@@ -692,6 +702,9 @@
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid}" Value="True">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>

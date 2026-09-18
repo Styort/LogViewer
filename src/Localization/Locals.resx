@@ -584,7 +584,7 @@
     <value>Включить автоматический переход к последнему сообщению</value>
   </data>
   <data name="MatchWholeWord" xml:space="preserve">
-    <value>Только слово целиком</value>
+    <value>Только слово целиком (игнорируется, если включены регулярные выражения)</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Release Notes</value>
@@ -617,7 +617,7 @@
     <value>Кодировка:</value>
   </data>
   <data name="UseRegularExpression" xml:space="preserve">
-    <value>Использовать регулярные выражения</value>
+    <value>Использовать регулярные выражения. Имеет приоритет над «слово целиком».</value>
   </data>
   <data name="CheckForUpdates" xml:space="preserve">
     <value>Проверка обновлений</value>
@@ -754,5 +754,8 @@
   </data>
   <data name="FixedBugs" xml:space="preserve">
     <value>Исправления:</value>
+  </data>
+  <data name="InvalidRegularExpression" xml:space="preserve">
+    <value>Некорректное регулярное выражение. Поиск не применяется, пока шаблон не исправлен.</value>
   </data>
 </root>

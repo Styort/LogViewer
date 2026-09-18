@@ -29,6 +29,11 @@ namespace LogViewer.Core.Domain
         /// </summary>
         public bool MatchLogLevel { get; set; } = true;
         public bool IsSearchActive { get; set; }
+        /// <summary>
+        /// Regex compile failed. UI shows an indicator; <c>LogFilter</c> does not apply the search predicate
+        /// so the list is not emptied with no explanation.
+        /// </summary>
+        public bool IsSearchPatternInvalid { get; set; }
         public bool IsTimeIntervalActive { get; set; }
         public DateTime TimeRangeFrom { get; set; }
         public DateTime TimeRangeTo { get; set; }

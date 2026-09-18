@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using LogViewer.Core.Services;
 
 namespace LogViewer.Helpers
 {
@@ -122,6 +119,32 @@ namespace LogViewer.Helpers
                 new UIPropertyMetadata(string.Empty, UpdateControlCallBack));
 
         /// <summary>
+        /// Whether to treat SearchText as a regular expression. Invalid patterns must not throw in OnRender.
+        /// </summary>
+        public bool UseRegex
+        {
+            get => (bool)GetValue(UseRegexProperty);
+            set => SetValue(UseRegexProperty, value);
+        }
+
+        public static readonly DependencyProperty UseRegexProperty =
+            DependencyProperty.Register("UseRegex", typeof(bool), typeof(SearchableTextControl),
+                new UIPropertyMetadata(false, UpdateControlCallBack));
+
+        /// <summary>
+        /// Whole-word highlighting. Ignored when <see cref="UseRegex"/> is true (same contract as Core search).
+        /// </summary>
+        public bool IsMatchWholeWord
+        {
+            get => (bool)GetValue(IsMatchWholeWordProperty);
+            set => SetValue(IsMatchWholeWordProperty, value);
+        }
+
+        public static readonly DependencyProperty IsMatchWholeWordProperty =
+            DependencyProperty.Register("IsMatchWholeWord", typeof(bool), typeof(SearchableTextControl),
+                new UIPropertyMetadata(false, UpdateControlCallBack));
+
+        /// <summary>
         /// Create a call back function which is used to invalidate the rendering of the element, 
         /// and force a complete new layout pass.
         /// One such advanced scenario is if you are creating a PropertyChangedCallback for a 
@@ -162,40 +185,45 @@ namespace LogViewer.Helpers
             }
 
             displayTextBlock.Inlines.Clear();
-            string searchstring = this.IsMatchCase ? (string)this.SearchText : ((string)this.SearchText).ToUpper();
 
-            string compareText = this.IsMatchCase ? this.Text : this.Text.ToUpper();
+            var matcher = SearchMatcher.Create(this.SearchText, this.IsMatchCase, this.UseRegex, this.IsMatchWholeWord);
+            if (matcher.IsPatternInvalid || matcher.IsEmpty)
+            {
+                displayTextBlock.Text = this.Text;
+                base.OnRender(drawingContext);
+                return;
+            }
+
+            var matches = matcher.FindMatches(this.Text);
+            if (matches == null || matches.Count == 0)
+            {
+                displayTextBlock.Text = this.Text;
+                base.OnRender(drawingContext);
+                return;
+            }
+
+            int cursor = 0;
             string displayText = this.Text;
-
-            Run run = null;
-            while (!string.IsNullOrEmpty(searchstring) && compareText.IndexOf(searchstring) >= 0)
+            foreach (var match in matches)
             {
-                int position = compareText.IndexOf(searchstring);
-                run = GenerateRun(displayText.Substring(0, position), false);
+                if (match.Index < cursor || match.Length <= 0 || match.Index + match.Length > displayText.Length)
+                    continue;
 
-                if (run != null)
-                {
-                    displayTextBlock.Inlines.Add(run);
-                }
+                Run prefix = GenerateRun(displayText.Substring(cursor, match.Index - cursor), false);
+                if (prefix != null)
+                    displayTextBlock.Inlines.Add(prefix);
 
-                run = GenerateRun(displayText.Substring(position, searchstring.Length), true);
+                Run hit = GenerateRun(displayText.Substring(match.Index, match.Length), true);
+                if (hit != null)
+                    displayTextBlock.Inlines.Add(hit);
 
-                if (run != null)
-                {
-                    displayTextBlock.Inlines.Add(run);
-                }
-
-                compareText = compareText.Substring(position + searchstring.Length);
-                displayText = displayText.Substring(position + searchstring.Length);
+                cursor = match.Index + match.Length;
             }
 
-            run = GenerateRun(displayText, false);
+            Run tail = GenerateRun(displayText.Substring(cursor), false);
+            if (tail != null)
+                displayTextBlock.Inlines.Add(tail);
 
-            if (run != null)
-            {
-                displayTextBlock.Inlines.Add(run);
-            }
-            
             base.OnRender(drawingContext);
         }
 

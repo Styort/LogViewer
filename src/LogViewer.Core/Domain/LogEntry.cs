@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace LogViewer.Core.Domain
 {
@@ -37,6 +38,17 @@ namespace LogViewer.Core.Domain
         }
 
         public int? ProcessID { get; set; }
+
+        /// <summary>
+        /// Raw throwable/stack text when present. Empty until the event-properties parser (task 04) fills it.
+        /// Not part of <see cref="Message"/>. Search includes this field.
+        /// </summary>
+        public string Throwable { get; set; }
+
+        /// <summary>
+        /// MDC / event data. Empty until task 04. Search uses values only (not keys, not <see cref="FullPath"/>).
+        /// </summary>
+        public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Receiver identifier (e.g. port) so UI can resolve color/name from Settings.

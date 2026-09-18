@@ -585,7 +585,7 @@ Restart now?</value>
     <value>Enable Auto Scroll to Last Log Message</value>
   </data>
   <data name="MatchWholeWord" xml:space="preserve">
-    <value>Match Whole Word</value>
+    <value>Match whole word (ignored when regular expressions are on)</value>
   </data>
   <data name="ReleaseNotes" xml:space="preserve">
     <value>Release Notes</value>
@@ -618,7 +618,7 @@ Restart now?</value>
     <value>Encoding:</value>
   </data>
   <data name="UseRegularExpression" xml:space="preserve">
-    <value>Use Regular Expressions</value>
+    <value>Use regular expressions. Takes precedence over whole-word matching.</value>
   </data>
   <data name="CheckForUpdates" xml:space="preserve">
     <value>Check for Updates</value>
@@ -755,5 +755,8 @@ Restart now?</value>
   </data>
   <data name="FixedBugs" xml:space="preserve">
     <value>Fixes:</value>
+  </data>
+  <data name="InvalidRegularExpression" xml:space="preserve">
+    <value>Invalid regular expression. Search is not applied until the pattern is fixed.</value>
   </data>
 </root>

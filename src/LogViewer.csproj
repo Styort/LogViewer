@@ -182,6 +182,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Adapters\CoreToUiAdapter.cs" />
+    <Compile Include="Adapters\UiLogEntryBatcher.cs" />
     <Compile Include="Adapters\LogEntryConverter.cs" />
     <Compile Include="Adapters\LogTemplateAdapter.cs" />
     <Compile Include="Adapters\ReceiverConfigAdapter.cs" />

@@ -8,24 +8,33 @@ using LogViewer.Core.State;
 namespace LogViewer.Adapters
 {
     /// <summary>
-    /// Subscribes to LogProcessingService and LogSession, marshals events to UI thread.
+    /// Subscribes to LogProcessingService and LogSession, marshals events to the UI thread.
     /// </summary>
-    public class CoreToUiAdapter
+    /// <remarks>
+    /// EntryProcessed from Core still arrives on the receive thread. Those notifications are queued
+    /// and flushed in batches (see <see cref="UiLogEntryBatcher"/>) so a UDP storm does not Post
+    /// once per packet. SessionCleared / EntriesRemoved / FilteredViewUpdated stay one-shot on the UI
+    /// thread, but pending batches are flushed or discarded first so add-then-trim order is preserved
+    /// and Clear never paints entries Core already dropped.
+    /// </remarks>
+    public class CoreToUiAdapter : IDisposable
     {
         private readonly SynchronizationContext _uiContext;
         private readonly LogProcessingService _service;
+        private readonly UiLogEntryBatcher _batcher;
         private bool _subscribed;
 
         public CoreToUiAdapter(SynchronizationContext uiContext, LogProcessingService service)
         {
             _uiContext = uiContext ?? throw new ArgumentNullException(nameof(uiContext));
             _service = service ?? throw new ArgumentNullException(nameof(service));
+            _batcher = new UiLogEntryBatcher(PostBatchToUi);
         }
 
         /// <summary>
-        /// Raised on UI thread when a log entry was processed. UI should convert to LogMessage and add to collections.
+        /// Raised on the UI thread with one or more entries in receive order.
         /// </summary>
-        public event EventHandler<LogEntryProcessedEventArgs> EntryProcessed;
+        public event EventHandler<LogEntriesProcessedEventArgs> EntriesProcessed;
 
         /// <summary>
         /// Raised on UI thread when session was cleared. UI should clear its collections.
@@ -58,31 +67,66 @@ namespace LogViewer.Adapters
             _service.Session.SessionChanged -= OnSessionChanged;
             _service.Session.FilterCriteriaChanged -= OnFilterCriteriaChanged;
             _subscribed = false;
+            // Last packets after Stop must not sit in the timer until the next Start/Clear.
+            _batcher.Flush();
+        }
+
+        /// <summary>
+        /// Pushes any queued entries to the UI immediately (Pause/Stop/Dispose).
+        /// </summary>
+        public void FlushPending()
+        {
+            _batcher.Flush();
+        }
+
+        public void Dispose()
+        {
+            Unsubscribe();
+            _batcher.Dispose();
+        }
+
+        private void PostBatchToUi(IReadOnlyList<LogEntryProcessedEventArgs> batch, int epoch)
+        {
+            _uiContext.Post(_ =>
+            {
+                if (!_batcher.IsCurrentEpoch(epoch))
+                    return;
+                EntriesProcessed?.Invoke(this, new LogEntriesProcessedEventArgs { Entries = batch });
+            }, null);
         }
 
         private void OnEntryProcessed(object sender, LogEntryProcessedEventArgs e)
         {
-            _uiContext.Post(_ =>
-            {
-                EntryProcessed?.Invoke(sender, e);
-            }, null);
+            _batcher.Enqueue(e);
         }
 
         private void OnSessionChanged(object sender, LogSessionChangedEventArgs e)
         {
-            _uiContext.Post(_ =>
+            if (e.Cleared)
             {
-                if (e.Cleared)
-                    SessionCleared?.Invoke(sender, EventArgs.Empty);
-                else if (e.RemovedCount > 0)
-                    EntriesRemoved?.Invoke(e.RemovedCount);
-                else if (e.AddedEntries != null && e.AddedEntries.Count > 0)
-                    RaiseFilteredViewUpdated(includeAllEntries: true);
-            }, null);
+                _batcher.Discard();
+                _uiContext.Post(_ => SessionCleared?.Invoke(sender, EventArgs.Empty), null);
+                return;
+            }
+
+            if (e.RemovedCount > 0)
+            {
+                _batcher.Flush();
+                var removed = e.RemovedCount;
+                _uiContext.Post(_ => EntriesRemoved?.Invoke(removed), null);
+                return;
+            }
+
+            if (e.AddedEntries != null && e.AddedEntries.Count > 0)
+            {
+                _batcher.Flush();
+                _uiContext.Post(_ => RaiseFilteredViewUpdated(includeAllEntries: true), null);
+            }
         }
 
         private void OnFilterCriteriaChanged(object sender, EventArgs e)
         {
+            _batcher.Flush();
             _uiContext.Post(_ => RaiseFilteredViewUpdated(includeAllEntries: false), null);
         }
 
@@ -98,9 +142,9 @@ namespace LogViewer.Adapters
                 var filtered = new List<LogEntry>(allEntries.Count);
                 for (int i = 0; i < allEntries.Count; i++)
                 {
-                    var e = allEntries[i];
-                    if (filter.ShouldInclude(e, criteria))
-                        filtered.Add(e);
+                    var item = allEntries[i];
+                    if (filter.ShouldInclude(item, criteria))
+                        filtered.Add(item);
                 }
                 entries = filtered;
             }
@@ -110,6 +154,11 @@ namespace LogViewer.Adapters
             }
             FilteredViewUpdated?.Invoke(this, new FilteredViewUpdatedEventArgs { Entries = entries, AllEntries = allEntries });
         }
+    }
+
+    public class LogEntriesProcessedEventArgs : EventArgs
+    {
+        public IReadOnlyList<LogEntryProcessedEventArgs> Entries { get; set; }
     }
 
     public class FilteredViewUpdatedEventArgs : EventArgs

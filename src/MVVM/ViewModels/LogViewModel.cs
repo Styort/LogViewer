@@ -672,7 +672,7 @@ namespace LogViewer.MVVM.ViewModels
             coreFilter = new LogFilter();
             processingService = new LogProcessingService(session, coreFilter);
             coreToUiAdapter = new CoreToUiAdapter(SynchronizationContext.Current, processingService);
-            coreToUiAdapter.EntryProcessed += OnCoreEntryProcessed;
+            coreToUiAdapter.EntriesProcessed += OnCoreEntriesProcessed;
             coreToUiAdapter.SessionCleared += OnCoreSessionCleared;
             coreToUiAdapter.EntriesRemoved += OnCoreEntriesRemoved;
             coreToUiAdapter.FilteredViewUpdated += OnFilteredViewUpdated;
@@ -689,30 +689,28 @@ namespace LogViewer.MVVM.ViewModels
                 Start();
         }
 
-        private void OnCoreEntryProcessed(object sender, LogEntryProcessedEventArgs e)
+        private void OnCoreEntriesProcessed(object sender, LogEntriesProcessedEventArgs e)
         {
-            if (e?.Entry == null) return;
-            var msg = LogEntryConverter.ToLogMessage(e.Entry, receivers);
-            if (msg == null) return;
-            var currentReceiver = receivers.FirstOrDefault(x => x.Port == e.Entry.ReceiverPort);
-            if (currentReceiver != null)
+            if (e?.Entries == null || e.Entries.Count == 0) return;
+
+            // Пачка уже в порядке приёма; IncludedInFilter решает, видна ли строка в Logs.
+            for (int i = 0; i < e.Entries.Count; i++)
             {
-                msg.Receiver.Color = currentReceiver.Color;
-                msg.Receiver.Name = currentReceiver.Name;
-                if (Settings.Instance.ShowMessageHighlightByReceiverColor)
-                {
-                    var messageColor = msg.Receiver.Color.Clone();
-                    messageColor.Opacity = 0.1;
-                    msg.ToggleMark = messageColor;
-                }
+                var item = e.Entries[i];
+                if (item?.Entry == null) continue;
+                var msg = ToUiMessage(item.Entry);
+                if (msg == null) continue;
+                // TODO: полный отказ от allLogs (биндинг к сессии) — задача 05; здесь только один Add на событие Core.
+                allLogs.Add(msg);
+                if (item.IncludedInFilter)
+                    Logs.Add(msg);
+                // Дерево больше не добавляет в allLogs/Logs: иначе live UDP даёт дубли строк.
+                // Повтор FullPath в пачке дёшев: BuildTreeByMessage сразу выходит по availableLoggers.
+                BuildTreeByMessage(msg);
             }
-            // TODO: полный отказ от allLogs (биндинг к сессии) — задача 05; здесь только один Add на событие Core.
-            allLogs.Add(msg);
-            if (e.IncludedInFilter)
-                Logs.Add(msg);
-            // Дерево больше не добавляет в allLogs/Logs: иначе live UDP даёт дубли строк.
-            BuildTreeByMessage(msg);
+
             CleanIsEnabled = allLogs.Any();
+            // Один отложенный rebuild timeline на пачку, не на каждую строку UDP-шторма.
             ScheduleErrorTimelineRebuild();
         }
 
@@ -974,6 +972,8 @@ namespace LogViewer.MVVM.ViewModels
         private void Pause()
         {
             processingService.StopAllSources();
+            // Источник уже молчит — вытолкнуть хвост очереди, иначе последние пакеты ждут таймер батча.
+            coreToUiAdapter.FlushPending();
             StartIsEnabled = true;
         }
 
@@ -995,6 +995,7 @@ namespace LogViewer.MVVM.ViewModels
             StartReadFromFileIsEnabled = true;
             foreach (var w in FileWatchers)
                 w.Source?.Stop();
+            coreToUiAdapter.FlushPending();
         }
 
         /// <summary>
@@ -2666,7 +2667,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Строит дерево логгеров по месседжу. Не трогает allLogs/Logs — запись уже добавлена в OnCoreEntryProcessed.
+        /// Строит дерево логгеров по месседжу. Не трогает allLogs/Logs — запись уже добавлена в OnCoreEntriesProcessed.
         /// </summary>
         private void BuildTreeByMessage(LogMessage log)
         {
@@ -2997,7 +2998,8 @@ namespace LogViewer.MVVM.ViewModels
                 errorTimelineTimer = null;
             }
             RemoveAllFileWatchers();
-            coreToUiAdapter?.Unsubscribe();
+            coreToUiAdapter?.FlushPending();
+            coreToUiAdapter?.Dispose();
             processingService?.RemoveAllSources();
             cancellationToken?.Dispose();
         }

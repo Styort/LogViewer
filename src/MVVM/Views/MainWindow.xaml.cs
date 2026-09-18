@@ -219,11 +219,11 @@ namespace LogViewer.MVVM.Views
 
         private void LogsListView_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // если включен автоскролл и произошла прокрутка наверх - то выключаем автоскролл
-            if (AutoScrollEnabled && LogsListView.Items.Count > 0 && e.VerticalChange < 0)
+            // Рост списка (пачка Add) меняет offset; это не жест пользователя «уехать вверх».
+            if (AutoScrollEnabled && LogsListView.Items.Count > 0 && e.VerticalChange < 0 && e.ExtentHeightChange == 0)
                 AutoScrollEnabled = false;
 
-            // автоскролл 
+            // автоскролл — к последней строке (после пачки Layout обычно один проход, не N прыжков с фона)
             if (AutoScrollEnabled && LogsListView.Items.Count > 0)
                 LogsListView.ScrollIntoView(LogsListView.Items[LogsListView.Items.Count - 1]);
         }

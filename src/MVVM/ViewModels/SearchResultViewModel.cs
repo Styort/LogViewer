@@ -1,4 +1,5 @@
-﻿using LogViewer.MVVM.Models;
+﻿using LogViewer.Core.Services;
+using LogViewer.MVVM.Models;
 using LogViewer.MVVM.Commands;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -47,12 +48,12 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand CopyMessageCommand => copyMessageCommand ?? (copyMessageCommand = new RelayCommand(CopyMessage));
 
         /// <summary>
-        /// Копирует сообщение лога в буфер
+        /// Копирует сообщение и throwable (как в основном окне), чтобы stack не терялся после выноса из Message.
         /// </summary>
         private void CopyMessage()
         {
             if (SelectedLog == null) return;
-            Clipboard.SetDataObject(SelectedLog.Message);
+            Clipboard.SetDataObject(LogExportText.JoinMessageAndThrowable(SelectedLog.Message, SelectedLog.Throwable));
         }
 
     }

@@ -234,6 +234,7 @@
     <Compile Include="MVVM\Models\ErrorTimelineBucket.cs" />
     <Compile Include="MVVM\Models\LoggerStatItem.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
+    <Compile Include="Helpers\TextBoxResetScroll.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />
     <Compile Include="MVVM\Models\Theme.cs" />
     <Compile Include="MVVM\Models\Settings.cs" />

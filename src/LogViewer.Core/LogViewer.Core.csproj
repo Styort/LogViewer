@@ -50,6 +50,7 @@
     <Compile Include="Domain\TemplateParseLayout.cs" />
     <Compile Include="Services\StringUtils.cs" />
     <Compile Include="Services\XmlLogParser.cs" />
+    <Compile Include="Services\LogExportText.cs" />
     <Compile Include="Services\TemplateLogParser.cs" />
     <Compile Include="Services\TemplateFileLogReader.cs" />
     <Compile Include="Services\LogFilter.cs" />

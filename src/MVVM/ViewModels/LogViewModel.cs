@@ -1354,12 +1354,12 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Копирует сообщение лога в буфер
+        /// Копирует сообщение и throwable (как раньше stack шёл в Message). MDC в буфер не попадает.
         /// </summary>
         private void CopyMessage()
         {
             if (SelectedLog == null) return;
-            Clipboard.SetDataObject(SelectedLog.Message);
+            Clipboard.SetDataObject(LogExportText.JoinMessageAndThrowable(SelectedLog.Message, SelectedLog.Throwable));
         }
 
         /// <summary>
@@ -1388,7 +1388,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private string FormatLogLineForClipboard(LogMessage logMessage)
         {
-            return $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Logger};{logMessage.Message}";
+            return $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Logger};{LogExportText.JoinMessageAndThrowable(logMessage.Message, logMessage.Throwable)}";
         }
 
         /// <summary>
@@ -1950,7 +1950,7 @@ namespace LogViewer.MVVM.ViewModels
                     IEnumerable<LogMessage> logsToExport = Logs;
                     if (node != null && node.Logger != "Root")
                         logsToExport = Logs.Where(x => x.FullPath.Contains(node.Logger));
-                    var txtLogs = logsToExport.Select(logMessage => $"{logMessage.Time:yy-MM-dd HH:mm:ss.ffff};{logMessage.Level};{CheckNullableIntExists(logMessage.ProcessID)}{logMessage.Thread};{logMessage.Logger};{logMessage.Message}").ToList();
+                    var txtLogs = logsToExport.Select(FormatLogLineForClipboard).ToList();
                     File.WriteAllLines(saveDialog.FileName, txtLogs, Encoding.UTF8);
                     Process.Start(Path.GetDirectoryName(saveDialog.FileName));
                 }

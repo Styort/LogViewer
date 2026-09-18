@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LogViewer.MVVM"
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
+        xmlns:helpers="clr-namespace:LogViewer.Helpers"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
         Title="{localization:LocBinding LogViewerSearchResult}" Height="600" Width="1024">
@@ -110,7 +111,8 @@
                 <Button Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom" ToolTip="{localization:LocBinding Copy}" Command="{Binding Path=CopyMessageCommand}" Margin="0,5">
                     <Image Source="{StaticResource CopyWhiteDrawingImage}"/>
                 </Button>
-                <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.Message}"
+                <TextBox x:Name="LoggerTextBox" Grid.Row="0" Text="{Binding Path=SelectedLog.MessageWithThrowable, Mode=OneWay}"
+                         helpers:TextBoxResetScroll.ResetOnTextChange="True"
                          FontFamily="{Binding Path=MessageFontFamily}" FontSize="{Binding Path=MessageFontSize}"
                          TextWrapping="Wrap" Grid.Column="1" VerticalAlignment="Stretch" Margin="10,0" Background="White"
                          BorderThickness="1" VerticalContentAlignment="Top" HorizontalAlignment="Stretch" Padding="5,0" Height="Auto" IsReadOnly="True"

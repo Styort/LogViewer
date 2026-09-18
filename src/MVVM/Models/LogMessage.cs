@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using LogViewer.Core.Services;
 using LogViewer.Enums;
 using LogViewer.MVVM.ViewModels;
 
@@ -53,14 +54,20 @@ namespace LogViewer.MVVM.Models
         public int? ProcessID { get; set; }
 
         /// <summary>
-        /// Текст исключения. Пока парсер (задача 04) не заполняет поле — пустая строка; поиск уже смотрит сюда.
+        /// Текст исключения из XML (не часть Message). Пустая строка, если элемента не было.
         /// </summary>
         public string Throwable { get; set; }
 
         /// <summary>
-        /// MDC/свойства события. Пустой словарь до задачи 04; поиск идёт по значениям.
+        /// MDC/свойства события. Никогда не null; в панели деталей не показываются.
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Текст панели деталей и копирования: Message, затем Throwable с новой строки — как раньше визуально.
+        /// В самом Message throwable не хранится (поиск/группировка).
+        /// </summary>
+        public string MessageWithThrowable => LogExportText.JoinMessageAndThrowable(Message, Throwable);
 
         public Receiver Receiver { get; set; } = new Receiver();
 

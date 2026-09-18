@@ -40,13 +40,15 @@ namespace LogViewer.Core.Domain
         public int? ProcessID { get; set; }
 
         /// <summary>
-        /// Raw throwable/stack text when present. Empty until the event-properties parser (task 04) fills it.
-        /// Not part of <see cref="Message"/>. Search includes this field.
+        /// Raw throwable/stack text from <c>log4j:throwable</c>. Empty when the event has none.
+        /// Not part of <see cref="Message"/> (search, grouping, and stacktrace UI need them separate).
+        /// Clipboard/export concatenate via <c>LogExportText</c>.
         /// </summary>
         public string Throwable { get; set; }
 
         /// <summary>
-        /// MDC / event data. Empty until task 04. Search uses values only (not keys, not <see cref="FullPath"/>).
+        /// MDC / event data from <c>log4j:data</c>. Never null; empty when the event has no properties.
+        /// Search uses values only (not keys, not <see cref="FullPath"/>).
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 

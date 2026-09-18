@@ -97,7 +97,7 @@ namespace LogViewer.Core.Services
         /// <summary>
         /// True if any searchable field contains the pattern. Does not search <see cref="LogEntry.FullPath"/>:
         /// that value is Address + optional ExecutableName + Logger, so it would duplicate those fields.
-        /// Throwable and Properties values are included so search keeps working after event-properties (task 04).
+        /// Throwable and property values are searchable so MDC-only hits still appear; list highlighting stays on Message.
         /// </summary>
         public bool Matches(LogEntry entry)
         {

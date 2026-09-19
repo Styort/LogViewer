@@ -11,7 +11,7 @@ using LogViewer.MVVM.ViewModels;
 namespace LogViewer.MVVM.Models
 {
     /// <summary>
-    /// Хранит в себе выбранный параметр шаблона и список возможных параметров для показа в комбо-боксе
+    /// Holds the selected template parameter and the combo-box list of available parameters.
     /// </summary>
     [Serializable]
     [DataContract]

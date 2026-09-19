@@ -14,7 +14,7 @@ using LogViewer.Localization;
 namespace LogViewer.MVVM.Models
 {
     /// <summary>
-    /// Синглтон с настройками
+    /// Settings singleton.
     /// </summary>
     [Serializable]
     [PermissionSet(SecurityAction.Demand, Name = "FullTrust")]
@@ -45,32 +45,32 @@ namespace LogViewer.MVVM.Models
         public List<IgnoredIPAddress> IgnoredIPs { get; set; } = new List<IgnoredIPAddress>();
 
         /// <summary>
-        /// Показывать ли колонку с источником 
+        /// Whether to show the source column. 
         /// </summary>
         public bool IsShowSourceColumn { get; set; } = false;
         
         /// <summary>
-        /// Показывать ли колонку с номером потока
+        /// Whether to show the thread column.
         /// </summary>
         public bool IsShowThreadColumn { get; set; } = true;
 
         /// <summary>
-        /// Показывать ли прогресс в таскбаре
+        /// Whether to show progress on the taskbar.
         /// </summary>
         public bool IsShowTaskbarProgress { get; set; } = true;
 
         /// <summary>
-        /// Показывать ли полосу плотности Warn/Error/Fatal
+        /// Whether to show the Warn/Error/Fatal density strip.
         /// </summary>
         public bool IsShowErrorTimeline { get; set; } = true;
 
         /// <summary>
-        /// Подсвечивать сообщение тем же цветом, что и цвет ресивера, но только с прозрачностью
+        /// Highlight the row with the receiver color at reduced opacity.
         /// </summary>
         public bool ShowMessageHighlightByReceiverColor { get; set; } = false;
 
         /// <summary>
-        /// Разделять IP логгеры по портам
+        /// Split IP loggers by port.
         /// </summary>
         public bool IsSeparateIpLoggersByPort { get; set; } = false;
 
@@ -88,7 +88,7 @@ namespace LogViewer.MVVM.Models
         }
 
         /// <summary>
-        /// Применить тему
+        /// Apply theme.
         /// </summary>
         public void ApplyTheme()
         {
@@ -103,7 +103,7 @@ namespace LogViewer.MVVM.Models
         }
 
         /// <summary>
-        /// Применить язык по названию
+        /// Apply language by name.
         /// </summary>
         public void ApplyLanguage(string lang)
         {
@@ -111,7 +111,7 @@ namespace LogViewer.MVVM.Models
         }
 
         /// <summary>
-        /// Применить язык по культуре
+        /// Apply language by culture.
         /// </summary>
         public void ApplyLanguage(CultureInfo culture)
         {
@@ -119,7 +119,7 @@ namespace LogViewer.MVVM.Models
         }
 
         /// <summary>
-        /// Сохраняет
+        /// Saves settings to XML.
         /// </summary>
         /// <returns></returns>
         public bool Save()
@@ -147,7 +147,7 @@ namespace LogViewer.MVVM.Models
 
             bool settingsFileExists = File.Exists(settingsPath);
 
-            // если в корневой папке лежит файл настроек - читаем оттуда
+            // if settings.xml lives next to the exe, load it from there
             if (!settingsFileExists && File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}settings.xml"))
             {
                 settingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}settings.xml";

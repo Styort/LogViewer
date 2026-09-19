@@ -4,22 +4,22 @@ using LogViewer.Enums;
 namespace LogViewer.MVVM.Models
 {
     /// <summary>
-    /// Хранит в себе конфигурацию шаблона лога, через которую будет импортироваться лог
+    /// Holds the log template used when importing a file.
     /// </summary>
     public class LogTemplate
     {
         /// <summary>
-        /// Элементы шаблона и их индекс в сообщении
+        /// Template fields and their index in the message.
         /// </summary>
         public Dictionary<eImportTemplateParameters, int> TemplateParameterses { get; } = new Dictionary<eImportTemplateParameters, int>();
 
         /// <summary>
-        /// Разделитель
+        /// Separator.
         /// </summary>
         public string Separator { get; set; } = ";";
 
         /// <summary>
-        /// Кодировка
+        /// Encoding.
         /// </summary>
         public string Encoding { get; set; } = "UTF-8";
     }

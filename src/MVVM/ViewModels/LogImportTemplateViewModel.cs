@@ -34,6 +34,7 @@ namespace LogViewer.MVVM.ViewModels
         private string selectedEncoding = "UTF-8";
         private bool? dialogResult;
         private bool needUpdateFile;
+        private bool isUserTemplateSelected;
         private bool isEntireFileRange = true;
         private bool isLastBytesRange;
         private bool isLastHoursRange;
@@ -41,7 +42,7 @@ namespace LogViewer.MVVM.ViewModels
         private double tailHours = 2;
         private string templateString = "${longdate};${level};${callsite};${logger};${message};${exception:format=tostring}";
 
-        #region Свойства
+        #region Properties
         [XmlIgnore]
         public Dictionary<string, List<eImportTemplateParameters>> PopularTemplates { get; set; } = new Dictionary<string, List<eImportTemplateParameters>>();
 
@@ -56,7 +57,18 @@ namespace LogViewer.MVVM.ViewModels
         [XmlElement(Order = 2)]
         public bool IsPopularTemplateSelected { get; set; }
         [XmlElement(Order = 3)]
-        public bool IsUserTemplateSelected { get; set; }
+        public bool IsUserTemplateSelected
+        {
+            get => isUserTemplateSelected;
+            set
+            {
+                // Notify is required: the add-template-item button Visibility binds here.
+                if (isUserTemplateSelected == value)
+                    return;
+                isUserTemplateSelected = value;
+                OnPropertyChanged();
+            }
+        }
         [XmlElement(Order = 4)]
         public bool IsLayoutStringTemplateSelected { get; set; }
 
@@ -220,7 +232,7 @@ namespace LogViewer.MVVM.ViewModels
 
         #endregion
 
-        #region Конструктор
+        #region Constructor
 
         public LogImportTemplateViewModel()
         {
@@ -295,7 +307,7 @@ namespace LogViewer.MVVM.ViewModels
 
             SelectedPopularTemplate = PopularTemplates.First().Value;
 
-            // если в корневой папке лежит файл настроек - читаем оттуда
+            // if settings.xml lives next to the exe, load it from there
             if (!File.Exists(settingsPath) && File.Exists($"{AppDomain.CurrentDomain.BaseDirectory}template_import_settings.xml"))
                 settingsPath = $"{AppDomain.CurrentDomain.BaseDirectory}template_import_settings.xml";
 
@@ -336,7 +348,7 @@ namespace LogViewer.MVVM.ViewModels
 
         #endregion
 
-        #region Команды
+        #region Commands
 
         private RelayCommand addTemplateItemCommand;
         private RelayCommand removeTemplateItemCommand;
@@ -350,10 +362,10 @@ namespace LogViewer.MVVM.ViewModels
 
         #endregion
 
-        #region Обработчики команд
+        #region Command handlers
 
         /// <summary>
-        /// Подтверждаем действие
+        /// Confirm the dialog.
         /// </summary>
         private void Confirm()
         {
@@ -434,12 +446,12 @@ namespace LogViewer.MVVM.ViewModels
 
         #endregion
 
-        #region Работа с подбором шаблона
+        #region Template detection
 
 
         private bool TryGetLogTemplateByAutodetect()
         {
-            //выбираем первое сообщение 
+            //take the first log message 
             string firstMessage = GetFirstLogMessage();
 
             if (string.IsNullOrWhiteSpace(firstMessage))
@@ -448,7 +460,7 @@ namespace LogViewer.MVVM.ViewModels
                 return true;
             }
 
-            //пытаемся сопоставить
+            //try to match a template
             if (!TryDetectTemplate(firstMessage))
             {
                 MessageBox.Show(Locals.AutomaticDetectTemplateError);
@@ -489,7 +501,7 @@ namespace LogViewer.MVVM.ViewModels
             SimpleLayout layout = new SimpleLayout(TemplateString);
             var elements = layout.Renderers;
 
-            // минимальное количество элементов - 4 (дата, уровень лога, логгер и сообщение)
+            // minimum field count is 4 (date, level, logger, and message)
             if (elements.Count < 4)
             {
                 MessageBox.Show(Locals.ParseTemplateStringError);
@@ -559,7 +571,7 @@ namespace LogViewer.MVVM.ViewModels
                     string line;
                     while ((line = sr.ReadLine()) != null)
                     {
-                        //проверяем, текущая запись - это новая запись или продолжение предыдущей.
+                        //check whether this line is a new entry or a continuation of the previous one.
                         if (line.ContainsAnyOf(logTypeArraySeparator1, true) || line.ContainsAnyOf(logTypeArraySeparator2, true))
                         {
                             if (sb.Length != 0) break;
@@ -577,11 +589,11 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Пытаемся автоматически подобрать шаблон сообщения
+        /// Try to detect the message template automatically.
         /// </summary>
         private bool TryDetectTemplate(string log)
         {
-            // пробуем разные разделители
+            // try different separators
             var logSplit = log.Split(';');
             if (logSplit.Length < 4)
             {
@@ -598,7 +610,7 @@ namespace LogViewer.MVVM.ViewModels
             var logLevelIndex = GetLogLevelIndex(logSplit);
             if (dateTimeIndex == -1) return false;
 
-            // оставшиеся индексы
+            // remaining indexes
             List<int> otherIndexes = new List<int>();
 
             for (int i = 0; i < logSplit.Length; i++)
@@ -629,7 +641,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Получаем индекс даты
+        /// Find the date field index.
         /// </summary>
         private int GetDateTimeIndex(string[] logSplit, ref eImportTemplateParameters dateTemplateParameter)
         {
@@ -660,7 +672,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Получаем индексы цифровых значений
+        /// Find indexes of numeric fields.
         /// </summary>
         private List<int> GetIntIndexes(string[] logSplit)
         {
@@ -675,7 +687,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Получаем индекс уровня лога
+        /// Find the log-level field index.
         /// </summary>
         private int GetLogLevelIndex(string[] logSplit)
         {

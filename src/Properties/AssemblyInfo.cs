@@ -53,4 +53,5 @@ using System.Windows;
 [assembly: AssemblyVersion("1.2.8.7")]
 [assembly: AssemblyFileVersion("1.2.8.7")]
 [assembly: NeutralResourcesLanguage("en-US")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("LogViewer.App.Tests")]
 

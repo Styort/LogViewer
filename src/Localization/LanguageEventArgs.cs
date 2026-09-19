@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace LogViewer.Localization
 {
     /// <summary>
-    /// Аргументы события смены языка
+    /// Event args for a language change.
     /// </summary>
     public class LanguageEventArgs : EventArgs
     {

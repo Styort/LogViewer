@@ -3,154 +3,68 @@ using System.Collections.Generic;
 using LogViewer.Enums;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
+using CoreTimeline = LogViewer.Core.Services.ErrorTimelineBuilder;
+using CoreEvent = LogViewer.Core.Services.TimelineEvent;
+using CoreLevel = LogViewer.Core.Domain.LogLevel;
 
 namespace LogViewer.Helpers
 {
     /// <summary>
-    /// Builds Warn/Error/Fatal density buckets from the currently displayed log list.
-    /// The X axis uses absolute <see cref="LogMessage.Time"/> of <c>Logs</c>, not ListView row order,
-    /// so sorting the Time column does not change the timeline.
+    /// Maps UI log rows onto Core timeline buckets and applies bar heights / tooltips.
     /// </summary>
     public static class ErrorTimelineBuilder
     {
+        /// <summary>Stacked bar cap in px; Core buckets have no heights.</summary>
         public const double BarHeight = 28;
 
-        public static IList<ErrorTimelineBucket> Build(IEnumerable<LogMessage> logs, int bucketCount)
+        /// <summary>
+        /// UI buckets with heights and localized tooltips. <paramref name="dateFormat"/> from settings.
+        /// </summary>
+        public static IList<ErrorTimelineBucket> Build(IEnumerable<LogMessage> logs, int bucketCount, string dateFormat = null)
         {
             var empty = new List<ErrorTimelineBucket>();
             if (logs == null || bucketCount <= 0)
                 return empty;
 
-            DateTime minTime = DateTime.MaxValue;
-            DateTime maxTime = DateTime.MinValue;
-            var snapshot = logs as IList<LogMessage>;
-            IEnumerable<LogMessage> source = snapshot ?? logs;
-            int counted = 0;
-
-            foreach (var log in source)
+            var snapshot = logs as IList<LogMessage> ?? new List<LogMessage>(logs);
+            var events = new List<CoreEvent>(snapshot.Count);
+            for (int i = 0; i < snapshot.Count; i++)
             {
-                if (log == null || log.Time == default)
+                var log = snapshot[i];
+                if (log == null)
                     continue;
-                counted++;
-                if (log.Time < minTime)
-                    minTime = log.Time;
-                if (log.Time > maxTime)
-                    maxTime = log.Time;
+                events.Add(new CoreEvent
+                {
+                    Time = log.Time,
+                    Level = (CoreLevel)(int)log.Level,
+                    Index = i
+                });
             }
 
-            if (counted == 0)
+            var coreBuckets = CoreTimeline.Build(events, bucketCount);
+            if (coreBuckets == null || coreBuckets.Count == 0)
                 return empty;
 
-            if (minTime == maxTime)
+            var result = new List<ErrorTimelineBucket>(coreBuckets.Count);
+            for (int i = 0; i < coreBuckets.Count; i++)
             {
-                var single = CreateBucket(minTime, maxTime);
-                FillSingleBucket(source, single);
-                ApplyHeights(new[] { single });
-                FormatToolTips(new[] { single });
-                return new List<ErrorTimelineBucket> { single };
-            }
-
-            int count = bucketCount;
-            var buckets = new ErrorTimelineBucket[count];
-            long minTicks = minTime.Ticks;
-            long maxTicks = maxTime.Ticks;
-            long range = maxTicks - minTicks;
-
-            for (int i = 0; i < count; i++)
-            {
-                var from = new DateTime(minTicks + range * i / count);
-                var to = i == count - 1
-                    ? maxTime
-                    : new DateTime(minTicks + range * (i + 1) / count);
-                buckets[i] = CreateBucket(from, to);
-            }
-
-            var firstAny = new LogMessage[count];
-
-            foreach (var log in source)
-            {
-                if (log == null || log.Time == default)
-                    continue;
-
-                long ticks = log.Time.Ticks;
-                if (ticks < minTicks || ticks > maxTicks)
-                    continue;
-
-                int index = (int)((ticks - minTicks) * (long)count / range);
-                if (index >= count)
-                    index = count - 1;
-                if (index < 0)
-                    continue;
-
-                var bucket = buckets[index];
-                if (IsWarnPlus(log.Level))
+                var core = coreBuckets[i];
+                var bucket = new ErrorTimelineBucket
                 {
-                    if (bucket.FirstHit == null)
-                        bucket.FirstHit = log;
-                    CountLevel(log.Level, bucket);
-                }
-                else if (firstAny[index] == null)
-                {
-                    firstAny[index] = log;
-                }
+                    From = core.From,
+                    To = core.To,
+                    Warn = core.Warn,
+                    Error = core.Error,
+                    Fatal = core.Fatal
+                };
+                if (core.FirstHitIndex >= 0 && core.FirstHitIndex < snapshot.Count)
+                    bucket.FirstHit = snapshot[core.FirstHitIndex];
+                result.Add(bucket);
             }
 
-            for (int i = 0; i < count; i++)
-            {
-                if (buckets[i].FirstHit == null)
-                    buckets[i].FirstHit = firstAny[i];
-            }
-
-            ApplyHeights(buckets);
-            FormatToolTips(buckets);
-            return buckets;
-        }
-
-        private static ErrorTimelineBucket CreateBucket(DateTime from, DateTime to)
-        {
-            return new ErrorTimelineBucket
-            {
-                From = from,
-                To = to
-            };
-        }
-
-        private static void FillSingleBucket(IEnumerable<LogMessage> source, ErrorTimelineBucket bucket)
-        {
-            LogMessage firstAny = null;
-            foreach (var log in source)
-            {
-                if (log == null || log.Time == default)
-                    continue;
-                if (IsWarnPlus(log.Level))
-                {
-                    if (bucket.FirstHit == null)
-                        bucket.FirstHit = log;
-                    CountLevel(log.Level, bucket);
-                }
-                else if (firstAny == null)
-                {
-                    firstAny = log;
-                }
-            }
-
-            if (bucket.FirstHit == null)
-                bucket.FirstHit = firstAny;
-        }
-
-        private static bool IsWarnPlus(eLogLevel level)
-        {
-            return level == eLogLevel.Warn || level == eLogLevel.Error || level == eLogLevel.Fatal;
-        }
-
-        private static void CountLevel(eLogLevel level, ErrorTimelineBucket bucket)
-        {
-            if (level == eLogLevel.Warn)
-                bucket.Warn++;
-            else if (level == eLogLevel.Error)
-                bucket.Error++;
-            else if (level == eLogLevel.Fatal)
-                bucket.Fatal++;
+            ApplyHeights(result);
+            FormatToolTips(result, dateFormat);
+            return result;
         }
 
         private static void ApplyHeights(IList<ErrorTimelineBucket> buckets)
@@ -166,10 +80,11 @@ namespace LogViewer.Helpers
             if (maxTotal <= 0)
                 return;
 
-            double scale = BarHeight / maxTotal;
+            double scale = 28d / maxTotal;
             for (int i = 0; i < buckets.Count; i++)
             {
                 var bucket = buckets[i];
+                // Floor 2px: a single Warn in a busy window would otherwise be a 0-height bar.
                 if (bucket.Warn > 0)
                     bucket.WarnHeight = Math.Max(2, bucket.Warn * scale);
                 if (bucket.Error > 0)
@@ -178,9 +93,9 @@ namespace LogViewer.Helpers
                     bucket.FatalHeight = Math.Max(2, bucket.Fatal * scale);
 
                 double stacked = bucket.WarnHeight + bucket.ErrorHeight + bucket.FatalHeight;
-                if (stacked > BarHeight && stacked > 0)
+                if (stacked > 28 && stacked > 0)
                 {
-                    double fit = BarHeight / stacked;
+                    double fit = 28 / stacked;
                     bucket.WarnHeight *= fit;
                     bucket.ErrorHeight *= fit;
                     bucket.FatalHeight *= fit;
@@ -188,12 +103,9 @@ namespace LogViewer.Helpers
             }
         }
 
-        private static void FormatToolTips(IList<ErrorTimelineBucket> buckets)
+        private static void FormatToolTips(IList<ErrorTimelineBucket> buckets, string dateFormat)
         {
-            var format = Settings.Instance?.DataFormat;
-            if (string.IsNullOrEmpty(format))
-                format = "dd/MM/yyyy HH:mm:ss.fff";
-
+            var format = string.IsNullOrEmpty(dateFormat) ? "dd/MM/yyyy HH:mm:ss.fff" : dateFormat;
             for (int i = 0; i < buckets.Count; i++)
             {
                 var bucket = buckets[i];

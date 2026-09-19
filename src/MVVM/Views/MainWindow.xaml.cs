@@ -55,8 +55,8 @@ namespace LogViewer.MVVM.Views
         }
 
         /// <summary>
-        /// Происходит при загрзуке окна. 
-        /// Если файл лога открыли через это приложение, то показывается сразу окно импорта.
+        /// Runs when the window is loaded. 
+        /// If a log file was opened with this app, import starts immediately.
         /// </summary>
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -79,11 +79,11 @@ namespace LogViewer.MVVM.Views
             DisplayChangeLog();
         }
 
-        #region Переход в tray
+        #region Minimize to tray
 
         /// <summary>
-        /// Происходит при изменении состояния окна. 
-        /// Если стоит настройка перехода приложения в трей, то переход осуществляется тут.
+        /// Runs when the window state changes. 
+        /// If minimize-to-tray is enabled, the window is hidden here.
         /// </summary>
         protected override void OnStateChanged(EventArgs e)
         {
@@ -106,7 +106,7 @@ namespace LogViewer.MVVM.Views
                     trayIcon.ContextMenuStrip = new ContextMenuStrip();
                     ToolStripMenuItem openAppMenuItem = new ToolStripMenuItem("Open");
                     ToolStripMenuItem exitAppMenuItem = new ToolStripMenuItem("Exit");
-                    // добавляем элементы в меню
+                    // add items to the tray menu
                     trayIcon.ContextMenuStrip.Items.AddRange(new ToolStripItem[] { openAppMenuItem, exitAppMenuItem });
                     trayIcon.ContextMenuStrip.ItemClicked += TrayIconContextMenuClick;
                 }
@@ -145,7 +145,7 @@ namespace LogViewer.MVVM.Views
 
         #endregion
 
-        #region Скролл логов
+        #region Log list scrolling
 
         private bool autoScrollEnabled = false;
 
@@ -170,7 +170,7 @@ namespace LogViewer.MVVM.Views
 
         private void OnScrollToTopButtonClick(object sender, RoutedEventArgs e)
         {
-            // переходим в начало логов
+            // scroll to the first log
             if (LogsListView.Items.Count > 0)
                 LogsListView.ScrollIntoView(LogsListView.Items[0]);
         }
@@ -190,14 +190,14 @@ namespace LogViewer.MVVM.Views
 
         private void OnScrollToBottomButtonClick(object sender, RoutedEventArgs e)
         {
-            // переходим в конец логов
+            // scroll to the last log
             if (LogsListView.Items.Count > 0)
                 LogsListView.ScrollIntoView(LogsListView.Items[LogsListView.Items.Count - 1]);
         }
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // если включен автоскролл и при этом человек нажал на какой-то элемент лога - выключаем автоскролл
+            // if autoscroll is on and the user clicked a log row, turn autoscroll off
             if (AutoScrollEnabled)
                 AutoScrollEnabled = false;
 
@@ -210,7 +210,7 @@ namespace LogViewer.MVVM.Views
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    // переходим к выбранному элементу (сделано для правильной работы поиска FindNext)
+                    // scroll the selected item into view (needed for Find Next)
                     LogsListView.ScrollIntoView(LogsListView.SelectedItem);
                     LoggersTreeView.BringIntoView();
                 });
@@ -219,18 +219,18 @@ namespace LogViewer.MVVM.Views
 
         private void LogsListView_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            // Рост списка (пачка Add) меняет offset; это не жест пользователя «уехать вверх».
+            // List growth (a batch of Add) changes the offset; that is not the user scrolling up.
             if (AutoScrollEnabled && LogsListView.Items.Count > 0 && e.VerticalChange < 0 && e.ExtentHeightChange == 0)
                 AutoScrollEnabled = false;
 
-            // автоскролл — к последней строке (после пачки Layout обычно один проход, не N прыжков с фона)
+            // autoscroll to the last row (after a batch, Layout usually runs once, not N jumps from the background)
             if (AutoScrollEnabled && LogsListView.Items.Count > 0)
                 LogsListView.ScrollIntoView(LogsListView.Items[LogsListView.Items.Count - 1]);
         }
 
         #endregion
 
-        #region Нажатие на чекбоксы дерева логгеров
+        #region Logger tree checkbox clicks
 
         private void TreeViewCheckBox_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -249,7 +249,7 @@ namespace LogViewer.MVVM.Views
 
         #endregion
 
-        #region Сортировка по нажатию на заголовок таблицы
+        #region Sort on column header click
 
         GridViewColumnHeader lastHeaderClicked = null;
         ListSortDirection lastDirection = ListSortDirection.Ascending;
@@ -363,7 +363,7 @@ namespace LogViewer.MVVM.Views
             releaseNotesDialog.ShowDialog();
         }
 
-        #region Передача параметров в другую аппу, если существует
+        #region Forward CLI args to an already running instance
 
         public static IntPtr WindowHandle { get; private set; }
 

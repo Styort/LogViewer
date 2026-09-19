@@ -6,8 +6,8 @@ using System.Windows.Threading;
 namespace LogViewer.Helpers
 {
     /// <summary>
-    /// Сбрасывает вертикальный скролл TextBox в начало при смене текста.
-    /// Иначе при переключении длинных логов ScrollViewer сохраняет VerticalOffset.
+    /// Resets a TextBox vertical scroll to the top when the text changes.
+    /// Otherwise ScrollViewer keeps VerticalOffset when switching long log messages.
     /// </summary>
     public static class TextBoxResetScroll
     {
@@ -43,7 +43,7 @@ namespace LogViewer.Helpers
         {
             var textBox = (TextBox)sender;
             Reset(textBox);
-            // Новый текст ещё не измерен: без отложенного сброса offset останется от предыдущей записи.
+            // The new text is not measured yet: without a deferred reset the offset stays from the previous entry.
             textBox.Dispatcher.BeginInvoke(new System.Action(() => Reset(textBox)), DispatcherPriority.Loaded);
         }
 

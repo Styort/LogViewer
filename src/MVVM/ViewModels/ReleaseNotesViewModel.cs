@@ -20,7 +20,7 @@ namespace LogViewer.MVVM.ViewModels
         private List<ReleaseNotes> releaseNotesList = new List<ReleaseNotes>();
 
         /// <summary>
-        /// Список изменений во всех версиях
+        /// Changelog for all versions.
         /// </summary>
         public List<ReleaseNotes> ReleaseNotesList
         {

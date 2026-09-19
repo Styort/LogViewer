@@ -37,7 +37,7 @@ namespace LogViewer.MVVM.Views
             
             else
             {
-                // обнуляем секунды и мс. для удобства работы с датой
+                // clear seconds and milliseconds so the date picker is easier to use
                 if (selectedDateTime.Second != 0)
                     selectedDateTime = selectedDateTime.AddSeconds(-selectedDateTime.Second);
                 if (selectedDateTime.Millisecond != 0)

@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <!-- Core-only NUnit: parsers, filter, Don't Receive, batch flush. Not WPF, ClickOnce, or Dispatcher. -->
   <PropertyGroup>
     <TargetFramework>net48</TargetFramework>
     <IsPackable>false</IsPackable>

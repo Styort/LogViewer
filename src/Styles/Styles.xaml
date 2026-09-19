@@ -93,9 +93,9 @@
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
 
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=StartIsEnabled}" Value="True">
+            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="True">
                 <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromUDP}"/>
-                <Setter Property="Command" Value="{Binding Path=StartCommand}"/>
+                <Setter Property="Command" Value="{Binding Path=Receivers.StartCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -118,9 +118,9 @@
                 </Setter>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Path=StartIsEnabled}" Value="False">
+            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
                 <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromUDP}"/>
-                <Setter Property="Command" Value="{Binding Path=PauseCommand}"/>
+                <Setter Property="Command" Value="{Binding Path=Receivers.PauseCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -149,9 +149,9 @@
         <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
         
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Path=StartReadFromFileIsEnabled}" Value="True">
+            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="True">
                 <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromFile}"/>
-                <Setter Property="Command" Value="{Binding Path=StartFileReadingCommand}"/>
+                <Setter Property="Command" Value="{Binding Path=Import.StartFileReadingCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -174,9 +174,9 @@
                 </Setter>
             </DataTrigger>
 
-            <DataTrigger Binding="{Binding Path=StartReadFromFileIsEnabled}" Value="False">
+            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
                 <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromFile}"/>
-                <Setter Property="Command" Value="{Binding Path=PauseFileReadingCommand}"/>
+                <Setter Property="Command" Value="{Binding Path=Import.PauseFileReadingCommand}"/>
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -410,7 +410,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
-                    <Grid Visibility="{Binding Path=IsIpVisible, Converter={StaticResource BooleanToVisibility}}">
+                    <Grid Visibility="{Binding Path=IsSourceVisible, Converter={StaticResource BooleanToVisibility}}">
                         <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,15" FontWeight="DemiBold" Foreground="Gray" x:Name="contentTB">
                             <ContentPresenter/>
                         </TextBlock>
@@ -492,7 +492,7 @@
                 <Style TargetType="{x:Type Image}">
                     <Setter Property="Margin" Value="2,0"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding DataContext.BookmarkColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="0">
+                        <DataTrigger Binding="{Binding DataContext.Bookmarks.BookmarkColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="0">
                             <Setter Property="Margin" Value="0"/>
                             <Setter Property="Width" Value="0"/>
                             <Setter Property="Height" Value="0"/>
@@ -541,10 +541,10 @@
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding DataContext.ColorReceiverColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="0">
+                        <DataTrigger Binding="{Binding DataContext.Receivers.ColorReceiverColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="0">
                             <Setter Property="Margin" Value="0"/>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding DataContext.ColorReceiverColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="15">
+                        <DataTrigger Binding="{Binding DataContext.Receivers.ColorReceiverColumnWidth, RelativeSource={RelativeSource AncestorType={x:Type Window}}}" Value="15">
                             <Setter Property="Margin" Value="-2, -13, -6, -13"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -555,10 +555,10 @@
 
     <DataTemplate x:Key="LogMessageDataTemplate">
         <helpers:SearchableTextControl Text="{Binding Path=Message, Converter={StaticResource LengthConverter}, ConverterParameter=140}"
-                       ToolTip="{Binding Path=Message}" IsHighlight="True" SearchText="{Binding Path=DataContext.HighlightSearchText, RelativeSource={RelativeSource AncestorType=Window}}"
-                       VerticalAlignment="Center" IsMatchCase="{Binding Path=DataContext.IsMatchCase, RelativeSource={RelativeSource AncestorType=Window}}"
-                       UseRegex="{Binding Path=DataContext.UseRegularExpressions, RelativeSource={RelativeSource AncestorType=Window}}"
-                       IsMatchWholeWord="{Binding Path=DataContext.IsMatchWholeWord, RelativeSource={RelativeSource AncestorType=Window}}"
+                       ToolTip="{Binding Path=Message}" IsHighlight="True" SearchText="{Binding Path=DataContext.Search.HighlightSearchText, RelativeSource={RelativeSource AncestorType=Window}}"
+                       VerticalAlignment="Center" IsMatchCase="{Binding Path=DataContext.Search.IsMatchCase, RelativeSource={RelativeSource AncestorType=Window}}"
+                       UseRegex="{Binding Path=DataContext.Search.UseRegularExpressions, RelativeSource={RelativeSource AncestorType=Window}}"
+                       IsMatchWholeWord="{Binding Path=DataContext.Search.IsMatchWholeWord, RelativeSource={RelativeSource AncestorType=Window}}"
                        FontFamily="{Binding Path=DataContext.MessageFontFamily, RelativeSource={RelativeSource AncestorType=Window}}"
                        FontSize="{Binding Path=DataContext.MessageFontSize, RelativeSource={RelativeSource AncestorType=Window}}"/>
     </DataTemplate>
@@ -632,21 +632,21 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBox materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" x:Name="SearchTextBox"
                                          materialDesign:HintAssist.Hint="{localization:LocBinding Search}"
-                                         BorderThickness="0" Text="{Binding Path=SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
+                                         BorderThickness="0" Text="{Binding Path=Search.SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
                                     <TextBox.InputBindings>
-                                        <KeyBinding  Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" 
+                                        <KeyBinding  Command="{Binding ElementName=LogsListView, Path=DataContext.Search.SearchLogCommand}" 
                                                      CommandParameter="{StaticResource False}" Key="Return" />
                                     </TextBox.InputBindings>
                                 </TextBox>
                                 <Image Grid.Column="1" Source="{StaticResource WarnImage}" Width="16" Height="16" Margin="0,0,2,0"
                                        Stretch="Uniform"
                                        ToolTip="{localization:LocBinding InvalidRegularExpression}"
-                                       Visibility="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid, Converter={StaticResource BooleanToVisibility}}"/>
+                                       Visibility="{Binding ElementName=LogsListView, Path=DataContext.Search.IsSearchPatternInvalid, Converter={StaticResource BooleanToVisibility}}"/>
 
                                 <Button Grid.Column="2" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearSearchAndSearchResult}"
                                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}"
-                                        Command="{Binding ElementName=LogsListView, Path=DataContext.ClearSearchResultCommand}" 
-                                        Visibility="{Binding ElementName=LogsListView, Path= DataContext.ClearSearchResultIsEnabled, Converter={StaticResource BooleanToVisibility}}">
+                                        Command="{Binding ElementName=LogsListView, Path=DataContext.Search.ClearSearchResultCommand}" 
+                                        Visibility="{Binding ElementName=LogsListView, Path= DataContext.Search.ClearSearchResultIsEnabled, Converter={StaticResource BooleanToVisibility}}">
                                     <Button.Template>
                                         <ControlTemplate TargetType="{x:Type Button}">
                                             <Grid x:Name="RootGrid">
@@ -669,12 +669,12 @@
                             </Grid>
                         </Border>
 
-                        <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindAllHotKeys}" Command="{Binding ElementName=LogsListView, Path=DataContext.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
+                        <Button Height="32" Width="32" Margin="5,0" Padding="2" ToolTip="{localization:LocBinding FindAllHotKeys}" Command="{Binding ElementName=LogsListView, Path=DataContext.Search.SearchLogCommand}" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{StaticResource False}">
                             <Image Source="{StaticResource SearchDrawingImage}"/>
 
                             <Button.ContextMenu>
                                 <ContextMenu Style="{StaticResource BaseContextMenu}">
-                                    <MenuItem Margin="0" Header="{localization:LocBinding InAnotherWindowHotKeys}" Command="{Binding PlacementTarget.Tag.SearchLogCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{StaticResource True}"/>
+                                    <MenuItem Margin="0" Header="{localization:LocBinding InAnotherWindowHotKeys}" Command="{Binding PlacementTarget.Tag.Search.SearchLogCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{StaticResource True}"/>
                                 </ContextMenu>
                             </Button.ContextMenu>
 
@@ -684,7 +684,7 @@
                                         <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid}" Value="True">
+                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.Search.IsSearchPatternInvalid}" Value="True">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -692,11 +692,11 @@
                             </Button.Style>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.IsEnableFindPrevious}">
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindPreviousLogMessageToolTip}" Margin="0" Command="{Binding ElementName=LogsListView, Path=DataContext.Search.FindPreviousCommand}" IsEnabled="{Binding ElementName=LogsListView, Path= DataContext.Search.IsEnableFindPrevious}">
                             <Image Source="{StaticResource SearchPrevious}"/>
                         </Button>
 
-                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindNextLogMessageToolTip}" Margin="5,0" Command="{Binding ElementName=LogsListView, Path=DataContext.FindNextCommand}">
+                        <Button Height="32" Width="32" Padding="2" ToolTip="{localization:LocBinding FindNextLogMessageToolTip}" Margin="5,0" Command="{Binding ElementName=LogsListView, Path=DataContext.Search.FindNextCommand}">
                             <Image Source="{StaticResource SearchNext}"/>
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -704,7 +704,7 @@
                                         <DataTrigger Binding="{Binding Text.Length, ElementName=SearchTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
-                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.IsSearchPatternInvalid}" Value="True">
+                                        <DataTrigger Binding="{Binding ElementName=LogsListView, Path=DataContext.Search.IsSearchPatternInvalid}" Value="True">
                                             <Setter Property="IsEnabled" Value="False"/>
                                         </DataTrigger>
                                     </Style.Triggers>
@@ -717,7 +717,7 @@
                             <Image Source="{StaticResource CleanWhiteImage}"/>
                         </Button>
 
-                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchCase}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchCase}">
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchCase}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.Search.IsMatchCase}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" Width="33" BorderBrush="DeepSkyBlue">
@@ -732,7 +732,7 @@
                             </ToggleButton.Template>
                         </ToggleButton>
 
-                        <ToggleButton Margin="0" ToolTip="{localization:LocBinding MatchWholeWord}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchWholeWord}">
+                        <ToggleButton Margin="0" ToolTip="{localization:LocBinding MatchWholeWord}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.Search.IsMatchWholeWord}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
@@ -747,7 +747,7 @@
                             </ToggleButton.Template>
                         </ToggleButton>
 
-                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchLogLevel}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.IsMatchLogLevel}">
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding MatchLogLevel}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.Search.IsMatchLogLevel}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
@@ -762,7 +762,7 @@
                             </ToggleButton.Template>
                         </ToggleButton>
 
-                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding UseRegularExpression}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.UseRegularExpressions}">
+                        <ToggleButton Margin="5,0" ToolTip="{localization:LocBinding UseRegularExpression}" IsChecked="{Binding ElementName=LogsListView, Path=DataContext.Search.UseRegularExpressions}">
                             <ToggleButton.Template>
                                 <ControlTemplate>
                                     <Border x:Name="toggleBorder" BorderThickness="0" Height="33" BorderBrush="DeepSkyBlue">
@@ -796,7 +796,7 @@
         </MenuItem>
 
         <MenuItem Header="{localization:LocBinding AddBookmark}" InputGestureText="Ctrl+B" Margin="0"
-                  Command="{Binding Path=DataContext.AddBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  Command="{Binding Path=DataContext.Bookmarks.AddBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource BookmarkDrawingImage}"/>
@@ -814,7 +814,7 @@
         </MenuItem>
 
         <MenuItem Header="{localization:LocBinding EditBookmarkComment}" Margin="0"
-                  Command="{Binding Path=DataContext.EditBookmarkCommentCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  Command="{Binding Path=DataContext.Bookmarks.EditBookmarkCommentCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource BookmarkDrawingImage}"/>
@@ -832,7 +832,7 @@
         </MenuItem>
 
         <MenuItem Header="{localization:LocBinding RemoveBookmark}" InputGestureText="Ctrl+B" Margin="0"
-                  Command="{Binding Path=DataContext.RemoveBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
+                  Command="{Binding Path=DataContext.Bookmarks.RemoveBookmarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}"
                   CommandParameter="{Binding}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource BookmarkDrawingImage}"/>
@@ -851,13 +851,13 @@
 
         <Separator />
 
-        <MenuItem Header="{localization:LocBinding DontShowThisLogger}"  Margin="0" Command="{Binding Path=DataContext.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <MenuItem Header="{localization:LocBinding DontShowThisLogger}"  Margin="0" Command="{Binding Path=DataContext.Tree.DontShowThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource HiddenEyeImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Margin="0" Command="{Binding Path=DataContext.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Margin="0" Command="{Binding Path=DataContext.Tree.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource StopImage}"/>
             </MenuItem.Icon>
@@ -865,31 +865,31 @@
 
         <Separator />
 
-        <MenuItem Header="{localization:LocBinding SetTimeInterval}" InputGestureText="Ctrl+Shift+T" Margin="0" Command="{Binding Path=DataContext.SetTimeIntervalCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding SetTimeInterval}" InputGestureText="Ctrl+Shift+T" Margin="0" Command="{Binding Path=DataContext.Search.SetTimeIntervalCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="{localization:LocBinding GoToTimestamp}" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding GoToTimestamp}" InputGestureText="Ctrl+T" Margin="0" Command="{Binding Path=DataContext.Search.GoToTimestampCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource GoToTimestampDrawingImage}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="{localization:LocBinding GoToNextWarning}" InputGestureText="Ctrl+W" Margin="0" Command="{Binding Path=DataContext.FindNextWarningCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding GoToNextWarning}" InputGestureText="Ctrl+W" Margin="0" Command="{Binding Path=DataContext.Search.FindNextWarningCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource FindNextWarning}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="{localization:LocBinding GoToNextError}" InputGestureText="Ctrl+E" Margin="0" Command="{Binding Path=DataContext.FindNextErrorCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
+        <MenuItem Header="{localization:LocBinding GoToNextError}" InputGestureText="Ctrl+E" Margin="0" Command="{Binding Path=DataContext.Search.FindNextErrorCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}" >
             <MenuItem.Icon>
                 <Image Source="{StaticResource FindNextError}"/>
             </MenuItem.Icon>
         </MenuItem>
 
-        <MenuItem Header="{localization:LocBinding FindInTree}" Margin="0" Command="{Binding Path=DataContext.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
+        <MenuItem Header="{localization:LocBinding FindInTree}" Margin="0" Command="{Binding Path=DataContext.Tree.FindInTreeCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListView}}">
             <MenuItem.Icon>
                 <Image Source="{StaticResource TreeImage}"/>
             </MenuItem.Icon>

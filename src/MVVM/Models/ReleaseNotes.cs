@@ -13,27 +13,27 @@ namespace LogViewer.MVVM.Models
     public class ReleaseNotes
     {
         /// <summary>
-        /// Версия
+        /// Version.
         /// </summary>
         public string Version { get; set; }
 
         /// <summary>
-        /// Список новых фич
+        /// New features.
         /// </summary>
         public List<string> NewFeatures { get; set; } = new List<string>();
 
         /// <summary>
-        /// Список измененных фич
+        /// Changed features.
         /// </summary>
         public List<string> ChangedFeatures { get; set; } = new List<string>();
 
         /// <summary>
-        /// Список исправленных багов
+        /// Fixed bugs.
         /// </summary>
         public List<string> FixedBugs { get; set; } = new List<string>();
 
         /// <summary>
-        /// Развернут ли элемент в списке.
+        /// Whether the item is expanded in the list.
         /// </summary>
         [XmlIgnore]
         public bool IsExpanded { get; set; } = false;

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- STA VM tests against the WPF host. Not XAML, ClickOnce, or live UDP/file sources. -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Description>STA tests for FilterCoordinator and child VMs. Not XAML, ClickOnce, or live UDP/file sources.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="NUnit" Version="3.14.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LogViewer.csproj" />
+    <ProjectReference Include="..\LogViewer.Core\LogViewer.Core.csproj" />
+  </ItemGroup>
+</Project>

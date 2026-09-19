@@ -51,7 +51,7 @@
 
         <RadioButton Grid.Row="5" Margin="10,0" Content="{localization:LocBinding OrCreateYourOwnTemplate}" IsChecked="{Binding Path=IsUserTemplateSelected}" VerticalAlignment="Center" />
 
-        <Button Grid.Row="6" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=ClearContainsIsVisible, Converter={StaticResource BooleanToVisibility}}"
+        <Button Grid.Row="6" Style="{StaticResource BaseButtonStyle}" Width="Auto" Foreground="White"  Content="{localization:LocBinding AddTemplateItem}" Visibility="{Binding Path=IsUserTemplateSelected, Converter={StaticResource BooleanToVisibility}}"
                 Command="{Binding Path=AddTemplateItemCommand}" Margin="10,5,0,0" HorizontalAlignment="Left"/>
 
         <StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1">

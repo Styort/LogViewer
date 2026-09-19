@@ -44,7 +44,7 @@ namespace LogViewer.MVVM.ViewModels
         private string selectedMessageFontFamily = "Consolas";
         private double messageFontSize = 14;
 
-        #region Свойства
+        #region Properties
 
         public ObservableCollection<Receiver> Receivers
         {
@@ -77,7 +77,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Автозапуск считывания логов при старте
+        /// Start receiving logs at application startup.
         /// </summary>
         public bool IsAutoStartReadAtStartup
         {
@@ -90,7 +90,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Показывать иконку в трее при сворачивании приложения
+        /// Show a tray icon when the window is minimized.
         /// </summary>
         public bool MinimizeToTray
         {
@@ -104,7 +104,7 @@ namespace LogViewer.MVVM.ViewModels
 
 
         /// <summary>
-        /// Учитывать максимальное количество сообщений
+        /// Honor the maximum message buffer size.
         /// </summary>
         public bool IsEnableMaxMessageBufferSize
         {
@@ -117,7 +117,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Максимальное количество принимаемых логов
+        /// Maximum number of received logs.
         /// </summary>
         public int MaxMessageBufferSize
         {
@@ -130,7 +130,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Количество удаляемых сообщений при привышении размера буфера
+        /// How many messages to delete when the buffer overflows.
         /// </summary>
         public int DeletedMessagesCount
         {
@@ -148,7 +148,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Только один экзепляр приложения
+        /// Allow only one application instance.
         /// </summary>
         public bool OnlyOneAppInstance
         {
@@ -161,7 +161,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Формат отображения даты
+        /// Displayed date format.
         /// </summary>
         public string DisplayedDataFormat
         {
@@ -174,7 +174,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Напечатанный IP
+        /// IP typed in the ignore box.
         /// </summary>
         public string TypedIP
         {
@@ -187,7 +187,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Выбранный IP-адрес
+        /// Selected ignored IP.
         /// </summary>
         public IgnoredIPAddress SelectedIP
         {
@@ -211,12 +211,12 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Текущий цвет шрифта
+        /// Current font color.
         /// </summary>
         public SolidColorBrush FontColor { get; set; } = new SolidColorBrush();
 
         /// <summary>
-        /// Выбранный цвет шрифта
+        /// Selected font color.
         /// </summary>
         public SolidColorBrush SelectedFontColor
         {
@@ -536,7 +536,7 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
-        #region Команды
+        #region Commands
 
         private RelayCommand addReceiverCommand;
         private RelayCommand removeReceiverCommand;
@@ -561,7 +561,7 @@ namespace LogViewer.MVVM.ViewModels
         #endregion
 
         /// <summary>
-        /// Добавить ресивер в список
+        /// Add a receiver to the list.
         /// </summary>
         /// <param name="obj"></param>
         private void AddReceiver(object obj)
@@ -570,7 +570,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Удалить выбранный ресивер
+        /// Remove the selected receiver.
         /// </summary>
         /// <param name="obj"></param>
         private void RemoveReceiver(object obj)
@@ -582,7 +582,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Добавить в список игнорирования IP-адрес
+        /// Add an IP to the ignore list.
         /// </summary>
         /// <param name="obj"></param>
         private void AddIgnoreIP(object obj)
@@ -592,7 +592,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Удалить из списка игнорирования IP-адрес
+        /// Remove an IP from the ignore list.
         /// </summary>
         private void RemoveIgnoreIP(object obj)
         {
@@ -644,7 +644,7 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Установить значение цвета ресивера по умолчанию
+        /// Reset the receiver color to the default.
         /// </summary>
         /// <param name="obj"></param>
         private void SetDefaultColor(object obj)

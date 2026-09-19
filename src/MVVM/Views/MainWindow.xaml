@@ -23,10 +23,10 @@
 
             <HierarchicalDataTemplate DataType="{x:Type threeView:Node}" ItemsSource="{Binding Children}">
                 <StackPanel Orientation="Horizontal" Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=Window}}">
-                    <CheckBox IsChecked="{Binding IsChecked}" Uid="{Binding Id}" Command="{Binding Path=DataContext.TreeViewElementCheckCommand, RelativeSource={RelativeSource AncestorType=Window}}" x:Name="TreeViewCheckBox"
-                              CommandParameter="{Binding RelativeSource={RelativeSource Self}}" PreviewMouseLeftButtonDown="TreeViewCheckBox_OnPreviewMouseLeftButtonDown" PreviewKeyDown="TreeViewCheckBox_OnPreviewKeyDown">
+                    <CheckBox IsChecked="{Binding IsChecked}" Uid="{Binding Id}" Command="{Binding Path=DataContext.Tree.TreeViewElementCheckCommand, RelativeSource={RelativeSource AncestorType=Window}}" x:Name="TreeViewCheckBox"
+                              CommandParameter="{Binding}" PreviewMouseLeftButtonDown="TreeViewCheckBox_OnPreviewMouseLeftButtonDown" PreviewKeyDown="TreeViewCheckBox_OnPreviewKeyDown">
                     </CheckBox>
-                    <helpers:SearchableTextControl Text="{Binding Text}" SearchText="{Binding DataContext.LoggerHighlightText, RelativeSource={RelativeSource AncestorType=Window}}" IsHighlight="True" IsMatchCase="False" Background="{Binding ToggleMark}">
+                    <helpers:SearchableTextControl Text="{Binding Text}" SearchText="{Binding DataContext.Tree.LoggerHighlightText, RelativeSource={RelativeSource AncestorType=Window}}" IsHighlight="True" IsMatchCase="False" Background="{Binding ToggleMark}">
                         <helpers:SearchableTextControl.ToolTip>
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -47,13 +47,13 @@
                     </helpers:SearchableTextControl>
                     <StackPanel.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}">
-                            <MenuItem Header="{localization:LocBinding CollapseAll}" Margin="0" Command="{Binding PlacementTarget.Tag.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding CollapseAll}" Margin="0" Command="{Binding PlacementTarget.Tag.Tree.CollapseChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CollapseImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="{localization:LocBinding ExpandAll}" Margin="0" Command="{Binding PlacementTarget.Tag.ExpandChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ExpandAll}" Margin="0" Command="{Binding PlacementTarget.Tag.Tree.ExpandChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ExpandImage}"/>
                                 </MenuItem.Icon>
@@ -61,25 +61,25 @@
 
                             <Separator />
 
-                            <MenuItem Header="{localization:LocBinding ShowOnlyThisLogger}" Command="{Binding PlacementTarget.Tag.ShowOnlyThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ShowOnlyThisLogger}" Command="{Binding PlacementTarget.Tag.Tree.ShowOnlyThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource EyeImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Command="{Binding PlacementTarget.Tag.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding DontReceiveThisLogger}" ToolTip="{localization:LocBinding DontReceiveThisLoggerToolTip}" Command="{Binding PlacementTarget.Tag.Tree.DontReceiveThisLoggerCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource StopImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="{localization:LocBinding AddCurrentIPtoIgnoreList}" ToolTip="{localization:LocBinding AddCurrentIPtoIgnoreListToolTip}" Command="{Binding PlacementTarget.Tag.IgnoreThisIPCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding AddCurrentIPtoIgnoreList}" ToolTip="{localization:LocBinding AddCurrentIPtoIgnoreListToolTip}" Command="{Binding PlacementTarget.Tag.Tree.IgnoreThisIPCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource IgnoreIPStopImage}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
 
-                            <MenuItem Header="{localization:LocBinding ToggleMarking}" ToolTip="{localization:LocBinding ToggleMarkingToolTip}" Command="{Binding PlacementTarget.Tag.ToggleMarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ToggleMarking}" ToolTip="{localization:LocBinding ToggleMarkingToolTip}" Command="{Binding PlacementTarget.Tag.Tree.ToggleMarkCommand, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource MarkDrawingImage}"/>
                                 </MenuItem.Icon>
@@ -87,7 +87,7 @@
 
                             <Separator />
 
-                            <MenuItem Header="{localization:LocBinding Clear}" Margin="0" Command="{Binding PlacementTarget.Tag.ClearChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding Clear}" Margin="0" Command="{Binding PlacementTarget.Tag.Tree.ClearChildrenCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource CleanImage}"/>
                                 </MenuItem.Icon>
@@ -95,7 +95,7 @@
 
                             <Separator />
 
-                            <MenuItem Header="{localization:LocBinding ExportCurrentLoggerToFile}" Margin="0" Command="{Binding PlacementTarget.Tag.ExportCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
+                            <MenuItem Header="{localization:LocBinding ExportCurrentLoggerToFile}" Margin="0" Command="{Binding PlacementTarget.Tag.Import.ExportCommand, RelativeSource={RelativeSource Mode=FindAncestor,AncestorType=ContextMenu}}" CommandParameter="{Binding}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ExportDrawingImage}"/>
                                 </MenuItem.Icon>
@@ -108,26 +108,26 @@
     </Window.Resources>
 
     <Window.TaskbarItemInfo>
-        <TaskbarItemInfo Description="Log Viewer" ProgressValue="{Binding Path=TaskBarFileLoadProgress}" ProgressState="{Binding Path=IsShowTaskbarProgress, Converter={StaticResource ProgressStateConverter}}">
+        <TaskbarItemInfo Description="Log Viewer" ProgressValue="{Binding Path=Import.TaskBarFileLoadProgress}" ProgressState="{Binding Path=IsShowTaskbarProgress, Converter={StaticResource ProgressStateConverter}}">
             <TaskbarItemInfo.ThumbButtonInfos>
-                <ThumbButtonInfo Command="{Binding StartCommand}" IsEnabled="{Binding StartIsEnabled}" Description="{localization:LocBinding Start}" ImageSource="{StaticResource PlayWhiteImage}"/>
-                <ThumbButtonInfo Command="{Binding PauseCommand}" IsEnabled="{Binding PauseIsEnabled}" Description="{localization:LocBinding Pause}" ImageSource="{StaticResource PauseWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding Receivers.StartCommand}" IsEnabled="{Binding Receivers.StartIsEnabled}" Description="{localization:LocBinding Start}" ImageSource="{StaticResource PlayWhiteImage}"/>
+                <ThumbButtonInfo Command="{Binding Receivers.PauseCommand}" IsEnabled="{Binding Receivers.PauseIsEnabled}" Description="{localization:LocBinding Pause}" ImageSource="{StaticResource PauseWhiteImage}"/>
                 <ThumbButtonInfo Command="{Binding CleanCommand}" IsEnabled="{Binding CleanIsEnabled}" Description="{localization:LocBinding ClearAllLogs}" ImageSource="{StaticResource CleanWhiteTaskBarImage}"/>
-                <ThumbButtonInfo Command="{Binding ImportCommand}" Description="{localization:LocBinding ImportLogsToolTip}" ImageSource="{StaticResource ImportWhiteDrawingImage}"/>
+                <ThumbButtonInfo Command="{Binding Import.ImportCommand}" Description="{localization:LocBinding ImportLogsToolTip}" ImageSource="{StaticResource ImportWhiteDrawingImage}"/>
             </TaskbarItemInfo.ThumbButtonInfos>
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
 
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=SearchLogCommand}" CommandParameter="{StaticResource False}" Modifiers="Control" Key="F"/>
-        <KeyBinding Command="{Binding Path=SearchLogCommand}" CommandParameter="{StaticResource True}" Modifiers="Control+Shift" Key="F"/>
-        <KeyBinding Command="{Binding Path=FindNextCommand}" Modifiers="Shift" Key="F"/>
-        <KeyBinding Command="{Binding Path=FindPreviousCommand}" Modifiers="Shift" Key="D"/>
-        <KeyBinding Command="{Binding Path=ClearSearchResultCommand}" Modifiers="Shift" Key="R"/>
-        <KeyBinding Command="{Binding Path=ExportCommand}" Modifiers="Control" Key="S"/>
+        <KeyBinding Command="{Binding Path=Search.SearchLogCommand}" CommandParameter="{StaticResource False}" Modifiers="Control" Key="F"/>
+        <KeyBinding Command="{Binding Path=Search.SearchLogCommand}" CommandParameter="{StaticResource True}" Modifiers="Control+Shift" Key="F"/>
+        <KeyBinding Command="{Binding Path=Search.FindNextCommand}" Modifiers="Shift" Key="F"/>
+        <KeyBinding Command="{Binding Path=Search.FindPreviousCommand}" Modifiers="Shift" Key="D"/>
+        <KeyBinding Command="{Binding Path=Search.ClearSearchResultCommand}" Modifiers="Shift" Key="R"/>
+        <KeyBinding Command="{Binding Path=Import.ExportCommand}" Modifiers="Control" Key="S"/>
         <KeyBinding Command="{Binding Path=CleanCommand}" Modifiers="Control" Key="R"/>
-        <KeyBinding Command="{Binding Path=GoToTimestampCommand}" Modifiers="Control" Key="T"/>
-        <KeyBinding Command="{Binding Path=SetTimeIntervalCommand}" Modifiers="Control+Shift" Key="T"/>
+        <KeyBinding Command="{Binding Path=Search.GoToTimestampCommand}" Modifiers="Control" Key="T"/>
+        <KeyBinding Command="{Binding Path=Search.SetTimeIntervalCommand}" Modifiers="Control+Shift" Key="T"/>
     </Window.InputBindings>
 
     <Grid>
@@ -145,16 +145,16 @@
 
         <Grid Grid.ColumnSpan="3" Margin="5">
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
-                <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=ImportCommand}"/>
-                <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=ExportCommand}"/>
+                <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=Import.ImportCommand}"/>
+                <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=Import.ExportCommand}"/>
                 <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
-                <Button Style="{StaticResource BookmarksButtonStyle}" Command="{Binding Path=OpenBookmarksCommand}"
-                        Visibility="{Binding Path=Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+                <Button Style="{StaticResource BookmarksButtonStyle}" Command="{Binding Path=Bookmarks.OpenBookmarksCommand}"
+                        Visibility="{Binding Path=Bookmarks.Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
                 <Button Style="{StaticResource StartPauseNetworkReceiverButtonStyle}"/>
-                <Button Style="{StaticResource StartPauseFileReceiverButtonStyle}" Visibility="{Binding Path=FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+                <Button Style="{StaticResource StartPauseFileReceiverButtonStyle}" Visibility="{Binding Path=Import.FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
                 <Button Style="{StaticResource ScrollToTop}" Click="OnScrollToTopButtonClick"/>
                 <Button Style="{StaticResource AutoScrollToBottom}" Click="OnAutoScrollToBottomButtonClick" x:Name="AutoScrollButton"/>
                 <Button Style="{StaticResource ScrollToBottom}" Click="OnScrollToBottomButtonClick"/>
@@ -207,15 +207,15 @@
                         </Grid.ColumnDefinitions>
                         <TextBox materialDesign:TextFieldAssist.DecorationVisibility="Collapsed" x:Name="SearchLoggerTextBox"
                                  materialDesign:HintAssist.Hint="{localization:LocBinding Search}"
-                                 BorderThickness="0" Text="{Binding Path=SearchLoggerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
+                                 BorderThickness="0" Text="{Binding Path=Tree.SearchLoggerText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5,0,5,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" >
                             <TextBox.InputBindings>
-                                <KeyBinding  Command="{Binding Path=SearchLoggersCommand}" Key="Return" />
+                                <KeyBinding  Command="{Binding Path=Tree.SearchLoggersCommand}" Key="Return" />
                             </TextBox.InputBindings>
                         </TextBox>
 
                         <Button Grid.Column="1" Margin="0,0,3,0" Padding="0" Height="20" Width="20" ToolTip="{localization:LocBinding ClearFindLoggersResultToolTip}"
-                                Command="{Binding Path=ClearSearchLoggerResultCommand}"
-                                Visibility="{Binding Path=IsEnableClearSearchLoggers, Converter={StaticResource BooleanToVisibility}}">
+                                Command="{Binding Path=Tree.ClearSearchLoggerResultCommand}"
+                                Visibility="{Binding Path=Tree.IsEnableClearSearchLoggers, Converter={StaticResource BooleanToVisibility}}">
                             <Button.Template>
                                 <ControlTemplate TargetType="{x:Type Button}">
                                     <Grid x:Name="RootGrid">
@@ -238,7 +238,7 @@
                     </Grid>
                 </Border>
 
-                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0,0,0" Padding="2" ToolTip="{localization:LocBinding FindLoggersToolTip}" Command="{Binding Path=SearchLoggersCommand}">
+                <Button Grid.Column="1" Height="32" Width="32" Margin="5,0,0,0" Padding="2" ToolTip="{localization:LocBinding FindLoggersToolTip}" Command="{Binding Path=Tree.SearchLoggersCommand}">
                     <Image Source="{StaticResource SearchDrawingImage}"/>
                     <Button.Style>
                         <Style TargetType="{x:Type Button}" BasedOn="{StaticResource BaseButtonStyle}">
@@ -252,14 +252,14 @@
                 </Button>
             </Grid>
 
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Content="{localization:LocBinding CollapseAll}" Width="120" Command="{Binding Path=CollapseLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
-            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="{localization:LocBinding ClearAll}" Width="120" Command="{Binding Path=ClearLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Left" Content="{localization:LocBinding CollapseAll}" Width="120" Command="{Binding Path=Tree.CollapseLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
+            <Button Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" HorizontalAlignment="Right" Content="{localization:LocBinding ClearAll}" Width="120" Command="{Binding Path=Tree.ClearLoggersCommand}" Style="{StaticResource BaseButtonStyle}"/>
 
-            <TreeView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Path=Loggers}" MaxHeight="900" IsEnabled="{Binding Path=IsEnableLogList}" x:Name="LoggersTreeView"
+            <TreeView Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" ItemsSource="{Binding Path=Tree.Loggers}" MaxHeight="900" IsEnabled="{Binding Path=IsEnableLogList}" x:Name="LoggersTreeView"
                       VirtualizingStackPanel.IsVirtualizing="True"
                       VirtualizingStackPanel.VirtualizationMode="Recycling" >
                 <i:Interaction.Behaviors>
-                    <helpers:BindableSelectedItemBehavior SelectedItem="{Binding SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <helpers:BindableSelectedItemBehavior SelectedItem="{Binding Tree.SelectedNode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </i:Interaction.Behaviors>
             </TreeView>
         </Grid>
@@ -288,8 +288,8 @@
             </ListView.ItemsPanel>
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Width="{Binding Path=ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}" />
-                    <GridViewColumn Width="{Binding Path=BookmarkColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource BookmarkColumnDataTemplate}" />
+                    <GridViewColumn Width="{Binding Path=Receivers.ColorReceiverColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource ReceiverColorColumnDataTemplate}" />
+                    <GridViewColumn Width="{Binding Path=Bookmarks.BookmarkColumnWidth}" HeaderContainerStyle="{StaticResource FixedWithHeaderContainerStyle}" CellTemplate="{StaticResource BookmarkColumnDataTemplate}" />
                     <GridViewColumn CellTemplate="{StaticResource LogLevelImagesDataTemplate}" Width="90" HeaderContainerStyle="{StaticResource LogLevelHeaderTemplate}"/>
                     <GridViewColumn Header="{localization:LocBinding Time}" Width="Auto" DisplayMemberBinding="{Binding Time, Converter={StaticResource DataConverter}}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
                     <GridViewColumn Width="{Binding Path=ThreadColumnWidth}" Header="{localization:LocBinding Thread}" DisplayMemberBinding="{Binding Thread}" HeaderContainerStyle="{StaticResource BaseGridViewColumnHeaderStyle}"/>
@@ -300,9 +300,9 @@
             </ListView.View>
             <ListView.InputBindings>
                 <KeyBinding Key="C" Modifiers="Control" Command="{Binding Path=CopyLogCommand}"/>
-                <KeyBinding Key="B" Modifiers="Control" Command="{Binding Path=ToggleBookmarkCommand}"/>
-                <KeyBinding Key="W" Modifiers="Control" Command="{Binding Path=FindNextWarningCommand}"/>
-                <KeyBinding Key="E" Modifiers="Control" Command="{Binding Path=FindNextErrorCommand}"/>
+                <KeyBinding Key="B" Modifiers="Control" Command="{Binding Path=Bookmarks.ToggleBookmarkCommand}"/>
+                <KeyBinding Key="W" Modifiers="Control" Command="{Binding Path=Search.FindNextWarningCommand}"/>
+                <KeyBinding Key="E" Modifiers="Control" Command="{Binding Path=Search.FindNextErrorCommand}"/>
             </ListView.InputBindings>
         </ListView>
 
@@ -310,14 +310,14 @@
                      VerticalAlignment="Center" HorizontalAlignment="Center" IsIndeterminate="True" 
                      Visibility="{Binding Path=IsVisibleLoader, Converter={StaticResource BooleanToVisibility}}"/>
 
-            <ProgressBar Grid.Row="0" Height="10" VerticalAlignment="Bottom" Value="{Binding ProcessBarValue}" Visibility="{Binding IsVisibleProcessBar, Converter={StaticResource BooleanToVisibility}}" Maximum="100"/>
+            <ProgressBar Grid.Row="0" Height="10" VerticalAlignment="Bottom" Value="{Binding Import.ProcessBarValue}" Visibility="{Binding Import.IsVisibleProcessBar, Converter={StaticResource BooleanToVisibility}}" Maximum="100"/>
 
-            <StackPanel Grid.Row="1" Visibility="{Binding Path=IsErrorTimelineVisible, Converter={StaticResource BooleanToVisibility}}">
+            <StackPanel Grid.Row="1" Visibility="{Binding Path=Timeline.IsErrorTimelineVisible, Converter={StaticResource BooleanToVisibility}}">
                 <Border Height="1" Background="Gray" Margin="0,2,0,0"/>
                 <helpers:ErrorTimelineControl Margin="0,3,0,0"
-                                              Items="{Binding Path=ErrorTimelineBuckets}"
-                                              NavigateCommand="{Binding Path=JumpToTimelineBucketCommand}"
-                                              BucketCountChangedCommand="{Binding Path=SetErrorTimelineBucketCountCommand}"
+                                              Items="{Binding Path=Timeline.ErrorTimelineBuckets}"
+                                              NavigateCommand="{Binding Path=Timeline.JumpToTimelineBucketCommand}"
+                                              BucketCountChangedCommand="{Binding Path=Timeline.SetErrorTimelineBucketCountCommand}"
                                               ToolTip="{localization:LocBinding ErrorTimelineHint}"/>
             </StackPanel>
         </Grid>

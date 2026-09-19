@@ -9,19 +9,19 @@ using LogViewer.Enums;
 namespace LogViewer.MVVM.Models
 {
     /// <summary>
-    /// Информация о параметре шаблона
+    /// Template parameter info.
     /// </summary>
     [Serializable]
     [DataContract]
     public class LogTemplateItemInfo
     {
         /// <summary>
-        /// Параметр
+        /// Parameter.
         /// </summary>
         public eImportTemplateParameters Parameter { get; set; }
 
         /// <summary>
-        /// Группа параметра
+        /// Parameter group.
         /// </summary>
         public string Group { get; set; }
     }

@@ -26,7 +26,7 @@ namespace LogViewer.MVVM.TreeView
             {
                 this.IsExpanded = Parent.IsExpanded;
 
-                // Формируем путь к классу из предыдущих веток дерева
+                // Build the logger path from ancestor tree nodes.
                 Logger = Parent.Logger + "." + Text;
 
                 if(!string.IsNullOrEmpty(Parent.Source))
@@ -58,7 +58,7 @@ namespace LogViewer.MVVM.TreeView
         }
 
         /// <summary>
-        /// Текст чекбокса
+        /// Checkbox label.
         /// </summary>
         public string Text
         {
@@ -71,17 +71,17 @@ namespace LogViewer.MVVM.TreeView
         }
 
         /// <summary>
-        /// Хранит в себе полный путь к классу
+        /// Full logger path.
         /// </summary>
         public string Logger { get; set; }
 
         /// <summary>
-        /// Является ли корнем дерева
+        /// Whether this is the tree root.
         /// </summary>
         public bool IsRoot { get; set; }
 
         /// <summary>
-        /// Развернуто ли в дереве
+        /// Whether the node is expanded.
         /// </summary>
         public bool IsExpanded
         {
@@ -96,7 +96,7 @@ namespace LogViewer.MVVM.TreeView
         private bool isVisible = true;
 
         /// <summary>
-        /// Видимость элемента дерева
+        /// Tree item visibility.
         /// </summary>
         public bool IsVisible
         {
@@ -109,7 +109,7 @@ namespace LogViewer.MVVM.TreeView
         }
 
         /// <summary>
-        /// Источник сообщения (IP или название файла)
+        /// Message source (IP or file name).
         /// </summary>
         public string Source
         {
@@ -176,7 +176,7 @@ namespace LogViewer.MVVM.TreeView
         }
 
         /// <summary>
-        /// Для отображения элемента как выбранного
+        /// Marks the node as selected in the tree.
         /// </summary>
         public bool IsSelected
         {

@@ -86,9 +86,9 @@ namespace LogViewer.Helpers
         }
 
         /// <summary>
-        /// Содержит любое значение из передаваемого массива
+        /// True if the string contains any value from the array.
         /// </summary>
-        /// <param name="line">Строка, в которой ищутся значения массива</param>
+        /// <param name="line">The string to search.</param>
         /// <param name="search"></param>
         /// <returns></returns>
         public static bool ContainsAnyOf(this String line, string[] search, bool ignoreCase = false)
@@ -101,20 +101,6 @@ namespace LogViewer.Helpers
             if (timeSpan == TimeSpan.Zero) return dateTime; // Or could throw an ArgumentException
             if (dateTime == DateTime.MinValue || dateTime == DateTime.MaxValue) return dateTime; // do not modify "guard" values
             return dateTime.AddTicks(-(dateTime.Ticks % timeSpan.Ticks));
-        }
-
-        /// <summary>
-        /// Фильтр списка UI-сообщений той же функцией совпадения, что и Core (<see cref="LogViewer.Core.Services.SearchMatcher"/>).
-        /// </summary>
-        public static IEnumerable<LogMessage> Filter(this IEnumerable<LogMessage> messages, string text, bool matchCase, bool matchWholeWord, bool useRegularExp, eLogLevel level = eLogLevel.Trace)
-        {
-            var matcher = LogViewer.Core.Services.SearchMatcher.Create(text, matchCase, useRegularExp, matchWholeWord);
-            if (matcher.IsPatternInvalid || matcher.IsEmpty)
-                return Enumerable.Empty<LogMessage>();
-
-            return messages.Where(x =>
-                level.HasFlag(x.Level)
-                && LogViewer.Core.Services.LogFilter.MatchesSearch(LogViewer.Adapters.LogEntryConverter.ToLogEntry(x), matcher));
         }
 
         public static string ToPascalCase(this string text)

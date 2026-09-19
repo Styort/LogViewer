@@ -39,7 +39,7 @@ namespace LogViewer.MVVM.Views
             dataView.Refresh();
         }
 
-        #region Сортировка по нажатию на заголовок таблицы
+        #region Sort on column header click
 
         private GridViewColumnHeader lastHeaderClicked;
         private ListSortDirection lastDirection = ListSortDirection.Descending;

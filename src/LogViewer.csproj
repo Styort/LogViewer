@@ -182,11 +182,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Adapters\CoreToUiAdapter.cs" />
-    <Compile Include="Adapters\UiLogEntryBatcher.cs" />
     <Compile Include="Adapters\LogEntryConverter.cs" />
+    <Compile Include="Adapters\LogEntryProjector.cs" />
     <Compile Include="Adapters\LogTemplateAdapter.cs" />
     <Compile Include="Adapters\ReceiverConfigAdapter.cs" />
     <Compile Include="Factories\UdpSourceFactory.cs" />
+    <Compile Include="Factories\LogViewModelFactory.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Converters\DataConverter.cs" />
     <Compile Include="Converters\ProgressStateConverter.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Converters\MaxLengthConverter.cs" />
     <Compile Include="Enums\eImportTemplateParameters.cs" />
     <Compile Include="Enums\eLogLevel.cs" />
+    <Compile Include="Helpers\BindingErrorTraceListener.cs" />
     <Compile Include="Helpers\ArchiveLogExtractor.cs" />
     <Compile Include="Helpers\LoggerStatistics.cs" />
     <Compile Include="Helpers\ErrorTimelineBuilder.cs" />
@@ -214,7 +216,6 @@
     <Compile Include="Localization\LocBinding.cs" />
     <Compile Include="Localization\TranslationSource.cs" />
     <Compile Include="MVVM\Commands\RelayCommand.cs" />
-    <Compile Include="Helpers\FileWatcher.cs" />
     <Compile Include="MVVM\Models\ImportLogFile.cs" />
     <Compile Include="MVVM\Models\WatchedFileInfo.cs" />
     <Compile Include="MVVM\Models\LogTemplate.cs" />
@@ -310,6 +311,30 @@
     </Compile>
     <Compile Include="MVVM\ViewModels\BaseViewModel.cs" />
     <Compile Include="MVVM\ViewModels\LogViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\LogViewState.cs" />
+    <Compile Include="MVVM\ViewModels\Log\FilterCoordinator.cs" />
+    <Compile Include="MVVM\ViewModels\Log\ReceiversViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\ErrorTimelineViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\BookmarksViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\ImportViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\SearchViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\LogSessionPresenter.cs" />
+    <Compile Include="MVVM\ViewModels\Log\SettingsChangeApplier.cs" />
+    <Compile Include="MVVM\ViewModels\Log\LoggerTreeViewModel.cs" />
+    <Compile Include="Services\IAppSettings.cs" />
+    <Compile Include="Services\IClipboardService.cs" />
+    <Compile Include="Services\IDialogService.cs" />
+    <Compile Include="Services\IFileDialogService.cs" />
+    <Compile Include="Services\IUiTimer.cs" />
+    <Compile Include="Services\IResettable.cs" />
+    <Compile Include="Services\LogFileWatchService.cs" />
+    <Compile Include="Services\LoggerTreeBuilder.cs" />
+    <Compile Include="Services\LoggerTreeMarker.cs" />
+    <Compile Include="Services\Wpf\WpfAppSettings.cs" />
+    <Compile Include="Services\Wpf\WpfClipboardService.cs" />
+    <Compile Include="Services\Wpf\WpfDialogService.cs" />
+    <Compile Include="Services\Wpf\WpfFileDialogService.cs" />
+    <Compile Include="Services\Wpf\DispatcherUiTimer.cs" />
     <Compile Include="MVVM\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

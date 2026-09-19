@@ -10,34 +10,34 @@ namespace LogViewer.MVVM.Models
     public class LogMessage : BaseViewModel, ICloneable
     {
         /// <summary>
-        /// Время получения лога
+        /// Time the log was received.
         /// </summary>
         public DateTime Time { get; set; }
 
         /// <summary>
-        /// Уроверь лога
+        /// Log level.
         /// </summary>
         public eLogLevel Level { get; set; }
 
         /// <summary>
-        /// Класс, из которого пришло сообщение
+        /// Logger / class the message came from.
         /// </summary>
         public string Logger { get; set; }
 
         /// <summary>
-        /// Номер потока
+        /// Thread id.
         /// </summary>
         public int Thread { get; set; }
 
         /// <summary>
-        /// Сообщение
+        /// Message text.
         /// </summary>
         public string Message { get; set; }
 
         public string ExecutableName { get; set; }
 
         /// <summary>
-        /// IP-Адрес устройства, с которого пришло сообщение
+        /// IP address of the device that sent the message.
         /// </summary>
         public string Address { get; set; }
 
@@ -54,18 +54,18 @@ namespace LogViewer.MVVM.Models
         public int? ProcessID { get; set; }
 
         /// <summary>
-        /// Текст исключения из XML (не часть Message). Пустая строка, если элемента не было.
+        /// Exception text from XML (not part of Message). Empty string if the element was absent.
         /// </summary>
         public string Throwable { get; set; }
 
         /// <summary>
-        /// MDC/свойства события. Никогда не null; в панели деталей не показываются.
+        /// MDC/event properties. Never null; not shown in the details pane.
         /// </summary>
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
-        /// Текст панели деталей и копирования: Message, затем Throwable с новой строки — как раньше визуально.
-        /// В самом Message throwable не хранится (поиск/группировка).
+        /// Details pane and copy text: Message, then Throwable on a new line — same visual as before.
+        /// Throwable is not stored inside Message (search/grouping).
         /// </summary>
         public string MessageWithThrowable => LogExportText.JoinMessageAndThrowable(Message, Throwable);
 

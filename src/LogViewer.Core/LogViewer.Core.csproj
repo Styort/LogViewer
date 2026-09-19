@@ -58,8 +58,13 @@
     <Compile Include="Services\UdpLogSource.cs" />
     <Compile Include="Services\FileLogSource.cs" />
     <Compile Include="Services\LogProcessingService.cs" />
+    <Compile Include="Services\LogEntryBatcher.cs" />
     <Compile Include="Services\LogImportService.cs" />
+    <Compile Include="Services\LogQueryService.cs" />
+    <Compile Include="Services\ErrorTimelineBuilder.cs" />
     <Compile Include="State\LogSession.cs" />
+    <Compile Include="State\LoggerFilterState.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

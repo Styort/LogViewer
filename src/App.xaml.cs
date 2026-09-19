@@ -122,9 +122,15 @@ namespace LogViewer
 
             base.OnStartup(e);
 
+#if DEBUG
+            // WPF does not validate bindings at compile time; without this a broken Path after the VM split stays silent.
+            PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Warning;
+            PresentationTraceSources.DataBindingSource.Listeners.Add(new BindingErrorTraceListener());
+#endif
+
             Task.Run(() =>
             {
-                // даем время прогрузиться окну
+                // give the window time to load
                 Thread.Sleep(5000);
                 UpdateManager.StartCheckUpdate();
             });

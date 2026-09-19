@@ -14,8 +14,8 @@ using NLog;
 namespace LogViewer.Localization
 {
     /// <summary>
-    /// Синглтон, который предоставляет источник данных для биндинга локализованных данных
-    /// Язык по умолчанию - русский
+    /// Singleton that provides localized values for bindings.
+    /// Default language is Russian.
     /// </summary>
     public class TranslationSource : INotifyPropertyChanged
     {
@@ -27,12 +27,12 @@ namespace LogViewer.Localization
         public List<CultureInfo> AvaiableCultures { get; set; }
 
         /// <summary>
-        /// Экземпляр синглтона
+        /// Singleton instance.
         /// </summary>
         public static TranslationSource Instance { get; } = new TranslationSource();
 
         /// <summary>
-        /// Возвращает экземпляр источника данных с путём подключения 
+        /// Creates the translation source and loads available cultures. 
         /// </summary>
         public TranslationSource()
         {
@@ -45,7 +45,7 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Возвращает и устанавливает текущую культуру с одновременным переключением культуры текущего потока
+        /// Gets or sets the current culture and switches the current thread culture.
         /// </summary>
         public CultureInfo CurrentCulture
         {
@@ -65,10 +65,10 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Возвращает локализованное значение в текущей культуре для переданного тега
+        /// Returns the localized value for the given key in the current culture.
         /// </summary>
-        /// <param name="key">Тег для поиска значения</param>
-        /// <returns>Локализованное значение</returns>
+        /// <param name="key">Resource key.</param>
+        /// <returns>Localized value.</returns>
         public Object this[string key]
         {
             get
@@ -82,11 +82,11 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Возвращает локализованное в указанной культуре значение, соответствующее указанному ключу
+        /// Returns the value for the key in the specified culture.
         /// </summary>
-        /// <param name="key">Ключ для поиска значений</param>
-        /// <param name="culture">Культура, в которой искать</param>
-        /// <returns>Локализованное для данной культуры значение</returns>
+        /// <param name="key">Resource key.</param>
+        /// <param name="culture">Culture to look up.</param>
+        /// <returns>Value localized for that culture.</returns>
         public Object GetLocalizedValue(String key, String culture)
         {
             logger.Debug($"GetLocalizedValue key: {key}, culture: {culture}");
@@ -114,9 +114,9 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Возвращает словарь флагов доступных культур
+        /// Returns a dictionary of flags for available cultures.
         /// </summary>
-        /// <returns>Словарь культур и соответствующих флагов</returns>
+        /// <returns>Cultures and their flags.</returns>
         public Dictionary<CultureInfo, Bitmap> GetAvaiableCulturesFlags()
         {
             Dictionary<CultureInfo, Bitmap> result = new Dictionary<CultureInfo, Bitmap>();
@@ -130,9 +130,9 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Получить доступные языки, для которых поддерживается перевод в ресурсах
+        /// Languages that have a translation in resources.
         /// </summary>
-        /// <returns>Поддерживаемые языки</returns>
+        /// <returns>Supported languages.</returns>
         private List<CultureInfo> GetAvaiableCultures()
         {
             List<CultureInfo> avaiableCultures = new List<CultureInfo>();
@@ -142,12 +142,12 @@ namespace LogViewer.Localization
             {
                 try
                 {
-                    if (culture.Equals(CultureInfo.InvariantCulture)) continue; //Пропускаем InvariantCulture
+                    if (culture.Equals(CultureInfo.InvariantCulture)) continue; // skip InvariantCulture
 
                     ResourceSet resourceSet = resManager.GetResourceSet(culture, true, false);
-                    if (resourceSet != null) // Нашли ресурсы для языка
+                    if (resourceSet != null) // found resources for this language
                     {
-                        //Делаем копию, чтобы поменять паттерн для вывода времени
+                        // clone so we can change the date/time pattern
                         CultureInfo cultureClone = (CultureInfo) culture.Clone();
 
                         string uiCultureDateTimePattern = resManager.GetObject("UICultureDateTimePattern", culture)
@@ -155,10 +155,10 @@ namespace LogViewer.Localization
                         if (!string.IsNullOrEmpty(uiCultureDateTimePattern))
                         {
                             cultureClone.DateTimeFormat.FullDateTimePattern =
-                                uiCultureDateTimePattern; //Применяем паттерн времени
+                                uiCultureDateTimePattern; // apply the date/time pattern
                         }
 
-                        avaiableCultures.Add(cultureClone); // Добавляем в поддерживаемые языки
+                        avaiableCultures.Add(cultureClone); // add to supported languages
                     }
                 }
                 catch (Exception ex)
@@ -167,18 +167,18 @@ namespace LogViewer.Localization
                 }
             }
 
-            //Сортировка для отображения в порядке приоритета. Задается в ресурсах. 
-            //Сортировка по имени будет автоматически (CultureInfo.GetCultures(CultureTypes.AllCultures) - вывод список отсортированный по алфавиту)
+            //Sort for display in priority order. Priority is defined in resources. 
+            //Sorting by name would happen automatically (CultureInfo.GetCultures returns an alphabetically sorted list)
             avaiableCultures.Sort((x, y) => GetUICulturePriority(x).CompareTo(GetUICulturePriority(y)));
 
             return avaiableCultures;
         }
 
         /// <summary>
-        /// Получить приоритет языка на интерфейсе пользователя
+        /// UI language display priority.
         /// </summary>
-        /// <param name="сultureInfo">Культура языка</param>
-        /// <returns>Приоритет</returns>
+        /// <param name="сultureInfo">Language culture.</param>
+        /// <returns>Priority.</returns>
         private int GetUICulturePriority(CultureInfo сultureInfo)
         {
             int uiCulturePriority;
@@ -189,7 +189,7 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Событие смены языка
+        /// Raised when the UI language changes.
         /// </summary>
         public event EventHandler<LanguageEventArgs> LanguageChanged;
 
@@ -199,17 +199,17 @@ namespace LogViewer.Localization
             handler?.Invoke(this, new LanguageEventArgs(cultureInfo));
         }
 
-        #region Реализация INotifyPropertyChanged
+        #region INotifyPropertyChanged
 
         /// <summary>
-        /// Возникает, когда изменяется какой-нибудь свойство.
+        /// Raised when a property changes.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Возникновение события PropertyChanged.
+        /// Raises PropertyChanged.
         /// </summary>
-        /// <param name="propertyName">Изменяемое свойство.</param>
+        /// <param name="propertyName">Changed property.</param>
         protected virtual void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChangedEventHandler handler = this.PropertyChanged;
@@ -217,15 +217,15 @@ namespace LogViewer.Localization
         }
 
         /// <summary>
-        /// Возникновение события PropertyChanged.
+        /// Raises PropertyChanged.
         /// </summary>
-        /// <param name="propertyName">Изменяемое свойство.</param>
+        /// <param name="propertyName">Changed property.</param>
         protected virtual void RaiseOtherPropertyChanged(string propertyName)
         {
             PropertyChangedEventHandler handler = this.PropertyChanged;
             handler?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #endregion Реализация INotifyPropertyChanged
+        #endregion INotifyPropertyChanged
     }
 }

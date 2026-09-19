@@ -1,7 +1,7 @@
 ﻿namespace LogViewer.MVVM.TreeView
 {
     /// <summary>
-    /// Хранит в себе ID нажатого в определенный момент чек-бокса
+    /// Holds the id of the checkbox that was just clicked.
     /// </summary>
     public struct CheckBoxId
     {

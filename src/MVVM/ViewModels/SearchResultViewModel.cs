@@ -13,7 +13,7 @@ namespace LogViewer.MVVM.ViewModels
         public ObservableCollection<LogMessage> SearchResult { get; set; } = new ObservableCollection<LogMessage>();
 
         /// <summary>
-        /// Выбранный лог
+        /// Selected log.
         /// </summary>
         public LogMessage SelectedLog
         {
@@ -26,12 +26,12 @@ namespace LogViewer.MVVM.ViewModels
         }
 
         /// <summary>
-        /// Подсвечиваемый текст
+        /// Text to highlight.
         /// </summary>
         public string HighlightSearchText { get; set; }
 
         /// <summary>
-        /// Учитывать регистр
+        /// Match case.
         /// </summary>
         public bool IsMatchCase { get; set; }
 
@@ -48,7 +48,7 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand CopyMessageCommand => copyMessageCommand ?? (copyMessageCommand = new RelayCommand(CopyMessage));
 
         /// <summary>
-        /// Копирует сообщение и throwable (как в основном окне), чтобы stack не терялся после выноса из Message.
+        /// Copies message and throwable (same as the main window) so the stack is not lost after being split from Message.
         /// </summary>
         private void CopyMessage()
         {

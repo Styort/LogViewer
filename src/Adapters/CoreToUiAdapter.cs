@@ -12,7 +12,7 @@ namespace LogViewer.Adapters
     /// </summary>
     /// <remarks>
     /// EntryProcessed from Core still arrives on the receive thread. Those notifications are queued
-    /// and flushed in batches (see <see cref="UiLogEntryBatcher"/>) so a UDP storm does not Post
+    /// and flushed in batches (see <see cref="LogEntryBatcher"/>) so a UDP storm does not Post
     /// once per packet. SessionCleared / EntriesRemoved / FilteredViewUpdated stay one-shot on the UI
     /// thread, but pending batches are flushed or discarded first so add-then-trim order is preserved
     /// and Clear never paints entries Core already dropped.
@@ -21,14 +21,14 @@ namespace LogViewer.Adapters
     {
         private readonly SynchronizationContext _uiContext;
         private readonly LogProcessingService _service;
-        private readonly UiLogEntryBatcher _batcher;
+        private readonly LogEntryBatcher _batcher;
         private bool _subscribed;
 
         public CoreToUiAdapter(SynchronizationContext uiContext, LogProcessingService service)
         {
             _uiContext = uiContext ?? throw new ArgumentNullException(nameof(uiContext));
             _service = service ?? throw new ArgumentNullException(nameof(service));
-            _batcher = new UiLogEntryBatcher(PostBatchToUi);
+            _batcher = new LogEntryBatcher(PostBatchToUi);
         }
 
         /// <summary>

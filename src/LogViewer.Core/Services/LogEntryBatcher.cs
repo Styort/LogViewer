@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using LogViewer.Core.Services;
 
-namespace LogViewer.Adapters
+namespace LogViewer.Core.Services
 {
     /// <summary>
-    /// Coalesces per-entry notifications so a UDP burst does not enqueue one Dispatcher.Post per packet.
+    /// Coalesces per-entry notifications so a UDP burst does not enqueue one UI marshal per packet.
     /// The first queued item arms a short timer; reaching <see cref="DefaultFlushThreshold"/> flushes immediately.
     /// </summary>
     /// <remarks>
-    /// Invariant: callers must <see cref="Flush"/> before trim/filter-refresh events so the UI applies
-    /// pending adds first, and <see cref="Discard"/> on session clear so Core-dropped entries never appear.
-    /// Flush invokes the callback outside the queue lock and does not marshal to the UI thread.
-    /// </summary>
-    public sealed class UiLogEntryBatcher : IDisposable
+    /// Lives in Core so flush order can be tested without WPF. The adapter still Posts the snapshot.
+    /// Invariant: callers must <see cref="Flush"/> before trim/filter-refresh events so pending adds apply first,
+    /// and <see cref="Discard"/> on session clear so dropped entries never appear.
+    /// Flush invokes the callback outside the queue lock and does not marshal threads.
+    /// </remarks>
+    public sealed class LogEntryBatcher : IDisposable
     {
         /// <summary>
         /// ~75 ms keeps the list feeling live without flooding the Dispatcher under hundreds of packets/sec.
@@ -36,7 +36,7 @@ namespace LogViewer.Adapters
         private int _epoch;
         private bool _disposed;
 
-        public UiLogEntryBatcher(Action<IReadOnlyList<LogEntryProcessedEventArgs>, int> onFlush,
+        public LogEntryBatcher(Action<IReadOnlyList<LogEntryProcessedEventArgs>, int> onFlush,
             int flushIntervalMs = DefaultFlushIntervalMs,
             int flushThreshold = DefaultFlushThreshold)
         {

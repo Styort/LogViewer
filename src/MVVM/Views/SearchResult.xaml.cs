@@ -29,7 +29,7 @@ namespace LogViewer.MVVM.Views
             ((SearchResultViewModel)DataContext).IsMatchWholeWord = matchWholeWord;
         }
 
-        #region Сортировка по нажатию на заголовок таблицы
+        #region Sort on column header click
 
         GridViewColumnHeader lastHeaderClicked = null;
         ListSortDirection lastDirection = ListSortDirection.Ascending;

@@ -18,7 +18,7 @@ using NLog;
 namespace LogViewer
 {
     /// <summary>
-    /// Управляет загрузкой и установкой обновлений
+    /// Downloads and installs updates.
     /// </summary>
     public static class UpdateManager
     {
@@ -28,7 +28,7 @@ namespace LogViewer
         private static ApplicationDeployment applicationDeployment;
 
         /// <summary>
-        /// Запускает проверку наличия обновлений
+        /// Starts periodic update checks.
         /// </summary>
         public static void StartCheckUpdate()
         {
@@ -48,7 +48,7 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Останавливает проверку на наличие обновлений
+        /// Stops periodic update checks.
         /// </summary>
         public static void StopCheckUpdate()
         {
@@ -57,7 +57,7 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Проверка наличия новых обновлений
+        /// Checks whether a new update is available.
         /// </summary>
         /// <returns></returns>
         public static bool CheckForUpdates()
@@ -81,7 +81,7 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Установить новое обновление
+        /// Install the available update.
         /// </summary>
         public static void InstallNewUpdate()
         {
@@ -115,9 +115,9 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Показывает окно с информацией по обновлению
+        /// Shows the update-available dialog.
         /// </summary>
-        /// <param name="info">Информация по обновлению</param>
+        /// <param name="info">Update details.</param>
         /// <returns></returns>
         private static bool ShowNewUpdateDialog(UpdateCheckInfo info)
         {
@@ -129,7 +129,7 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Проверяет наличие обновлений
+        /// Timer callback that checks for updates.
         /// </summary>
         public static void UpdaterPeriodicProcess(object state)
         {
@@ -171,7 +171,7 @@ namespace LogViewer
         }
 
         /// <summary>
-        /// Выполняет перезагрузку приложения после успешного обновления
+        /// Restarts the ClickOnce app after a successful update.
         /// </summary>
         private static void RestartClickOnceApplication()
         {

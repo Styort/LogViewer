@@ -28,6 +28,7 @@ namespace LogViewer.App.Tests
         public bool IsShowTaskbarProgress => false;
         public bool IsShowErrorTimeline => true;
         public bool ShowMessageHighlightByReceiverColor => false;
+        public List<HighlightRuleItem> HighlightRules { get; } = new List<HighlightRuleItem>();
         public bool IsSeparateIpLoggersByPort => false;
         public bool Save() => true;
     }

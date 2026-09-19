@@ -758,4 +758,61 @@
   <data name="InvalidRegularExpression" xml:space="preserve">
     <value>Некорректное регулярное выражение. Поиск не применяется, пока шаблон не исправлен.</value>
   </data>
+  <data name="HighlightRules" xml:space="preserve">
+    <value>Подсветка</value>
+  </data>
+  <data name="HighlightRulesHeader" xml:space="preserve">
+    <value>Правила подсветки строк</value>
+  </data>
+  <data name="HighlightRulePriorityHint" xml:space="preserve">
+    <value>Первое совпавшее включённое правило задаёт фон. Дальше: метка логгера, затем цвет приёмника. Поиск по тексту — отдельно и не фильтрует список.</value>
+  </data>
+  <data name="HighlightRuleName" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="HighlightRuleEnabled" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="HighlightRuleLevel" xml:space="preserve">
+    <value>Уровень</value>
+  </data>
+  <data name="HighlightRuleAnyLevel" xml:space="preserve">
+    <value>Любой</value>
+  </data>
+  <data name="HighlightRuleLogger" xml:space="preserve">
+    <value>Логгер</value>
+  </data>
+  <data name="HighlightRuleMessage" xml:space="preserve">
+    <value>Сообщение</value>
+  </data>
+  <data name="HighlightRuleLoggerIsRegex" xml:space="preserve">
+    <value>Шаблон логгера — регулярное выражение</value>
+  </data>
+  <data name="HighlightRuleMessageIsRegex" xml:space="preserve">
+    <value>Шаблон сообщения — регулярное выражение</value>
+  </data>
+  <data name="HighlightRuleColor" xml:space="preserve">
+    <value>Цвет фона</value>
+  </data>
+  <data name="HighlightRuleOpacity" xml:space="preserve">
+    <value>Непрозрачность</value>
+  </data>
+  <data name="HighlightRuleOpacityToolTip" xml:space="preserve">
+    <value>100% — сплошная заливка. Меньше значение — бледнее фон, текст строки читается лучше.</value>
+  </data>
+  <data name="HighlightRuleRegex" xml:space="preserve">
+    <value>Regex</value>
+  </data>
+  <data name="HighlightRuleMoveUp" xml:space="preserve">
+    <value>Выше (выше приоритет)</value>
+  </data>
+  <data name="HighlightRuleMoveDown" xml:space="preserve">
+    <value>Ниже (ниже приоритет)</value>
+  </data>
+  <data name="HighlightRuleDefaultName" xml:space="preserve">
+    <value>Новое правило</value>
+  </data>
+  <data name="HighlightRuleInvalidRegex" xml:space="preserve">
+    <value>Некорректное регулярное выражение в поле «{0}». Сохранение отменено, список логов не меняется.</value>
+  </data>
 </root>

@@ -759,4 +759,61 @@ Restart now?</value>
   <data name="InvalidRegularExpression" xml:space="preserve">
     <value>Invalid regular expression. Search is not applied until the pattern is fixed.</value>
   </data>
+  <data name="HighlightRules" xml:space="preserve">
+    <value>Highlight</value>
+  </data>
+  <data name="HighlightRulesHeader" xml:space="preserve">
+    <value>Row highlight rules</value>
+  </data>
+  <data name="HighlightRulePriorityHint" xml:space="preserve">
+    <value>The first matching enabled rule sets the background. Then: logger mark, then receiver color. Search text highlighting is separate and does not filter the list.</value>
+  </data>
+  <data name="HighlightRuleName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="HighlightRuleEnabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="HighlightRuleLevel" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="HighlightRuleAnyLevel" xml:space="preserve">
+    <value>Any</value>
+  </data>
+  <data name="HighlightRuleLogger" xml:space="preserve">
+    <value>Logger</value>
+  </data>
+  <data name="HighlightRuleMessage" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="HighlightRuleLoggerIsRegex" xml:space="preserve">
+    <value>Logger pattern is a regular expression</value>
+  </data>
+  <data name="HighlightRuleMessageIsRegex" xml:space="preserve">
+    <value>Message pattern is a regular expression</value>
+  </data>
+  <data name="HighlightRuleColor" xml:space="preserve">
+    <value>Background color</value>
+  </data>
+  <data name="HighlightRuleOpacity" xml:space="preserve">
+    <value>Opacity</value>
+  </data>
+  <data name="HighlightRuleOpacityToolTip" xml:space="preserve">
+    <value>100% is a solid fill. Lower values fade the background so the row text stays readable.</value>
+  </data>
+  <data name="HighlightRuleRegex" xml:space="preserve">
+    <value>Regex</value>
+  </data>
+  <data name="HighlightRuleMoveUp" xml:space="preserve">
+    <value>Move up (higher priority)</value>
+  </data>
+  <data name="HighlightRuleMoveDown" xml:space="preserve">
+    <value>Move down (lower priority)</value>
+  </data>
+  <data name="HighlightRuleDefaultName" xml:space="preserve">
+    <value>New rule</value>
+  </data>
+  <data name="HighlightRuleInvalidRegex" xml:space="preserve">
+    <value>Invalid regular expression in “{0}”. Save was cancelled; the log list is unchanged.</value>
+  </data>
 </root>

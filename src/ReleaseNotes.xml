@@ -31,6 +31,10 @@
 				<ru>Полоса плотности Warn/Error/Fatal над списком логов: клик по интервалу переходит к первому сообщению</ru>
 				<en>Warn/Error/Fatal density strip above the log list: clicking an interval jumps to the first matching message</en>
 			</Item>
+			<Item>
+				<ru>Правила подсветки строк: постоянный цвет фона по уровню, логгеру или тексту сообщения (подстрока или regex). Настраиваются во вкладке «Подсветка», включаются и выключаются, порядок в списке задаёт приоритет. Можно задать непрозрачность цвета. Правила не фильтруют список и не зависят от текущего поиска.</ru>
+				<en>Row highlight rules: a persistent background color by level, logger, or message text (substring or regex). Configure them on the Highlight settings tab; rules can be enabled or disabled, and list order is priority. Color opacity is adjustable. Rules do not filter the list and are independent of the current search.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

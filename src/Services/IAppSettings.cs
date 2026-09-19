@@ -62,6 +62,12 @@ namespace LogViewer.Services
         bool ShowMessageHighlightByReceiverColor { get; }
 
         /// <summary>
+        /// Persistent row-highlight rules from <c>settings.xml</c>. Empty by default.
+        /// List order is first-match-wins. Does not filter.
+        /// </summary>
+        System.Collections.Generic.List<HighlightRuleItem> HighlightRules { get; }
+
+        /// <summary>
         /// Split loggers for the same IP by receiver port. Otherwise two UDP ports merge into one branch.
         /// </summary>
         bool IsSeparateIpLoggersByPort { get; }

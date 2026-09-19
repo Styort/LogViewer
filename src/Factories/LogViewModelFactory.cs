@@ -37,6 +37,7 @@ namespace LogViewer.Factories
         public LogFileWatchService FileWatch { get; set; }
         public LoggerTreeBuilder TreeBuilder { get; set; }
         public LoggerTreeMarker TreeMarker { get; set; }
+        public RowHighlightApplier HighlightApplier { get; set; }
     }
 
     /// <summary>
@@ -77,10 +78,13 @@ namespace LogViewer.Factories
             var loggerFilter = new LoggerFilterState();
             var viewState = new LogViewState();
             var coordinator = new FilterCoordinator(processing, loggerFilter);
-            var projector = new LogEntryProjector(settings.Receivers, settings);
+            var highlightEngine = new HighlightEngine();
+            var highlightApplier = new RowHighlightApplier(highlightEngine, settings);
+            highlightApplier.ReplaceRules(settings.HighlightRules?.ConvertAll(r => r.ToCore()));
+            var projector = new LogEntryProjector(settings.Receivers, settings, highlightApplier);
             var fileWatch = new LogFileWatchService(processing);
             var treeBuilder = new LoggerTreeBuilder();
-            var treeMarker = new LoggerTreeMarker(viewState, settings);
+            var treeMarker = new LoggerTreeMarker(viewState, settings, highlightApplier);
 
             return new LogViewModelDependencies
             {
@@ -100,7 +104,8 @@ namespace LogViewer.Factories
                 Projector = projector,
                 FileWatch = fileWatch,
                 TreeBuilder = treeBuilder,
-                TreeMarker = treeMarker
+                TreeMarker = treeMarker,
+                HighlightApplier = highlightApplier
             };
         }
     }

@@ -70,6 +70,12 @@ namespace LogViewer.MVVM.Models
         public bool ShowMessageHighlightByReceiverColor { get; set; } = false;
 
         /// <summary>
+        /// Row highlight rules. Empty list = 1.2.8.x look. Serialized under HighlightRules in settings.xml;
+        /// missing element on old files is treated as empty. Order is first-match-wins.
+        /// </summary>
+        public List<HighlightRuleItem> HighlightRules { get; set; } = new List<HighlightRuleItem>();
+
+        /// <summary>
         /// Split IP loggers by port.
         /// </summary>
         public bool IsSeparateIpLoggersByPort { get; set; } = false;
@@ -179,6 +185,7 @@ namespace LogViewer.MVVM.Models
                         Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
                         Instance.IsShowErrorTimeline = settings.IsShowErrorTimeline;
                         Instance.ShowMessageHighlightByReceiverColor = settings.ShowMessageHighlightByReceiverColor;
+                        Instance.HighlightRules = settings.HighlightRules ?? new List<HighlightRuleItem>();
                         Instance.IsSeparateIpLoggersByPort = settings.IsSeparateIpLoggersByPort;
                         Instance.Language = settings.Language;
                     }

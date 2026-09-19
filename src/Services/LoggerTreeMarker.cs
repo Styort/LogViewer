@@ -17,13 +17,14 @@ namespace LogViewer.Services
     {
         private const string TransparentColor = "#00FFFFFF";
         private readonly LogViewState _state;
-        private readonly IAppSettings _settings;
+        private readonly LogViewer.Adapters.RowHighlightApplier _highlight;
         private int _toggledMarksCount;
 
-        public LoggerTreeMarker(LogViewState state, IAppSettings settings)
+        public LoggerTreeMarker(LogViewState state, IAppSettings settings, LogViewer.Adapters.RowHighlightApplier highlight = null)
         {
             _state = state;
-            _settings = settings;
+            _highlight = highlight;
+            _ = settings;
         }
 
         /// <summary>How many marks are currently set. 0 — ApplyExistingMark is a no-op on the hot path.</summary>
@@ -41,24 +42,12 @@ namespace LogViewer.Services
             if (node == null)
                 return;
 
-            var receiverColor = _state.AllLogs.FirstOrDefault(x => x.FullPath == node.Logger)?.Receiver?.Color?.Clone();
             bool isSet = false;
             SolidColorBrush currentColor;
             if (node.ToggleMark.Color.ToString() != TransparentColor)
             {
                 _toggledMarksCount--;
-                if (_settings.ShowMessageHighlightByReceiverColor)
-                {
-                    if (receiverColor != null)
-                    {
-                        receiverColor.Opacity = 0.3;
-                        currentColor = receiverColor;
-                    }
-                    else
-                        currentColor = new SolidColorBrush(Colors.Transparent);
-                }
-                else
-                    currentColor = new SolidColorBrush(Colors.Transparent);
+                currentColor = new SolidColorBrush(Colors.Transparent);
             }
             else
             {
@@ -72,17 +61,24 @@ namespace LogViewer.Services
 
             node.ToggleMark = isSet ? currentColor : new SolidColorBrush(Colors.Transparent);
             // Contains, not equality: a mark on a parent must color descendants (A.B when A is marked).
+            // ToggleMark is only the tree mark; row fill is recomputed (rule > mark > receiver).
             foreach (var logMessage in _state.Logs.Where(x => x.FullPath.Contains(node.Logger)))
-                logMessage.ToggleMark = currentColor;
+                SetMark(logMessage, currentColor);
             foreach (var logMessage in _state.AllLogs.Where(x => x.FullPath.Contains(node.Logger)))
-                logMessage.ToggleMark = currentColor;
+                SetMark(logMessage, currentColor);
         }
 
         /// <summary>A new list row inherits an existing node mark without another Toggle.</summary>
         public void ApplyExistingMark(LogMessage log, Node node)
         {
             if (_toggledMarksCount > 0 && node != null && log != null)
-                log.ToggleMark = node.ToggleMark;
+                SetMark(log, node.ToggleMark);
+        }
+
+        private void SetMark(LogMessage log, SolidColorBrush mark)
+        {
+            log.ToggleMark = mark;
+            _highlight?.Apply(log);
         }
     }
 }

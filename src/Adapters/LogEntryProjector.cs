@@ -15,11 +15,13 @@ namespace LogViewer.Adapters
     {
         private readonly IList<Receiver> _receivers;
         private readonly IAppSettings _settings;
+        private readonly RowHighlightApplier _highlight;
 
-        public LogEntryProjector(IList<Receiver> receivers, IAppSettings settings)
+        public LogEntryProjector(IList<Receiver> receivers, IAppSettings settings, RowHighlightApplier highlight = null)
         {
             _receivers = receivers;
             _settings = settings;
+            _highlight = highlight;
         }
 
         /// <summary>
@@ -35,14 +37,19 @@ namespace LogViewer.Adapters
             {
                 msg.Receiver.Color = rec.Color;
                 msg.Receiver.Name = rec.Name;
-                if (_settings != null && _settings.ShowMessageHighlightByReceiverColor)
-                {
-                    // Keep the wash translucent; opaque Color makes the message text unreadable.
-                    var mc = rec.Color.Clone();
-                    mc.Opacity = 0.1;
-                    msg.ToggleMark = mc;
-                }
             }
+
+            if (_highlight != null)
+                _highlight.Apply(msg);
+            else if (rec != null && _settings != null && _settings.ShowMessageHighlightByReceiverColor)
+            {
+                // Keep the wash translucent; opaque Color makes the message text unreadable.
+                var mc = rec.Color.Clone();
+                mc.Opacity = 0.1;
+                msg.ToggleMark = mc;
+                msg.RowBackground = mc;
+            }
+
             return msg;
         }
     }

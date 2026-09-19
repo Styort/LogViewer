@@ -72,6 +72,7 @@ namespace LogViewer.MVVM.Models
         public Receiver Receiver { get; set; } = new Receiver();
 
         private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
+        private SolidColorBrush rowBackground = new SolidColorBrush(Colors.Transparent);
         private bool hasBookmark;
 
         public SolidColorBrush ToggleMark
@@ -80,7 +81,24 @@ namespace LogViewer.MVVM.Models
             set
             {
                 toggleMark = value;
-                toggleMark.Freeze();
+                if (toggleMark != null && !toggleMark.IsFrozen)
+                    toggleMark.Freeze();
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// ListView row fill. Separate from <see cref="ToggleMark"/> so tree marks survive rule recolor.
+        /// Frozen for virtualization.
+        /// </summary>
+        public SolidColorBrush RowBackground
+        {
+            get => rowBackground;
+            set
+            {
+                rowBackground = value;
+                if (rowBackground != null && !rowBackground.IsFrozen)
+                    rowBackground.Freeze();
                 OnPropertyChanged();
             }
         }
@@ -98,6 +116,7 @@ namespace LogViewer.MVVM.Models
         public LogMessage()
         {
             toggleMark.Freeze();
+            rowBackground.Freeze();
         }
 
         public object Clone()

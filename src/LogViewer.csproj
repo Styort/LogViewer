@@ -184,6 +184,7 @@
     <Compile Include="Adapters\CoreToUiAdapter.cs" />
     <Compile Include="Adapters\LogEntryConverter.cs" />
     <Compile Include="Adapters\LogEntryProjector.cs" />
+    <Compile Include="Adapters\RowHighlightApplier.cs" />
     <Compile Include="Adapters\LogTemplateAdapter.cs" />
     <Compile Include="Adapters\ReceiverConfigAdapter.cs" />
     <Compile Include="Factories\UdpSourceFactory.cs" />
@@ -231,6 +232,7 @@
     </Compile>
     <Compile Include="MVVM\Models\IgnoredIPAddress.cs" />
     <Compile Include="MVVM\Models\LogMessage.cs" />
+    <Compile Include="MVVM\Models\HighlightRuleItem.cs" />
     <Compile Include="MVVM\Models\LogBookmark.cs" />
     <Compile Include="MVVM\Models\ErrorTimelineBucket.cs" />
     <Compile Include="MVVM\Models\LoggerStatItem.cs" />

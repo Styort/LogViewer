@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -41,6 +42,8 @@ namespace LogViewer.MVVM.ViewModels
         private bool isShowErrorTimeline;
         private bool showMessageHighlightByReceiverColor;
         private bool isSeparateIpLoggersByPort;
+        private ObservableCollection<HighlightRuleItem> highlightRules = new ObservableCollection<HighlightRuleItem>();
+        private HighlightRuleItem selectedHighlightRule;
         private string selectedMessageFontFamily = "Consolas";
         private double messageFontSize = 14;
 
@@ -442,6 +445,41 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        public ObservableCollection<HighlightRuleItem> HighlightRules
+        {
+            get => highlightRules;
+            set
+            {
+                highlightRules = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public HighlightRuleItem SelectedHighlightRule
+        {
+            get => selectedHighlightRule;
+            set
+            {
+                selectedHighlightRule = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsHighlightEditorVisible));
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
+        public bool IsHighlightEditorVisible => selectedHighlightRule != null;
+
+        public Dictionary<string, string> HighlightLevelChoices { get; } = new Dictionary<string, string>
+        {
+            { string.Empty, Locals.HighlightRuleAnyLevel },
+            { "Trace", "Trace" },
+            { "Debug", "Debug" },
+            { "Info", "Info" },
+            { "Warn", "Warn" },
+            { "Error", "Error" },
+            { "Fatal", "Fatal" }
+        };
+
         public List<string> MessageFontFamilies { get; } = GetAvailableMessageFontFamilies();
 
         public List<double> MessageFontSizes { get; } = Enumerable.Range(10, 13).Select(x => (double)x).ToList();
@@ -524,6 +562,8 @@ namespace LogViewer.MVVM.ViewModels
                 IsShowErrorTimeline = Settings.Instance.IsShowErrorTimeline;
                 ShowMessageHighlightByReceiverColor = Settings.Instance.ShowMessageHighlightByReceiverColor;
                 IsSeparateIpLoggersByPort = Settings.Instance.IsSeparateIpLoggersByPort;
+                HighlightRules = new ObservableCollection<HighlightRuleItem>(
+                    Settings.Instance.HighlightRules ?? new List<HighlightRuleItem>());
                 SelectedLanguage = TranslationSource.Instance.CurrentCulture;
 
                 var theme = Themes.FirstOrDefault(x => x.Name == Settings.Instance.CurrentTheme.Name);
@@ -547,6 +587,10 @@ namespace LogViewer.MVVM.ViewModels
         private RelayCommand setDefaultColorCommand;
         private RelayCommand showReleaseNotesCommand;
         private RelayCommand checkUpdatesCommand;
+        private RelayCommand addHighlightRuleCommand;
+        private RelayCommand removeHighlightRuleCommand;
+        private RelayCommand moveHighlightRuleUpCommand;
+        private RelayCommand moveHighlightRuleDownCommand;
 
         public RelayCommand AddReceiverCommand => addReceiverCommand ?? (addReceiverCommand = new RelayCommand(AddReceiver));
         public RelayCommand RemoveReceiverCommand => removeReceiverCommand ?? (removeReceiverCommand = new RelayCommand(RemoveReceiver));
@@ -557,6 +601,10 @@ namespace LogViewer.MVVM.ViewModels
         public RelayCommand SetDefaultColorCommand => setDefaultColorCommand ?? (setDefaultColorCommand = new RelayCommand(SetDefaultColor));
         public RelayCommand ShowReleaseNotesCommand => showReleaseNotesCommand ?? (showReleaseNotesCommand = new RelayCommand(ShowReleaseNotes));
         public RelayCommand CheckUpdatesCommand => checkUpdatesCommand ?? (checkUpdatesCommand = new RelayCommand(CheckUpdates));
+        public RelayCommand AddHighlightRuleCommand => addHighlightRuleCommand ?? (addHighlightRuleCommand = new RelayCommand(AddHighlightRule));
+        public RelayCommand RemoveHighlightRuleCommand => removeHighlightRuleCommand ?? (removeHighlightRuleCommand = new RelayCommand(RemoveHighlightRule, _ => SelectedHighlightRule != null));
+        public RelayCommand MoveHighlightRuleUpCommand => moveHighlightRuleUpCommand ?? (moveHighlightRuleUpCommand = new RelayCommand(MoveHighlightRuleUp, CanMoveHighlightRuleUp));
+        public RelayCommand MoveHighlightRuleDownCommand => moveHighlightRuleDownCommand ?? (moveHighlightRuleDownCommand = new RelayCommand(MoveHighlightRuleDown, CanMoveHighlightRuleDown));
 
         #endregion
 
@@ -607,6 +655,19 @@ namespace LogViewer.MVVM.ViewModels
                 return;
             }
 
+            foreach (var rule in HighlightRules)
+            {
+                string field;
+                if (!rule.TryValidateRegex(out field))
+                {
+                    string fieldName = field == nameof(HighlightRuleItem.LoggerPattern)
+                        ? Locals.HighlightRuleLogger
+                        : Locals.HighlightRuleMessage;
+                    MessageBox.Show(string.Format(Locals.HighlightRuleInvalidRegex, fieldName), Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+            }
+
             var window = obj as Views.SettingsWindow;
             if (window == null)
             {
@@ -634,6 +695,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.OnlyOneAppInstance = OnlyOneAppInstance;
             Settings.Instance.Language = SelectedLanguage.Name;
             Settings.Instance.IsSeparateIpLoggersByPort = IsSeparateIpLoggersByPort;
+            Settings.Instance.HighlightRules = HighlightRules.ToList();
 
             if (!string.IsNullOrEmpty(currentThemeName) && SelectedTheme.Name != currentThemeName)
                 Settings.Instance.ApplyTheme();
@@ -641,6 +703,56 @@ namespace LogViewer.MVVM.ViewModels
                 Settings.Instance.ApplyLanguage(SelectedLanguage);
 
             window.DialogResult = Settings.Instance.Save();
+        }
+
+        private void AddHighlightRule(object obj)
+        {
+            var rule = new HighlightRuleItem
+            {
+                Name = Locals.HighlightRuleDefaultName,
+                Enabled = true,
+                ColorArgb = "#4DFF0000"
+            };
+            HighlightRules.Add(rule);
+            SelectedHighlightRule = rule;
+        }
+
+        private void RemoveHighlightRule(object obj)
+        {
+            if (SelectedHighlightRule == null)
+                return;
+            HighlightRules.Remove(SelectedHighlightRule);
+        }
+
+        private bool CanMoveHighlightRuleUp(object obj)
+        {
+            return SelectedHighlightRule != null && HighlightRules.IndexOf(SelectedHighlightRule) > 0;
+        }
+
+        private bool CanMoveHighlightRuleDown(object obj)
+        {
+            if (SelectedHighlightRule == null)
+                return false;
+            int index = HighlightRules.IndexOf(SelectedHighlightRule);
+            return index >= 0 && index < HighlightRules.Count - 1;
+        }
+
+        private void MoveHighlightRuleUp(object obj)
+        {
+            int index = HighlightRules.IndexOf(SelectedHighlightRule);
+            if (index <= 0)
+                return;
+            HighlightRules.Move(index, index - 1);
+            CommandManager.InvalidateRequerySuggested();
+        }
+
+        private void MoveHighlightRuleDown(object obj)
+        {
+            int index = HighlightRules.IndexOf(SelectedHighlightRule);
+            if (index < 0 || index >= HighlightRules.Count - 1)
+                return;
+            HighlightRules.Move(index, index + 1);
+            CommandManager.InvalidateRequerySuggested();
         }
 
         /// <summary>

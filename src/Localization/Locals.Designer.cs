@@ -827,6 +827,120 @@ namespace LogViewer.Localization {
             }
         }
         
+        internal static string HighlightRules {
+            get {
+                return ResourceManager.GetString("HighlightRules", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRulesHeader {
+            get {
+                return ResourceManager.GetString("HighlightRulesHeader", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRulePriorityHint {
+            get {
+                return ResourceManager.GetString("HighlightRulePriorityHint", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleName {
+            get {
+                return ResourceManager.GetString("HighlightRuleName", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleEnabled {
+            get {
+                return ResourceManager.GetString("HighlightRuleEnabled", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleLevel {
+            get {
+                return ResourceManager.GetString("HighlightRuleLevel", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleAnyLevel {
+            get {
+                return ResourceManager.GetString("HighlightRuleAnyLevel", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleLogger {
+            get {
+                return ResourceManager.GetString("HighlightRuleLogger", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleMessage {
+            get {
+                return ResourceManager.GetString("HighlightRuleMessage", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleLoggerIsRegex {
+            get {
+                return ResourceManager.GetString("HighlightRuleLoggerIsRegex", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleMessageIsRegex {
+            get {
+                return ResourceManager.GetString("HighlightRuleMessageIsRegex", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleColor {
+            get {
+                return ResourceManager.GetString("HighlightRuleColor", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleOpacity {
+            get {
+                return ResourceManager.GetString("HighlightRuleOpacity", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleOpacityToolTip {
+            get {
+                return ResourceManager.GetString("HighlightRuleOpacityToolTip", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleRegex {
+            get {
+                return ResourceManager.GetString("HighlightRuleRegex", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleMoveUp {
+            get {
+                return ResourceManager.GetString("HighlightRuleMoveUp", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleMoveDown {
+            get {
+                return ResourceManager.GetString("HighlightRuleMoveDown", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleDefaultName {
+            get {
+                return ResourceManager.GetString("HighlightRuleDefaultName", resourceCulture);
+            }
+        }
+        
+        internal static string HighlightRuleInvalidRegex {
+            get {
+                return ResourceManager.GetString("HighlightRuleInvalidRegex", resourceCulture);
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Некорректное регулярное выражение. Поиск не применяется, пока шаблон не исправлен.
         /// </summary>

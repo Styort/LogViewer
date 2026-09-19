@@ -22,6 +22,7 @@ namespace LogViewer.Services.Wpf
         public bool IsShowTaskbarProgress => Settings.Instance.IsShowTaskbarProgress;
         public bool IsShowErrorTimeline => Settings.Instance.IsShowErrorTimeline;
         public bool ShowMessageHighlightByReceiverColor => Settings.Instance.ShowMessageHighlightByReceiverColor;
+        public System.Collections.Generic.List<HighlightRuleItem> HighlightRules => Settings.Instance.HighlightRules;
         public bool IsSeparateIpLoggersByPort => Settings.Instance.IsSeparateIpLoggersByPort;
         public bool Save() => Settings.Instance.Save();
     }

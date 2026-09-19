@@ -10,7 +10,7 @@
         xmlns:dropDownCustomColorPicker="clr-namespace:DropDownCustomColorPicker;assembly=CustomColorPicker"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding Settings}" Height="740" Width="600" MinHeight="610">
+        Title="{localization:LocBinding Settings}" Height="740" Width="760" MinWidth="720" MinHeight="610">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -33,7 +33,7 @@
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         <TabControl BorderThickness="0">
-            <TabItem Header="{localization:LocBinding General}" Height="25" Width="100">
+            <TabItem Header="{localization:LocBinding General}" Height="25" Width="90">
                 <GroupBox FontSize="16" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <GroupBox.HeaderTemplate>
                         <DataTemplate>
@@ -136,7 +136,7 @@
                     </Grid>
                 </GroupBox>
             </TabItem>
-            <TabItem Header="{localization:LocBinding Receivers}" Height="25" Width="100">
+            <TabItem Header="{localization:LocBinding Receivers}" Height="25" Width="90">
                 <GroupBox FontSize="16" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <GroupBox.HeaderTemplate>
                         <DataTemplate>
@@ -216,7 +216,7 @@
                     </Grid>
                 </GroupBox>
             </TabItem>
-            <TabItem Header="{localization:LocBinding IgnoredList}" Height="25" Width="100">
+            <TabItem Header="{localization:LocBinding IgnoredList}" Height="25" Width="90">
                 <GroupBox Style="{DynamicResource MaterialDesignGroupBox}" FontSize="16" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <GroupBox.HeaderTemplate>
                         <DataTemplate>
@@ -266,7 +266,157 @@
                     </Grid>
                 </GroupBox>
             </TabItem>
-            <TabItem Header="{localization:LocBinding About}" Width="100" Height="25">
+            <TabItem Header="{localization:LocBinding HighlightRules}" Height="25" Width="110">
+                <GroupBox FontSize="16" Style="{DynamicResource MaterialDesignGroupBox}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <GroupBox.HeaderTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{localization:LocBinding HighlightRulesHeader}" FontSize="16" Foreground="{Binding DataContext.FontColor, RelativeSource={RelativeSource AncestorType=Window}}"/>
+                        </DataTemplate>
+                    </GroupBox.HeaderTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="240" MinWidth="200"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.ColumnSpan="2" TextWrapping="Wrap" Margin="8,0,8,8" FontSize="12"
+                                   Text="{localization:LocBinding HighlightRulePriorityHint}"/>
+
+                        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="8,0,8,8">
+                            <Button Foreground="{Binding Path=FontColor}" MinWidth="96" Padding="16,0" Height="32"
+                                    Content="{localization:LocBinding Add}" Margin="0,0,8,0"
+                                    Command="{Binding Path=AddHighlightRuleCommand}"/>
+                            <Button Foreground="{Binding Path=FontColor}" MinWidth="96" Padding="16,0" Height="32"
+                                    Content="{localization:LocBinding Remove}" Margin="0,0,8,0"
+                                    Command="{Binding Path=RemoveHighlightRuleCommand}"/>
+                            <Button Foreground="{Binding Path=FontColor}" MinWidth="40" Padding="0" Height="32" Width="40"
+                                    Content="↑" Margin="0,0,8,0"
+                                    Command="{Binding Path=MoveHighlightRuleUpCommand}"
+                                    ToolTip="{localization:LocBinding HighlightRuleMoveUp}"/>
+                            <Button Foreground="{Binding Path=FontColor}" MinWidth="40" Padding="0" Height="32" Width="40"
+                                    Content="↓"
+                                    Command="{Binding Path=MoveHighlightRuleDownCommand}"
+                                    ToolTip="{localization:LocBinding HighlightRuleMoveDown}"/>
+                        </StackPanel>
+
+                        <ListBox Grid.Row="2" Grid.Column="0" Margin="8,0,8,8"
+                                 HorizontalContentAlignment="Stretch"
+                                 ItemsSource="{Binding Path=HighlightRules}"
+                                 SelectedItem="{Binding Path=SelectedHighlightRule}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Path=Name}" TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <CheckBox Grid.Column="1" IsChecked="{Binding Path=Enabled, Mode=TwoWay}"
+                                                  ToolTip="{localization:LocBinding HighlightRuleEnabled}"
+                                                  VerticalAlignment="Center"/>
+                                    </Grid>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Path=Enabled}" Value="False">
+                                            <Setter Property="ListBoxItem.Opacity" Value="0.5"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <ScrollViewer Grid.Row="2" Grid.Column="1" Margin="8,0,8,8" VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      Visibility="{Binding Path=IsHighlightEditorVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" MinWidth="110"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Text="{localization:LocBinding HighlightRuleName}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Margin="0,0,0,8"
+                                         Text="{Binding Path=SelectedHighlightRule.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <TextBlock Grid.Row="1" Text="{localization:LocBinding HighlightRuleEnabled}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <ToggleButton Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,8"
+                                              IsChecked="{Binding Path=SelectedHighlightRule.Enabled}"/>
+
+                                <TextBlock Grid.Row="2" Text="{localization:LocBinding HighlightRuleLevel}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <ComboBox Grid.Row="2" Grid.Column="1" Margin="0,0,0,8"
+                                          ItemsSource="{Binding Path=HighlightLevelChoices}"
+                                          SelectedValue="{Binding Path=SelectedHighlightRule.Level}"
+                                          SelectedValuePath="Key" DisplayMemberPath="Value"/>
+
+                                <TextBlock Grid.Row="3" Text="{localization:LocBinding HighlightRuleLogger}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <Grid Grid.Row="3" Grid.Column="1" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Path=SelectedHighlightRule.LoggerPattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <CheckBox Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                                              Content="{localization:LocBinding HighlightRuleRegex}"
+                                              IsChecked="{Binding Path=SelectedHighlightRule.LoggerIsRegex}"
+                                              ToolTip="{localization:LocBinding HighlightRuleLoggerIsRegex}"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="4" Text="{localization:LocBinding HighlightRuleMessage}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <Grid Grid.Row="4" Grid.Column="1" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Text="{Binding Path=SelectedHighlightRule.MessagePattern, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <CheckBox Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                                              Content="{localization:LocBinding HighlightRuleRegex}"
+                                              IsChecked="{Binding Path=SelectedHighlightRule.MessageIsRegex}"
+                                              ToolTip="{localization:LocBinding HighlightRuleMessageIsRegex}"/>
+                                </Grid>
+
+                                <TextBlock Grid.Row="5" Text="{localization:LocBinding HighlightRuleColor}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,8"/>
+                                <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Margin="0,0,0,8">
+                                    <dropDownCustomColorPicker:CustomColorPicker Width="50" VerticalAlignment="Center"
+                                        SelectedColor="{Binding Path=SelectedHighlightRule.Color, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                    <Border Width="48" Height="22" Margin="10,0,0,0" VerticalAlignment="Center"
+                                            BorderBrush="Gray" BorderThickness="1"
+                                            Background="{Binding Path=SelectedHighlightRule.Color}"/>
+                                </StackPanel>
+
+                                <TextBlock Grid.Row="6" Text="{localization:LocBinding HighlightRuleOpacity}" VerticalAlignment="Center" FontSize="14" Margin="0,0,12,0"/>
+                                <Grid Grid.Row="6" Grid.Column="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="56"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Slider Minimum="5" Maximum="100" SmallChange="1" LargeChange="10"
+                                            TickFrequency="1" IsSnapToTickEnabled="True"
+                                            VerticalAlignment="Center" Margin="0,0,8,0"
+                                            ToolTip="{localization:LocBinding HighlightRuleOpacityToolTip}"
+                                            Value="{Binding Path=SelectedHighlightRule.OpacityPercent, Mode=TwoWay}"/>
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center"
+                                               Text="{Binding Path=SelectedHighlightRule.OpacityPercent, StringFormat={}{0}%}"/>
+                                </Grid>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+                </GroupBox>
+            </TabItem>
+            <TabItem Header="{localization:LocBinding About}" Width="90" Height="25">
                 <GroupBox Style="{DynamicResource MaterialDesignGroupBox}" FontSize="16" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                     <GroupBox.HeaderTemplate>
                         <DataTemplate>

@@ -31,6 +31,7 @@ namespace LogViewer.MVVM.ViewModels
         private readonly CoreToUiAdapter _adapter;
         private readonly LogSessionPresenter _presenter;
         private readonly SettingsChangeApplier _settingsApplier = new SettingsChangeApplier();
+        private readonly RowHighlightApplier _highlight;
         private readonly IResettable[] _parts;
 
         private bool _cleanIsEnabled;
@@ -65,6 +66,7 @@ namespace LogViewer.MVVM.ViewModels
             _session = d.Session;
             _processing = d.Processing;
             _adapter = d.Adapter;
+            _highlight = d.HighlightApplier;
 
             IconColor = _settings.CurrentTheme.Color;
             FontColor = FontColor.FromARGB(_settings.FontColor);
@@ -200,7 +202,7 @@ namespace LogViewer.MVVM.ViewModels
             {
                 _settingsApplier.Apply(_settings, _state, _session, Receivers, Timeline,
                     v => IsSourceVisible = v, v => IsThreadVisible = v, ApplyMessageDisplaySettings,
-                    b => IconColor = b, b => FontColor = b, IconColor);
+                    b => IconColor = b, b => FontColor = b, IconColor, _highlight);
                 if (isProgress) Receivers.Start();
             }
             else if (isProgress) Receivers.Start();

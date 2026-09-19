@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using LogViewer.Adapters;
 using LogViewer.Core.State;
 using LogViewer.Helpers;
 using LogViewer.MVVM.Models;
@@ -30,7 +31,8 @@ namespace LogViewer.MVVM.ViewModels.Log
             Action applyFonts,
             Action<System.Windows.Media.SolidColorBrush> setIcon,
             Action<System.Windows.Media.SolidColorBrush> setFont,
-            System.Windows.Media.SolidColorBrush currentIcon)
+            System.Windows.Media.SolidColorBrush currentIcon,
+            RowHighlightApplier highlight = null)
         {
             try
             {
@@ -80,6 +82,14 @@ namespace LogViewer.MVVM.ViewModels.Log
 
                 receivers.RecreateUdpSources();
                 receivers.RefreshColorColumnWidthAfterSettings();
+
+                if (highlight != null)
+                {
+                    highlight.ReplaceRules(settings.HighlightRules == null
+                        ? null
+                        : settings.HighlightRules.Select(r => r.ToCore()));
+                    highlight.RecolorAll(state);
+                }
             }
             catch (Exception e)
             {

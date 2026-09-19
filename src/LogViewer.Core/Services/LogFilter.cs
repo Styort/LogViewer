@@ -29,7 +29,7 @@ namespace LogViewer.Core.Services
 
             // Display only. Don't Receive (ExcludedLoggerFullPathsWithBuffer) is applied in
             // FilterCriteria.ShouldStoreInBuffer before the session stores the entry.
-            if (criteria.ExcludedLoggerFullPaths != null && criteria.ExcludedLoggerFullPaths.Contains(entry.FullPath))
+            if (!LoggerIsShown(entry.FullPath, criteria))
                 return false;
 
             bool searchIsConstraining = criteria.IsSearchActive && !criteria.IsSearchPatternInvalid;
@@ -83,6 +83,20 @@ namespace LogViewer.Core.Services
                 _matcherKey = key;
             }
             return _cachedMatcher;
+        }
+
+        private static bool LoggerIsShown(string fullPath, FilterCriteria criteria)
+        {
+            var included = criteria.IncludedLoggerFullPaths;
+            if (included != null && included.Count > 0)
+                return FilterPresetMapper.IsKeptByIncludeOnly(fullPath, included);
+
+            var excluded = criteria.ExcludedLoggerFullPaths;
+            if (excluded == null || excluded.Count == 0)
+                return true;
+            if (string.IsNullOrEmpty(fullPath))
+                return true;
+            return !excluded.Contains(fullPath);
         }
 
         private static bool LevelIncluded(LogLevel minLevel, LogLevel entryLevel)

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using LogViewer.Adapters;
+using LogViewer.Core.Domain;
 using LogViewer.Core.Services;
 using LogViewer.Core.State;
 using LogViewer.MVVM.TreeView;
@@ -42,6 +44,78 @@ namespace LogViewer.App.Tests
 
             env.Tree.DontReceiveThisLoggerCommand.Execute(app);
             Assert.That(env.Coordinator.Loggers.ExcludedWithBufferPaths, Does.Contain("ip.App"));
+        }
+
+        [Test]
+        public void SyncCheckboxesFromExclusions_ChecksIncludedLeavesAndMixesParents()
+        {
+            var env = TreeEnv.Create();
+            env.Tree.SeedAvailableLoggers(new[]
+            {
+                "file.BackgroundTasks.Ping",
+                "file.BackgroundTasks.Ping.PingScheduledService",
+                "file.Core",
+                "file.Core.Navigator",
+                "file.Other"
+            });
+
+            var file = Child(env.Tree.Loggers[0], "file", "file");
+            var pingParent = Child(file, "Ping", "file.BackgroundTasks.Ping");
+            var ping = Child(pingParent, "PingScheduledService", "file.BackgroundTasks.Ping.PingScheduledService");
+            var core = Child(file, "Core", "file.Core");
+            var navigator = Child(core, "Navigator", "file.Core.Navigator");
+            var other = Child(file, "Other", "file.Other");
+            env.Tree.Loggers[0].Children.Add(file);
+            file.Children.Add(pingParent);
+            pingParent.Children.Add(ping);
+            file.Children.Add(core);
+            core.Children.Add(navigator);
+            file.Children.Add(other);
+
+            env.Coordinator.ApplyPreset(new FilterPreset
+            {
+                ExcludedLoggerFullPaths = new List<string>
+                {
+                    "Root",
+                    "file",
+                    "file.BackgroundTasks.Ping",
+                    "file.Core",
+                    "file.Other"
+                }
+            }, System.DateTime.Now, env.Tree.AvailableLoggerPaths);
+
+            env.Tree.SyncCheckboxesFromExclusions();
+
+            Assert.That(ping.IsChecked, Is.True);
+            Assert.That(navigator.IsChecked, Is.True);
+            Assert.That(other.IsChecked, Is.False);
+            Assert.That(file.IsChecked, Is.Null);
+            Assert.That(env.Tree.Loggers[0].IsChecked, Is.Not.False);
+        }
+
+        [Test]
+        public void CollectIncludedRoots_TakesCheckedSubtreesUnderMixedFile()
+        {
+            var env = TreeEnv.Create();
+            const string file = @"C:\Users\styor\Downloads\2026-09-18.txt";
+            var fileNode = Child(env.Tree.Loggers[0], file, file);
+            var security = Child(fileNode, "SecurityLog", file + ".SecurityLog");
+            var securitySvc = Child(security, "SecurityLogService", file + ".SecurityLog.SecurityLogService");
+            var terminal = Child(fileNode, "Terminal", file + ".Terminal");
+            var app = Child(fileNode, "App", file + ".App");
+            env.Tree.Loggers[0].Children.Add(fileNode);
+            fileNode.Children.Add(security);
+            security.Children.Add(securitySvc);
+            fileNode.Children.Add(terminal);
+            fileNode.Children.Add(app);
+
+            app.IsChecked = false;
+            env.Tree.Loggers[0].IsChecked = null;
+            fileNode.IsChecked = null;
+
+            var roots = env.Tree.CollectIncludedRoots();
+            Assert.That(roots.OrderBy(x => x).ToArray(),
+                Is.EqualTo(new[] { "SecurityLog", "Terminal" }));
         }
 
         [Test]

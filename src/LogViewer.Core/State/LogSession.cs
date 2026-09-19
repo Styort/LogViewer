@@ -177,6 +177,7 @@ namespace LogViewer.Core.State
         {
             if (criteria == null) return;
             FilterCriteria.MinLevel = criteria.MinLevel;
+            FilterCriteria.IncludedLoggerFullPaths = new HashSet<string>(criteria.IncludedLoggerFullPaths ?? new HashSet<string>());
             FilterCriteria.ExcludedLoggerFullPaths = new HashSet<string>(criteria.ExcludedLoggerFullPaths ?? new HashSet<string>());
             FilterCriteria.ExcludedLoggerFullPathsWithBuffer = new HashSet<string>(criteria.ExcludedLoggerFullPathsWithBuffer ?? new HashSet<string>());
             FilterCriteria.SearchText = criteria.SearchText ?? string.Empty;

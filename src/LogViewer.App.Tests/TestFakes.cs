@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LogViewer.Core.Domain;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
+using LogViewer.MVVM.ViewModels.Log;
 using LogViewer.Services;
 
 namespace LogViewer.App.Tests
@@ -56,6 +57,17 @@ namespace LogViewer.App.Tests
         public void ShowOrActivateLoggerStatistics(LoggerStatisticsViewModel viewModel, Action<LogMessage> showLog) { }
         public void ShowOrActivateBookmarks(BookmarkListViewModel viewModel) { }
         public bool? ShowSettings() => false;
+        public bool Confirm(string message, string caption = null) => ConfirmResult;
+        public bool TryPromptText(string title, string prompt, string initial, out string text)
+        {
+            text = PromptTextToReturn;
+            return PromptTextResult;
+        }
+        public void ShowFilterPresets(FilterPresetsViewModel viewModel) { }
+
+        public bool ConfirmResult = true;
+        public string PromptTextToReturn = "Payments errors";
+        public bool PromptTextResult = true;
     }
 
     internal sealed class FakeFiles : IFileDialogService

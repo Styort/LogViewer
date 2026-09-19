@@ -2058,5 +2058,119 @@ namespace LogViewer.Localization {
                 return ResourceManager.GetString("Version", resourceCulture);
             }
         }
+        
+        internal static string FilterPresets {
+            get {
+                return ResourceManager.GetString("FilterPresets", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetsToolTip {
+            get {
+                return ResourceManager.GetString("FilterPresetsToolTip", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetApply {
+            get {
+                return ResourceManager.GetString("FilterPresetApply", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetSaveAs {
+            get {
+                return ResourceManager.GetString("FilterPresetSaveAs", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetDelete {
+            get {
+                return ResourceManager.GetString("FilterPresetDelete", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetRename {
+            get {
+                return ResourceManager.GetString("FilterPresetRename", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetName {
+            get {
+                return ResourceManager.GetString("FilterPresetName", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetEmptyName {
+            get {
+                return ResourceManager.GetString("FilterPresetEmptyName", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetOverwrite {
+            get {
+                return ResourceManager.GetString("FilterPresetOverwrite", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetSaveTitle {
+            get {
+                return ResourceManager.GetString("FilterPresetSaveTitle", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetRenameTitle {
+            get {
+                return ResourceManager.GetString("FilterPresetRenameTitle", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetTimeLeaveUnchanged {
+            get {
+                return ResourceManager.GetString("FilterPresetTimeLeaveUnchanged", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetTimeAbsolute {
+            get {
+                return ResourceManager.GetString("FilterPresetTimeAbsolute", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetTimeRelative {
+            get {
+                return ResourceManager.GetString("FilterPresetTimeRelative", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetRelativeMinutes {
+            get {
+                return ResourceManager.GetString("FilterPresetRelativeMinutes", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetDeleteConfirm {
+            get {
+                return ResourceManager.GetString("FilterPresetDeleteConfirm", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetsDescription {
+            get {
+                return ResourceManager.GetString("FilterPresetsDescription", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetsHint {
+            get {
+                return ResourceManager.GetString("FilterPresetsHint", resourceCulture);
+            }
+        }
+        
+        internal static string FilterPresetsHelpToolTip {
+            get {
+                return ResourceManager.GetString("FilterPresetsHelpToolTip", resourceCulture);
+            }
+        }
     }
 }

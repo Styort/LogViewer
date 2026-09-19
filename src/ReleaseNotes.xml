@@ -35,6 +35,10 @@
 				<ru>Правила подсветки строк: постоянный цвет фона по уровню, логгеру или тексту сообщения (подстрока или regex). Настраиваются во вкладке «Подсветка», включаются и выключаются, порядок в списке задаёт приоритет. Можно задать непрозрачность цвета. Правила не фильтруют список и не зависят от текущего поиска.</ru>
 				<en>Row highlight rules: a persistent background color by level, logger, or message text (substring or regex). Configure them on the Highlight settings tab; rules can be enabled or disabled, and list order is priority. Color opacity is adjustable. Rules do not filter the list and are independent of the current search.</en>
 			</Item>
+			<Item>
+				<ru>Сохранённые пресеты фильтра: именованный набор уровня, поиска и выбранных логгеров. Открываются иконкой в шапке окна, применяются одной командой, хранятся в filter_presets.xml рядом с настройками. Не сохраняют сами логи, закладки и Don't Receive.</ru>
+				<en>Saved filter presets: a named set of min level, search, and selected loggers. Open them from the toolbar icon, apply in one step; they are stored in filter_presets.xml next to settings. Presets do not save log rows, bookmarks, or Don't Receive.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

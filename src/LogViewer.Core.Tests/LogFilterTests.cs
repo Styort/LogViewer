@@ -82,6 +82,21 @@ namespace LogViewer.Core.Tests
             Assert.That(filter.ShouldInclude(entry, criteria), Is.False);
         }
 
+        [Test]
+        public void IncludeOnly_HidesLoggersOutsideSelectedRoots()
+        {
+            var filter = new LogFilter();
+            const string file = @"C:\Users\styor\Downloads\2026-09-18.txt";
+            var criteria = new FilterCriteria();
+            criteria.IncludedLoggerFullPaths.Add("SecurityLog");
+            criteria.IncludedLoggerFullPaths.Add("Terminal");
+
+            Assert.That(filter.ShouldInclude(new LogEntry { Address = file, Logger = "SecurityLog", Message = "a", Level = LogLevel.Info }, criteria), Is.True);
+            Assert.That(filter.ShouldInclude(new LogEntry { Address = file, Logger = "SecurityLog.SecurityLogService", Message = "a", Level = LogLevel.Info }, criteria), Is.True);
+            Assert.That(filter.ShouldInclude(new LogEntry { Address = file, Logger = "Terminal", Message = "a", Level = LogLevel.Info }, criteria), Is.True);
+            Assert.That(filter.ShouldInclude(new LogEntry { Address = file, Logger = "App", Message = "a", Level = LogLevel.Info }, criteria), Is.False);
+        }
+
         private static LogEntry Entry(LogLevel level, string message, DateTime? time = null, string logger = "App")
         {
             return new LogEntry

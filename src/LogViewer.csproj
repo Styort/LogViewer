@@ -270,6 +270,12 @@
     <Compile Include="MVVM\Views\BookmarkCommentDialog.xaml.cs">
       <DependentUpon>BookmarkCommentDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MVVM\Views\InputTextDialog.xaml.cs">
+      <DependentUpon>InputTextDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\Views\FilterPresetsWindow.xaml.cs">
+      <DependentUpon>FilterPresetsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\Views\BookmarkListWindow.xaml.cs">
       <DependentUpon>BookmarkListWindow.xaml</DependentUpon>
     </Compile>
@@ -323,6 +329,7 @@
     <Compile Include="MVVM\ViewModels\Log\LogSessionPresenter.cs" />
     <Compile Include="MVVM\ViewModels\Log\SettingsChangeApplier.cs" />
     <Compile Include="MVVM\ViewModels\Log\LoggerTreeViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\FilterPresetsViewModel.cs" />
     <Compile Include="Services\IAppSettings.cs" />
     <Compile Include="Services\IClipboardService.cs" />
     <Compile Include="Services\IDialogService.cs" />
@@ -350,6 +357,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\Views\BookmarkCommentDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\InputTextDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\FilterPresetsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

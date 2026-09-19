@@ -240,8 +240,11 @@ namespace LogViewer.MVVM.ViewModels.Log
 
             Node currentParent = GetParentFromFullPath(root, log.Logger, log.ExecutableName);
 
-            if (Loggers[0].IsChecked.HasValue && !Loggers[0].IsChecked.Value ||
-                currentParent.IsChecked.HasValue && !currentParent.IsChecked.Value || !currentParent.IsChecked.HasValue)
+            bool parentHidden = Loggers[0].IsChecked.HasValue && !Loggers[0].IsChecked.Value ||
+                currentParent.IsChecked.HasValue && !currentParent.IsChecked.Value || !currentParent.IsChecked.HasValue;
+            // Preset / Show only may name a logger that is not in the tree yet — hide it when it first appears.
+            bool presetHidden = _filter.Loggers.ShouldHideNewLogger(log.FullPath);
+            if (parentHidden || presetHidden)
             {
                 // Parent is hidden: the new logger must not appear in the list (or in the buffer if Don't Receive).
                 _filter.Loggers.Exclude(log.FullPath);
@@ -285,6 +288,143 @@ namespace LogViewer.MVVM.ViewModels.Log
                 prevParent.Children.Add(newNode);
                 parent = newNode;
             }
+
+            if (parent != null && (parentHidden || presetHidden))
+                parent.IsChecked = false;
+        }
+
+        /// <summary>
+        /// Highest checked FullPaths in the WPF tree: a node is a root when it is checked and its
+        /// parent is mixed or unchecked. Empty when Root is fully checked (show every logger).
+        /// </summary>
+        public List<string> CollectIncludedRoots()
+        {
+            var result = new List<string>();
+            if (Loggers.Count == 0)
+                return result;
+            var root = Loggers[0];
+            if (root.IsChecked == true)
+                return result;
+            CollectIncludedRoots(root, result, isRoot: true);
+            return result;
+        }
+
+        private static void CollectIncludedRoots(Node node, List<string> result, bool isRoot)
+        {
+            if (node == null)
+                return;
+            if (!isRoot && node.IsChecked == true)
+            {
+                string key = LoggerFilterState.ToPortableLoggerKey(node.Logger);
+                if (!string.IsNullOrEmpty(key) && key != "Root")
+                {
+                    result.Add(key);
+                    return;
+                }
+            }
+
+            foreach (var child in node.Children)
+            {
+                if (child.IsChecked == false)
+                    continue;
+                CollectIncludedRoots(child, result, isRoot: false);
+            }
+        }
+
+        /// <summary>Known FullPaths currently in the tree — used when a preset include-only list is applied.</summary>
+        public IReadOnlyCollection<string> AvailableLoggerPaths => _availableLoggers;
+
+        /// <summary>
+        /// Restore tree checkboxes from the active preset. Included leaves are checked, their ancestors
+        /// are mixed/checked, everything else is unchecked. Root stays checked/mixed so new UDP loggers
+        /// are not auto-hidden. Clears <see cref="CheckBoxId"/> so parent-unchecked does not cascade.
+        /// </summary>
+        public void SyncCheckboxesFromExclusions()
+        {
+            if (Loggers.Count == 0)
+                return;
+            CheckBoxId.CurrentСheckBoxId = null;
+            var included = _filter.Loggers.IncludeOnlyPaths;
+            var excluded = _filter.Loggers.ExcludedPaths;
+            SyncNodeCheckbox(Loggers[0], included, excluded, isRoot: true);
+        }
+
+        private static bool? SyncNodeCheckbox(
+            Node node,
+            IReadOnlyCollection<string> included,
+            IReadOnlyCollection<string> excluded,
+            bool isRoot)
+        {
+            if (node == null)
+                return false;
+
+            bool includeOnly = included != null && included.Count > 0;
+            bool selfKept = isRoot
+                || (includeOnly
+                    ? FilterPresetMapper.IsKeptByIncludeOnly(node.Logger, included)
+                    : !IsExcluded(excluded, node.Logger));
+
+            if (node.Children.Count == 0)
+            {
+                node.IsChecked = selfKept;
+                if (selfKept && !isRoot)
+                    ExpandAncestors(node);
+                return selfKept;
+            }
+
+            int checkedCount = 0;
+            int mixedCount = 0;
+            foreach (var child in node.Children)
+            {
+                bool? childState = SyncNodeCheckbox(child, included, excluded, isRoot: false);
+                if (childState == true)
+                    checkedCount++;
+                else if (!childState.HasValue)
+                    mixedCount++;
+            }
+
+            bool? state;
+            if (isRoot)
+            {
+                if (checkedCount == node.Children.Count && mixedCount == 0)
+                    state = true;
+                else if (checkedCount == 0 && mixedCount == 0)
+                    state = true;
+                else
+                    state = null;
+            }
+            else if (selfKept)
+            {
+                state = mixedCount > 0 || checkedCount != node.Children.Count ? (bool?)null : true;
+            }
+            else if (checkedCount == 0 && mixedCount == 0)
+            {
+                state = false;
+            }
+            else if (checkedCount == node.Children.Count && mixedCount == 0)
+            {
+                state = true;
+            }
+            else
+            {
+                state = null;
+            }
+
+            node.IsChecked = state;
+            if (state != false && !isRoot)
+                node.IsExpanded = true;
+            return state;
+        }
+
+        private static bool IsExcluded(IReadOnlyCollection<string> excluded, string path)
+        {
+            return !string.IsNullOrEmpty(path) && path != "Root" && excluded != null && excluded.Contains(path);
+        }
+
+        private static void ExpandAncestors(Node node)
+        {
+            for (var current = node; current != null; current = current.Parent)
+                current.IsExpanded = true;
         }
 
         private void TreeViewElementCheck(object obj)

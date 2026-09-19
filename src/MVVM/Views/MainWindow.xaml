@@ -150,6 +150,8 @@
                 <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
                 <Button Style="{StaticResource BookmarksButtonStyle}" Command="{Binding Path=Bookmarks.OpenBookmarksCommand}"
                         Visibility="{Binding Path=Bookmarks.Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+                <Button Style="{StaticResource FilterPresetsButtonStyle}" Command="{Binding Path=FilterPresets.OpenCommand}"
+                        ToolTip="{localization:LocBinding FilterPresetsToolTip}"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">

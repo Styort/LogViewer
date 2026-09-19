@@ -42,8 +42,9 @@
     <Compile Include="Abstractions\ILogImportService.cs" />
     <Compile Include="Domain\LogLevel.cs" />
     <Compile Include="Domain\LogEntry.cs" />
-    <Compile Include="Domain\HighlightRule.cs" />
-    <Compile Include="Domain\FilterCriteria.cs" />
+            <Compile Include="Domain\HighlightRule.cs" />
+            <Compile Include="Domain\FilterPreset.cs" />
+            <Compile Include="Domain\FilterCriteria.cs" />
             <Compile Include="Domain\ImportRange.cs" />
             <Compile Include="Domain\ImportTemplateParameters.cs" />
     <Compile Include="Domain\LogTemplateDto.cs" />
@@ -55,7 +56,9 @@
     <Compile Include="Services\TemplateLogParser.cs" />
     <Compile Include="Services\TemplateFileLogReader.cs" />
     <Compile Include="Services\LogFilter.cs" />
-    <Compile Include="Services\HighlightEngine.cs" />
+            <Compile Include="Services\HighlightEngine.cs" />
+            <Compile Include="Services\FilterPresetMapper.cs" />
+            <Compile Include="Services\FilterPresetXmlStore.cs" />
     <Compile Include="Services\SearchMatcher.cs" />
     <Compile Include="Services\UdpLogSource.cs" />
     <Compile Include="Services\FileLogSource.cs" />

@@ -816,4 +816,65 @@ Restart now?</value>
   <data name="HighlightRuleInvalidRegex" xml:space="preserve">
     <value>Invalid regular expression in “{0}”. Save was cancelled; the log list is unchanged.</value>
   </data>
+  <data name="FilterPresets" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="FilterPresetsToolTip" xml:space="preserve">
+    <value>Named display filter: level, search, logger tree. Does not save log rows. Example: “Payments errors” — Error+, regex timeout|declined.</value>
+  </data>
+  <data name="FilterPresetApply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="FilterPresetSaveAs" xml:space="preserve">
+    <value>Save current as…</value>
+  </data>
+  <data name="FilterPresetDelete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="FilterPresetRename" xml:space="preserve">
+    <value>Rename</value>
+  </data>
+  <data name="FilterPresetName" xml:space="preserve">
+    <value>Preset name</value>
+  </data>
+  <data name="FilterPresetEmptyName" xml:space="preserve">
+    <value>Preset name cannot be empty.</value>
+  </data>
+  <data name="FilterPresetOverwrite" xml:space="preserve">
+    <value>Preset “{0}” already exists. Overwrite it?</value>
+  </data>
+  <data name="FilterPresetSaveTitle" xml:space="preserve">
+    <value>Save filter</value>
+  </data>
+  <data name="FilterPresetRenameTitle" xml:space="preserve">
+    <value>Rename preset</value>
+  </data>
+  <data name="FilterPresetTimeLeaveUnchanged" xml:space="preserve">
+    <value>Do not change the current time interval when applying</value>
+  </data>
+  <data name="FilterPresetTimeAbsolute" xml:space="preserve">
+    <value>Save the current interval as absolute dates</value>
+  </data>
+  <data name="FilterPresetTimeRelative" xml:space="preserve">
+    <value>Last N minutes (From/To are recomputed on each Apply)</value>
+  </data>
+  <data name="FilterPresetRelativeMinutes" xml:space="preserve">
+    <value>Minutes:</value>
+  </data>
+  <data name="FilterPresetDeleteConfirm" xml:space="preserve">
+    <value>Delete preset “{0}”? settings.xml will not be changed.</value>
+  </data>
+  <data name="FilterPresetsDescription" xml:space="preserve">
+    <value>A preset is a saved set of display criteria. Apply it in one click: the current list filter is replaced; log rows already in memory are not.
+
+Saved: minimum level, search text (match case, whole word, regex, and “match level”), checked loggers in the tree, and an optional time interval.
+
+Not saved: received messages, bookmarks, Don't Receive, or receiver settings. Presets live in filter_presets.xml in the LogViewer documents folder, separate from settings.xml.</value>
+  </data>
+  <data name="FilterPresetsHint" xml:space="preserve">
+    <value>A named list filter: level, search, and selected loggers. Does not save log rows.</value>
+  </data>
+  <data name="FilterPresetsHelpToolTip" xml:space="preserve">
+    <value>What presets are and what they store</value>
+  </data>
 </root>

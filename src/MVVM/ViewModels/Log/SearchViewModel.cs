@@ -35,6 +35,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         private readonly Func<eLogLevel> _minLevel;
 
         private bool _isSearchProcess;
+        private bool _suppressCoordinatorSync;
         private bool _clearSearchResultIsEnabled;
         private bool _isMatchCase;
         private bool _isMatchWholeWord;
@@ -210,6 +211,36 @@ namespace LogViewer.MVVM.ViewModels.Log
         public RelayCommand ClearSearchResultCommand => _clearCommand ?? (_clearCommand = new RelayCommand(ClearSearchResult));
         public RelayCommand GoToTimestampCommand => _goToTimestampCommand ?? (_goToTimestampCommand = new RelayCommand(GoToTimestamp));
         public RelayCommand SetTimeIntervalCommand => _setTimeIntervalCommand ?? (_setTimeIntervalCommand = new RelayCommand(SetTimeInterval));
+
+        /// <summary>Copy preset search fields into the toolbar. Coordinator already called Apply.</summary>
+        public void LoadFromPreset(string text, bool matchCase, bool wholeWord, bool regex, bool matchLevel, bool searchActive)
+        {
+            _suppressCoordinatorSync = true;
+            try
+            {
+                _searchText = text ?? string.Empty;
+                _isMatchCase = matchCase;
+                _isMatchWholeWord = wholeWord;
+                _useRegularExpressions = regex;
+                _isMatchLogLevel = matchLevel;
+                _isSearchProcess = searchActive;
+                _highlightSearchText = searchActive ? _searchText : string.Empty;
+                ClearSearchResultIsEnabled = _isSearchProcess || _searchText.Length > 0;
+                OnPropertyChanged(nameof(SearchText));
+                OnPropertyChanged(nameof(IsMatchCase));
+                OnPropertyChanged(nameof(IsMatchWholeWord));
+                OnPropertyChanged(nameof(UseRegularExpressions));
+                OnPropertyChanged(nameof(IsMatchLogLevel));
+                OnPropertyChanged(nameof(IsSearchProcess));
+                OnPropertyChanged(nameof(HighlightSearchText));
+                OnPropertyChanged(nameof(IsSearchPatternInvalid));
+                RefreshFindPreviousEnabled();
+            }
+            finally
+            {
+                _suppressCoordinatorSync = false;
+            }
+        }
 
         /// <inheritdoc />
         public void Reset()
@@ -397,12 +428,16 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         private void OnSearchOptionsChanged()
         {
+            if (_suppressCoordinatorSync)
+                return;
             SyncSearchToCoordinator(apply: IsSearchProcess);
             OnPropertyChanged(nameof(IsSearchPatternInvalid));
         }
 
         private void SyncSearchToCoordinator(bool apply)
         {
+            if (_suppressCoordinatorSync)
+                return;
             if (apply)
                 _filter.SetSearch(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions, IsMatchLogLevel, IsSearchProcess);
             else

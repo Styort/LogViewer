@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LogViewer.Core.Domain;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
+using LogViewer.MVVM.ViewModels.Log;
 
 namespace LogViewer.Services
 {
@@ -86,5 +87,14 @@ namespace LogViewer.Services
         /// Modal settings. true — OK and apply; false/null — Cancel, UDP can resume as before.
         /// </summary>
         bool? ShowSettings();
+
+        /// <summary>Yes/No question. false on No or close.</summary>
+        bool Confirm(string message, string caption = null);
+
+        /// <summary>Single-line prompt (rename). false if cancelled.</summary>
+        bool TryPromptText(string title, string prompt, string initial, out string text);
+
+        /// <summary>Filter preset manager: apply, save, rename, delete.</summary>
+        void ShowFilterPresets(FilterPresetsViewModel viewModel);
     }
 }

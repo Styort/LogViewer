@@ -815,4 +815,65 @@
   <data name="HighlightRuleInvalidRegex" xml:space="preserve">
     <value>Некорректное регулярное выражение в поле «{0}». Сохранение отменено, список логов не меняется.</value>
   </data>
+  <data name="FilterPresets" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="FilterPresetsToolTip" xml:space="preserve">
+    <value>Именованный фильтр: уровень, поиск, дерево логгеров. Не сохраняет сами логи. Пример: «Payments errors» — Error+, regex timeout|declined.</value>
+  </data>
+  <data name="FilterPresetApply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="FilterPresetSaveAs" xml:space="preserve">
+    <value>Сохранить текущий как…</value>
+  </data>
+  <data name="FilterPresetDelete" xml:space="preserve">
+    <value>Удалить</value>
+  </data>
+  <data name="FilterPresetRename" xml:space="preserve">
+    <value>Переименовать</value>
+  </data>
+  <data name="FilterPresetName" xml:space="preserve">
+    <value>Имя пресета</value>
+  </data>
+  <data name="FilterPresetEmptyName" xml:space="preserve">
+    <value>Имя пресета не может быть пустым.</value>
+  </data>
+  <data name="FilterPresetOverwrite" xml:space="preserve">
+    <value>Пресет «{0}» уже есть. Перезаписать?</value>
+  </data>
+  <data name="FilterPresetSaveTitle" xml:space="preserve">
+    <value>Сохранить фильтр</value>
+  </data>
+  <data name="FilterPresetRenameTitle" xml:space="preserve">
+    <value>Переименовать пресет</value>
+  </data>
+  <data name="FilterPresetTimeLeaveUnchanged" xml:space="preserve">
+    <value>При применении не менять текущий интервал времени</value>
+  </data>
+  <data name="FilterPresetTimeAbsolute" xml:space="preserve">
+    <value>Сохранить текущий интервал как абсолютные даты</value>
+  </data>
+  <data name="FilterPresetTimeRelative" xml:space="preserve">
+    <value>Последние N минут (From/To пересчитываются при каждом Apply)</value>
+  </data>
+  <data name="FilterPresetRelativeMinutes" xml:space="preserve">
+    <value>Минут:</value>
+  </data>
+  <data name="FilterPresetDeleteConfirm" xml:space="preserve">
+    <value>Удалить пресет «{0}»? Файл настроек settings.xml не изменится.</value>
+  </data>
+  <data name="FilterPresetsDescription" xml:space="preserve">
+    <value>Пресет — сохранённый набор критериев отображения. Применить его можно одной кнопкой: текущий фильтр списка заменяется, сами логи в буфере не меняются.
+
+Сохраняется: минимальный уровень, текст поиска (с учётом регистра, целого слова, regex и «учитывать уровень»), выбранные логгеры в дереве и при необходимости интервал времени.
+
+Не сохраняется: принятые сообщения, закладки, Don't Receive и настройки приёмников. Файл пресетов — filter_presets.xml в папке документов LogViewer, отдельно от settings.xml.</value>
+  </data>
+  <data name="FilterPresetsHint" xml:space="preserve">
+    <value>Именованный фильтр списка: уровень, поиск и выбранные логгеры. Не сохраняет сами логи.</value>
+  </data>
+  <data name="FilterPresetsHelpToolTip" xml:space="preserve">
+    <value>Что такое пресеты и что в них сохраняется</value>
+  </data>
 </root>

@@ -11,6 +11,14 @@ namespace LogViewer.Core.Domain
         public LogLevel MinLevel { get; set; } = LogLevel.Trace;
 
         /// <summary>
+        /// When non-empty, the list is include-only: an entry is shown if its FullPath is one of these
+        /// roots or a descendant. Independent from <see cref="ExcludedLoggerFullPaths"/> so a mixed
+        /// parent path is not required in the exclude dump (file sources with '.' in the name, e.g. <c>.txt</c>).
+        /// Empty means "not include-only" — then Don't-Show uses <see cref="ExcludedLoggerFullPaths"/>.
+        /// </summary>
+        public HashSet<string> IncludedLoggerFullPaths { get; set; } = new HashSet<string>();
+
+        /// <summary>
         /// Loggers hidden in the list only. Entries stay in the session and reappear when the logger is shown again.
         /// </summary>
         public HashSet<string> ExcludedLoggerFullPaths { get; set; } = new HashSet<string>();

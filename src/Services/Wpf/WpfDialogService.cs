@@ -5,6 +5,7 @@ using System.Windows;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
+using LogViewer.MVVM.ViewModels.Log;
 using LogViewer.MVVM.Views;
 
 namespace LogViewer.Services.Wpf
@@ -143,6 +144,40 @@ namespace LogViewer.Services.Wpf
         {
             var settingsDialog = new SettingsWindow();
             return settingsDialog.ShowDialog();
+        }
+
+        public bool Confirm(string message, string caption = null)
+        {
+            var result = MessageBox.Show(
+                message,
+                caption ?? Locals.Information,
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            return result == MessageBoxResult.Yes;
+        }
+
+        public bool TryPromptText(string title, string prompt, string initial, out string text)
+        {
+            var dialog = new InputTextDialog(title, prompt, initial)
+            {
+                Owner = Owner()
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                text = dialog.Text ?? string.Empty;
+                return true;
+            }
+            text = initial ?? string.Empty;
+            return false;
+        }
+
+        public void ShowFilterPresets(FilterPresetsViewModel viewModel)
+        {
+            var dialog = new FilterPresetsWindow(viewModel)
+            {
+                Owner = Owner()
+            };
+            dialog.ShowDialog();
         }
 
         private static Window Owner()

@@ -80,6 +80,7 @@ namespace LogViewer.MVVM.ViewModels
             Import = new ImportViewModel(d.ViewState, d.Session, d.Processing, d.ImportService, d.Adapter, d.FileWatch, d.Dialogs, d.Files, Receivers, FormatLogLineForClipboard);
             Search = new SearchViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.Projector, d.Query, d.Dialogs, d.Settings, () => SelectedMinLogLevel);
             Tree = new LoggerTreeViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.FileWatch, d.TreeBuilder, d.TreeMarker, d.Settings, Receivers, Import, Clean);
+            FilterPresets = new FilterPresetsViewModel(d.Coordinator, d.Dialogs, Search, Tree, SetMinLevelFromPreset);
 
             _parts = new IResettable[] { Receivers, Import, Tree, Search, Bookmarks, Timeline };
             _presenter = new LogSessionPresenter(d.ViewState, d.Projector, Tree, Bookmarks, Timeline, v => CleanIsEnabled = v);
@@ -110,6 +111,7 @@ namespace LogViewer.MVVM.ViewModels
         public SearchViewModel Search { get; }
         public BookmarksViewModel Bookmarks { get; }
         public ErrorTimelineViewModel Timeline { get; }
+        public FilterPresetsViewModel FilterPresets { get; }
 
         /// <summary>Proxy for <see cref="LogViewState.Logs"/> — window DataContext was not changed, XAML still uses Logs.</summary>
         public AsyncObservableCollection<LogMessage> Logs { get => _state.Logs; set => _state.Logs = value; }
@@ -136,6 +138,13 @@ namespace LogViewer.MVVM.ViewModels
         {
             get => _selectedMinLogLevel;
             set { _selectedMinLogLevel = value; _coordinator.SetMinLevel(value); OnPropertyChanged(); }
+        }
+
+        /// <summary>Preset Apply already wrote min level into the coordinator — update the combo only.</summary>
+        private void SetMinLevelFromPreset(eLogLevel level)
+        {
+            _selectedMinLogLevel = level;
+            OnPropertyChanged(nameof(SelectedMinLogLevel));
         }
 
         public bool IsSourceVisible

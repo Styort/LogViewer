@@ -74,5 +74,48 @@ namespace LogViewer.Core.Tests
             state.ShowOnly("Root", new[] { "a", "b" });
             Assert.That(state.ExcludedPaths, Is.Empty);
         }
+
+        [Test]
+        public void ShowOnly_RemembersIncludeOnlyForFutureLoggers()
+        {
+            var state = new LoggerFilterState();
+            state.ShowOnly("root.keep", new[] { "root.keep", "root.other" });
+
+            Assert.That(state.IncludeOnlyPaths, Does.Contain("root.keep"));
+            Assert.That(state.ShouldHideNewLogger("root.other.new"), Is.True);
+            Assert.That(state.ShouldHideNewLogger("root.keep.child"), Is.False);
+        }
+
+        [Test]
+        public void ToPortableLoggerKey_StripsFileAndIpPrefix()
+        {
+            Assert.That(LoggerFilterState.ToPortableLoggerKey(@"C:\Users\styor\Downloads\2026-09-18.txt.SecurityLog"),
+                Is.EqualTo("SecurityLog"));
+            Assert.That(LoggerFilterState.ToPortableLoggerKey(@"C:\Users\styor\Downloads\2026-09-18.txt.Terminal.TerminalLogicalStatusManager"),
+                Is.EqualTo("Terminal.TerminalLogicalStatusManager"));
+            Assert.That(LoggerFilterState.ToPortableLoggerKey("127.0.0.1.Payments"), Is.EqualTo("Payments"));
+            Assert.That(LoggerFilterState.ToPortableLoggerKey("10.0.0.2.Payments.Api"), Is.EqualTo("Payments.Api"));
+        }
+
+        [Test]
+        public void MatchesIncludeRoot_SameLoggersOnAnotherFile()
+        {
+            Assert.That(LoggerFilterState.MatchesIncludeRoot(
+                @"D:\logs\2026-09-19.txt.SecurityLog.SecurityLogService", "SecurityLog"), Is.True);
+            Assert.That(LoggerFilterState.MatchesIncludeRoot(
+                @"D:\logs\2026-09-19.txt.App", "SecurityLog"), Is.False);
+        }
+
+        [Test]
+        public void ReplaceDisplayExclusions_KeepsDontReceiveHidden()
+        {
+            var state = new LoggerFilterState();
+            state.DontReceive("ip.Drop", null);
+            state.ReplaceDisplayExclusions(new[] { "ip.Hide" });
+
+            Assert.That(state.ExcludedPaths, Does.Contain("ip.Hide"));
+            Assert.That(state.ExcludedPaths, Does.Contain("ip.Drop"));
+            Assert.That(state.ExcludedWithBufferPaths, Does.Contain("ip.Drop"));
+        }
     }
 }

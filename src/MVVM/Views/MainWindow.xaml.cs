@@ -97,6 +97,7 @@ namespace LogViewer.MVVM.Views
                         Visible = true,
                         Text = "Log Viewer"
                     };
+                    LogViewer.Services.Wpf.WpfAlertEffects.SharedTrayIcon = trayIcon;
                     trayIcon.DoubleClick += delegate
                     {
                         this.Show();
@@ -135,6 +136,8 @@ namespace LogViewer.MVVM.Views
         {
             if (trayIcon != null)
             {
+                if (ReferenceEquals(LogViewer.Services.Wpf.WpfAlertEffects.SharedTrayIcon, trayIcon))
+                    LogViewer.Services.Wpf.WpfAlertEffects.SharedTrayIcon = null;
                 trayIcon.Visible = false;
                 trayIcon.Dispose();
                 trayIcon.Icon = null;

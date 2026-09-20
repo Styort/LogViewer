@@ -14,6 +14,15 @@ namespace LogViewer.Services
         /// <summary>Start UDP when the app launches, unless this was a manual start from the tray.</summary>
         bool AutoStartInStartup { get; }
 
+        /// <summary>Pause live receive when an Error/Fatal is stored. Default false.</summary>
+        bool AlertAutoPauseOnError { get; }
+
+        /// <summary>System sound on Error/Fatal. Default false.</summary>
+        bool AlertSoundOnError { get; }
+
+        /// <summary>Tray balloon on Error/Fatal. Default false. Balloon does not require MinimizeToTray.</summary>
+        bool AlertBalloonOnError { get; }
+
         /// <summary>Whether the session buffer cap is enabled (otherwise the list grows unbounded).</summary>
         bool IsEnabledMaxMessageBufferSize { get; }
 

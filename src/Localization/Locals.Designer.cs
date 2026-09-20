@@ -124,6 +124,60 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Автопауза на Error/Fatal:.
+        /// </summary>
+        internal static string AlertAutoPauseOnError {
+            get {
+                return ResourceManager.GetString("AlertAutoPauseOnError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Остановить приём при Error или Fatal (не Warn). По умолчанию выключено..
+        /// </summary>
+        internal static string AlertAutoPauseOnErrorToolTip {
+            get {
+                return ResourceManager.GetString("AlertAutoPauseOnErrorToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Подсказка в трее на Error/Fatal:.
+        /// </summary>
+        internal static string AlertBalloonOnError {
+            get {
+                return ResourceManager.GetString("AlertBalloonOnError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Balloon в трее при Error или Fatal. По умолчанию выключено..
+        /// </summary>
+        internal static string AlertBalloonOnErrorToolTip {
+            get {
+                return ResourceManager.GetString("AlertBalloonOnErrorToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Звук на Error/Fatal:.
+        /// </summary>
+        internal static string AlertSoundOnError {
+            get {
+                return ResourceManager.GetString("AlertSoundOnError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Системный звук при Error или Fatal. По умолчанию выключено..
+        /// </summary>
+        internal static string AlertSoundOnErrorToolTip {
+            get {
+                return ResourceManager.GetString("AlertSoundOnErrorToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не удалось распаковать архив {0}..
         /// </summary>
         internal static string ArchiveExtractFailed {
@@ -1001,6 +1055,24 @@ namespace LogViewer.Localization {
         internal static string ListOfReceivers {
             get {
                 return ResourceManager.GetString("ListOfReceivers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Получено сообщение Error или Fatal..
+        /// </summary>
+        internal static string LiveAlertBalloonText {
+            get {
+                return ResourceManager.GetString("LiveAlertBalloonText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Log Viewer.
+        /// </summary>
+        internal static string LiveAlertBalloonTitle {
+            get {
+                return ResourceManager.GetString("LiveAlertBalloonTitle", resourceCulture);
             }
         }
         

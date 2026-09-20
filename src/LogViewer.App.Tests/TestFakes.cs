@@ -14,6 +14,9 @@ namespace LogViewer.App.Tests
     internal sealed class FakeAppSettings : IAppSettings
     {
         public bool AutoStartInStartup => false;
+        public bool AlertAutoPauseOnError => false;
+        public bool AlertSoundOnError => false;
+        public bool AlertBalloonOnError => false;
         public bool IsEnabledMaxMessageBufferSize => false;
         public int MaxMessageBufferSize => 1000;
         public int DeletedMessagesCount => 100;

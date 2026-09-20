@@ -47,6 +47,10 @@
 				<ru>Сетевой приёмник умеет UDP и TCP: транспорт выбирается в настройках приёмника. TCP принимает несколько клиентов на одном порту (NLog target NLogViewer, address="tcp://хост:порт"), события не теряются на границе сегмента. Старые настройки без транспорта работают как UDP. Start/Pause, Don't Receive, фильтры и игнор IP действуют так же, как для UDP.</ru>
 				<en>Network receivers support UDP and TCP: pick the transport in receiver settings. TCP accepts multiple clients on one port (NLog NLogViewer target, address="tcp://host:port"); events split across TCP segments are not lost. Existing settings without a transport still use UDP. Start/Pause, Don't Receive, filters, and ignored IPs work the same as for UDP.</en>
 			</Item>
+			<Item>
+				<ru>Опциональные алерты на Error/Fatal: автопауза приёма, системный звук и balloon в трее. Три независимых тумблера в общих настройках, все по умолчанию выключены. Warn не триггерит; Don't Receive не триггерит; одна пачка даёт один звук и один balloon (не чаще чем раз в несколько секунд).</ru>
+				<en>Optional Error/Fatal alerts: auto-pause receive, a system sound, and a tray balloon. Three independent toggles on the General settings tab, all off by default. Warn does not trigger; Don't Receive does not trigger; one UI batch produces one sound and one balloon (throttled to once every few seconds).</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

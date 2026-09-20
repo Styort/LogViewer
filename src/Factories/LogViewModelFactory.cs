@@ -26,6 +26,7 @@ namespace LogViewer.Factories
         public IUiTimer TimelineTimer { get; set; }
         /// <summary>Repeats-window debounce; separate instance so timeline ticks do not rebuild groups.</summary>
         public IUiTimer MessageGroupsTimer { get; set; }
+        public IAlertEffects AlertEffects { get; set; }
         /// <summary>Canonical entry buffer. One per window.</summary>
         public LogSession Session { get; set; }
         public LogProcessingService Processing { get; set; }
@@ -65,6 +66,7 @@ namespace LogViewer.Factories
             var clipboard = new WpfClipboardService();
             var timer = new DispatcherUiTimer();
             var groupsTimer = new DispatcherUiTimer();
+            var alertEffects = new WpfAlertEffects();
 
             var session = new LogSession();
             session.AllowMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
@@ -97,6 +99,7 @@ namespace LogViewer.Factories
                 Clipboard = clipboard,
                 TimelineTimer = timer,
                 MessageGroupsTimer = groupsTimer,
+                AlertEffects = alertEffects,
                 Session = session,
                 Processing = processing,
                 Adapter = adapter,

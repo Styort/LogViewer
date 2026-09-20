@@ -26,6 +26,9 @@ namespace LogViewer.MVVM.ViewModels
         private bool isConfigurationVisible = false;
         private bool isAutoStartReadAtStartup = true;
         private bool minimizeToTray = false;
+        private bool alertAutoPauseOnError;
+        private bool alertSoundOnError;
+        private bool alertBalloonOnError;
         private bool isEnableMaxMessageBufferSize = false;
         private bool onlyOneAppInstance = true;
         private Receiver selectedReceiver;
@@ -102,6 +105,45 @@ namespace LogViewer.MVVM.ViewModels
             set
             {
                 minimizeToTray = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Stop live receive on Error/Fatal. Default off.
+        /// </summary>
+        public bool AlertAutoPauseOnError
+        {
+            get => alertAutoPauseOnError;
+            set
+            {
+                alertAutoPauseOnError = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// System sound on Error/Fatal. Default off.
+        /// </summary>
+        public bool AlertSoundOnError
+        {
+            get => alertSoundOnError;
+            set
+            {
+                alertSoundOnError = value;
+                OnPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Tray balloon on Error/Fatal. Default off. Does not require MinimizeToTray.
+        /// </summary>
+        public bool AlertBalloonOnError
+        {
+            get => alertBalloonOnError;
+            set
+            {
+                alertBalloonOnError = value;
                 OnPropertyChanged();
             }
         }
@@ -551,6 +593,9 @@ namespace LogViewer.MVVM.ViewModels
                 IgnoredIpAdresses = new ObservableCollection<IgnoredIPAddress>(Settings.Instance.IgnoredIPs);
                 IsAutoStartReadAtStartup = Settings.Instance.AutoStartInStartup;
                 MinimizeToTray = Settings.Instance.MinimizeToTray;
+                AlertAutoPauseOnError = Settings.Instance.AlertAutoPauseOnError;
+                AlertSoundOnError = Settings.Instance.AlertSoundOnError;
+                AlertBalloonOnError = Settings.Instance.AlertBalloonOnError;
                 OnlyOneAppInstance = Settings.Instance.OnlyOneAppInstance;
                 SelectedDataFormat = Settings.Instance.DataFormat;
                 DisplayedDataFormat = Settings.Instance.DataFormat;
@@ -684,6 +729,9 @@ namespace LogViewer.MVVM.ViewModels
             }
 
             Settings.Instance.MinimizeToTray = MinimizeToTray;
+            Settings.Instance.AlertAutoPauseOnError = AlertAutoPauseOnError;
+            Settings.Instance.AlertSoundOnError = AlertSoundOnError;
+            Settings.Instance.AlertBalloonOnError = AlertBalloonOnError;
             Settings.Instance.AutoStartInStartup = IsAutoStartReadAtStartup;
             Settings.Instance.IsShowSourceColumn = IsShowSourceColumn;
             Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;

@@ -33,6 +33,7 @@ namespace LogViewer.MVVM.ViewModels
         private readonly SettingsChangeApplier _settingsApplier = new SettingsChangeApplier();
         private readonly RowHighlightApplier _highlight;
         private readonly IResettable[] _parts;
+        private readonly IAlertEffects _alertEffects;
 
         private bool _cleanIsEnabled;
         private bool _isShowTaskbarProgress;
@@ -67,6 +68,7 @@ namespace LogViewer.MVVM.ViewModels
             _processing = d.Processing;
             _adapter = d.Adapter;
             _highlight = d.HighlightApplier;
+            _alertEffects = d.AlertEffects;
 
             IconColor = _settings.CurrentTheme.Color;
             FontColor = FontColor.FromARGB(_settings.FontColor);
@@ -82,6 +84,7 @@ namespace LogViewer.MVVM.ViewModels
             Search = new SearchViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.Projector, d.Query, d.Dialogs, d.Settings, () => SelectedMinLogLevel);
             Tree = new LoggerTreeViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.FileWatch, d.TreeBuilder, d.TreeMarker, d.Settings, Receivers, Import, Clean);
             FilterPresets = new FilterPresetsViewModel(d.Coordinator, d.Dialogs, Search, Tree, SetMinLevelFromPreset);
+            LiveAlerts = new LiveAlertsViewModel(d.Settings, Receivers, d.AlertEffects);
 
             _parts = new IResettable[] { Receivers, Import, Tree, Search, Bookmarks, Timeline, MessageGroups };
             _presenter = new LogSessionPresenter(d.ViewState, d.Projector, Tree, Bookmarks, Timeline, MessageGroups, v => CleanIsEnabled = v);
@@ -95,6 +98,7 @@ namespace LogViewer.MVVM.ViewModels
             };
 
             _adapter.EntriesProcessed += _presenter.OnEntriesProcessed;
+            _adapter.EntriesProcessed += LiveAlerts.OnEntriesProcessed;
             _adapter.SessionCleared += _presenter.OnSessionCleared;
             _adapter.EntriesRemoved += _presenter.OnEntriesRemoved;
             _adapter.FilteredViewUpdated += _presenter.OnFilteredViewUpdated;
@@ -114,6 +118,7 @@ namespace LogViewer.MVVM.ViewModels
         public ErrorTimelineViewModel Timeline { get; }
         public MessageGroupsViewModel MessageGroups { get; }
         public FilterPresetsViewModel FilterPresets { get; }
+        public LiveAlertsViewModel LiveAlerts { get; }
 
         /// <summary>Proxy for <see cref="LogViewState.Logs"/> — window DataContext was not changed, XAML still uses Logs.</summary>
         public AsyncObservableCollection<LogMessage> Logs { get => _state.Logs; set => _state.Logs = value; }
@@ -263,6 +268,7 @@ namespace LogViewer.MVVM.ViewModels
             _adapter?.FlushPending();
             _adapter?.Dispose();
             _processing?.RemoveAllSources();
+            (_alertEffects as IDisposable)?.Dispose();
         }
     }
 }

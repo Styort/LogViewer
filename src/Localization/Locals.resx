@@ -144,6 +144,30 @@
   <data name="AutoStartReadingLogsAtStartupToolTip" xml:space="preserve">
     <value>Запускать считывание логов по UDP при запуске программы</value>
   </data>
+  <data name="AlertAutoPauseOnError" xml:space="preserve">
+    <value>Автопауза на Error/Fatal:</value>
+  </data>
+  <data name="AlertAutoPauseOnErrorToolTip" xml:space="preserve">
+    <value>Остановить приём при Error или Fatal (не Warn). По умолчанию выключено. Don't Receive не вызывает паузу. Пауза один раз, пока не нажмёте Start.</value>
+  </data>
+  <data name="AlertSoundOnError" xml:space="preserve">
+    <value>Звук на Error/Fatal:</value>
+  </data>
+  <data name="AlertSoundOnErrorToolTip" xml:space="preserve">
+    <value>Системный звук при Error или Fatal. По умолчанию выключено. Не чаще одного раза за пачку и не чаще чем раз в несколько секунд.</value>
+  </data>
+  <data name="AlertBalloonOnError" xml:space="preserve">
+    <value>Подсказка в трее на Error/Fatal:</value>
+  </data>
+  <data name="AlertBalloonOnErrorToolTip" xml:space="preserve">
+    <value>Balloon в трее при Error или Fatal. По умолчанию выключено. Сворачивание в трей не требуется — иконка создаётся на время подсказки.</value>
+  </data>
+  <data name="LiveAlertBalloonTitle" xml:space="preserve">
+    <value>Log Viewer</value>
+  </data>
+  <data name="LiveAlertBalloonText" xml:space="preserve">
+    <value>Получено сообщение Error или Fatal.</value>
+  </data>
   <data name="Cancel" xml:space="preserve">
     <value>Отмена</value>
   </data>

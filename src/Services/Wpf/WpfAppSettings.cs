@@ -7,6 +7,9 @@ namespace LogViewer.Services.Wpf
     public sealed class WpfAppSettings : IAppSettings
     {
         public bool AutoStartInStartup => Settings.Instance.AutoStartInStartup;
+        public bool AlertAutoPauseOnError => Settings.Instance.AlertAutoPauseOnError;
+        public bool AlertSoundOnError => Settings.Instance.AlertSoundOnError;
+        public bool AlertBalloonOnError => Settings.Instance.AlertBalloonOnError;
         public bool IsEnabledMaxMessageBufferSize => Settings.Instance.IsEnabledMaxMessageBufferSize;
         public int MaxMessageBufferSize => Settings.Instance.MaxMessageBufferSize;
         public int DeletedMessagesCount => Settings.Instance.DeletedMessagesCount;

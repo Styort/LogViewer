@@ -222,6 +222,30 @@
   <data name="AutoStartReadingLogsAtStartupToolTip" xml:space="preserve">
     <value>Start reading UDP logs as soon as the application starts.</value>
   </data>
+  <data name="AlertAutoPauseOnError" xml:space="preserve">
+    <value>Auto-pause on Error/Fatal:</value>
+  </data>
+  <data name="AlertAutoPauseOnErrorToolTip" xml:space="preserve">
+    <value>Stop receiving on Error or Fatal (not Warn). Off by default. Don't Receive does not pause. Pauses once until you press Start.</value>
+  </data>
+  <data name="AlertSoundOnError" xml:space="preserve">
+    <value>Sound on Error/Fatal:</value>
+  </data>
+  <data name="AlertSoundOnErrorToolTip" xml:space="preserve">
+    <value>System sound on Error or Fatal. Off by default. At most once per UI batch and not more than once every few seconds.</value>
+  </data>
+  <data name="AlertBalloonOnError" xml:space="preserve">
+    <value>Tray balloon on Error/Fatal:</value>
+  </data>
+  <data name="AlertBalloonOnErrorToolTip" xml:space="preserve">
+    <value>Tray balloon on Error or Fatal. Off by default. Minimize to tray is not required — a temporary icon is created for the tip.</value>
+  </data>
+  <data name="LiveAlertBalloonTitle" xml:space="preserve">
+    <value>Log Viewer</value>
+  </data>
+  <data name="LiveAlertBalloonText" xml:space="preserve">
+    <value>An Error or Fatal message was received.</value>
+  </data>
   <data name="Configuration" xml:space="preserve">
     <value>Configuration</value>
   </data>

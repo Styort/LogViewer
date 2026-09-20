@@ -70,6 +70,7 @@
     <Compile Include="Services\FileLogSource.cs" />
     <Compile Include="Services\LogProcessingService.cs" />
     <Compile Include="Services\LogEntryBatcher.cs" />
+    <Compile Include="Services\LiveAlertEvaluator.cs" />
     <Compile Include="Services\LogImportService.cs" />
     <Compile Include="Services\LogQueryService.cs" />
     <Compile Include="Services\ErrorTimelineBuilder.cs" />

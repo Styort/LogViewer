@@ -27,6 +27,22 @@ namespace LogViewer.MVVM.Models
 
         public bool AutoStartInStartup { get; set; } = false;
         public bool MinimizeToTray { get; set; } = false;
+
+        /// <summary>
+        /// Stop live sources when an Error/Fatal row is stored. Default false so existing
+        /// settings.xml (missing element) stays silent after upgrade. Threshold is Error+Fatal only, not Warn.
+        /// </summary>
+        public bool AlertAutoPauseOnError { get; set; } = false;
+
+        /// <summary>
+        /// Play SystemSounds.Hand on Error/Fatal. Default false. Throttled per UI batch, not per packet.
+        /// </summary>
+        public bool AlertSoundOnError { get; set; } = false;
+
+        /// <summary>
+        /// Tray balloon on Error/Fatal. Default false. Does not require MinimizeToTray (a temporary icon is used).
+        /// </summary>
+        public bool AlertBalloonOnError { get; set; } = false;
         public bool OnlyOneAppInstance { get; set; } = false;
         public bool IsEnabledMaxMessageBufferSize { get; set; } = false;
         public int MaxMessageBufferSize { get; set; } = 1000000;
@@ -169,6 +185,9 @@ namespace LogViewer.MVVM.Models
                         Settings settings = (Settings)ser.Deserialize(fs);
                         Instance.AutoStartInStartup = settings.AutoStartInStartup;
                         Instance.MinimizeToTray = settings.MinimizeToTray;
+                        Instance.AlertAutoPauseOnError = settings.AlertAutoPauseOnError;
+                        Instance.AlertSoundOnError = settings.AlertSoundOnError;
+                        Instance.AlertBalloonOnError = settings.AlertBalloonOnError;
                         Instance.CurrentTheme = settings.CurrentTheme;
                         Instance.DataFormat = settings.DataFormat;
                         Instance.IgnoredIPs = settings.IgnoredIPs;

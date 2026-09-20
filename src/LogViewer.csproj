@@ -236,6 +236,7 @@
     <Compile Include="MVVM\Models\LogBookmark.cs" />
     <Compile Include="MVVM\Models\ErrorTimelineBucket.cs" />
     <Compile Include="MVVM\Models\LoggerStatItem.cs" />
+    <Compile Include="MVVM\Models\MessageGroupItem.cs" />
     <Compile Include="Helpers\BindableSelectedItemBehavior.cs" />
     <Compile Include="Helpers\TextBoxResetScroll.cs" />
     <Compile Include="MVVM\Models\LogTemplateItem.cs" />
@@ -266,6 +267,9 @@
     <Compile Include="MVVM\ViewModels\BookmarkListViewModel.cs" />
     <Compile Include="MVVM\Views\LoggerStatisticsWindow.xaml.cs">
       <DependentUpon>LoggerStatisticsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MVVM\Views\MessageGroupsWindow.xaml.cs">
+      <DependentUpon>MessageGroupsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="MVVM\Views\BookmarkCommentDialog.xaml.cs">
       <DependentUpon>BookmarkCommentDialog.xaml</DependentUpon>
@@ -330,6 +334,7 @@
     <Compile Include="MVVM\ViewModels\Log\SettingsChangeApplier.cs" />
     <Compile Include="MVVM\ViewModels\Log\LoggerTreeViewModel.cs" />
     <Compile Include="MVVM\ViewModels\Log\FilterPresetsViewModel.cs" />
+    <Compile Include="MVVM\ViewModels\Log\MessageGroupsViewModel.cs" />
     <Compile Include="Services\IAppSettings.cs" />
     <Compile Include="Services\IClipboardService.cs" />
     <Compile Include="Services\IDialogService.cs" />
@@ -353,6 +358,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MVVM\Views\LoggerStatisticsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MVVM\Views\MessageGroupsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

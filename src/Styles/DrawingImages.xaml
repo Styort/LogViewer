@@ -356,6 +356,14 @@
         </DrawingImage.Drawing>
     </DrawingImage>
 
+    <DrawingImage x:Key="MessageGroupsDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup ClipGeometry="M0,0 V512 H512 V0 H0 Z">
+                <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="F1 M512,512z M0,0z M12.41,148.02 l232.94,105.67 c6.8,3.09 14.49,3.09 21.29,0 l232.94,-105.67 c16.55,-7.51 16.55,-32.52 0,-40.03 L266.65,2.31 a25.607,25.607 0 0 0 -21.29,0 L12.41,107.98 c-16.55,7.51 -16.55,32.53 0,40.04 z m487.18,88.28 l-58.09,-26.33 -161.64,73.27 c-7.56,3.43 -15.59,5.17 -23.86,5.17 s-16.29,-1.74 -23.86,-5.17 L70.51,209.97 l-58.1,26.33 c-16.55,7.5 -16.55,32.5 0,40 l232.94,105.59 c6.8,3.08 14.49,3.08 21.29,0 L499.59,276.3 c16.55,-7.5 16.55,-32.5 0,-40 z m0,127.8 l-57.87,-26.23 -161.86,73.37 c-7.56,3.43 -15.59,5.17 -23.86,5.17 s-16.29,-1.74 -23.86,-5.17 L70.29,337.87 12.41,364.1 c-16.55,7.5 -16.55,32.5 0,40 l232.94,105.59 c6.8,3.08 14.49,3.08 21.29,0 L499.59,404.1 c16.55,-7.5 16.55,-32.5 0,-40 z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
     <DrawingImage x:Key="BookmarkDrawingImage">
         <DrawingImage.Drawing>
             <DrawingGroup>

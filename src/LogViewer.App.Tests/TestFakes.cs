@@ -55,6 +55,7 @@ namespace LogViewer.App.Tests
         public void ShowImportProgress(List<ImportLogFile> files, Action cancel) { }
         public void ShowSearchResults(List<LogMessage> messages, string searchText, bool matchCase, bool useRegex, bool matchWholeWord, Action<LogMessage> showLog) { }
         public void ShowOrActivateLoggerStatistics(LoggerStatisticsViewModel viewModel, Action<LogMessage> showLog) { }
+        public void ShowOrActivateMessageGroups(MessageGroupsViewModel viewModel, Action<LogMessage> showLog) { }
         public void ShowOrActivateBookmarks(BookmarkListViewModel viewModel) { }
         public bool? ShowSettings() => false;
         public bool Confirm(string message, string caption = null) => ConfirmResult;
@@ -68,6 +69,20 @@ namespace LogViewer.App.Tests
         public bool ConfirmResult = true;
         public string PromptTextToReturn = "Payments errors";
         public bool PromptTextResult = true;
+    }
+
+    internal sealed class FakeUiTimer : IUiTimer
+    {
+        public TimeSpan Interval { get; set; }
+        public bool IsEnabled { get; private set; }
+        public event EventHandler Tick;
+        public void Start() => IsEnabled = true;
+        public void Stop() => IsEnabled = false;
+        public void Dispose() => Stop();
+        public void Fire()
+        {
+            Tick?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     internal sealed class FakeFiles : IFileDialogService

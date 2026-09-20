@@ -8,7 +8,7 @@ namespace LogViewer.Services
     /// </summary>
     public interface IUiTimer : IDisposable
     {
-        /// <summary>Delay between ticks. The timeline uses 1.5s so buckets are not rebuilt on every UDP batch.</summary>
+        /// <summary>Delay between ticks. Timeline and repeats windows use 1.5s so UDP batches are coalesced.</summary>
         TimeSpan Interval { get; set; }
 
         /// <summary>True while a deferred tick is pending; a second Start is not needed.</summary>

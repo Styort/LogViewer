@@ -48,8 +48,9 @@
             <Compile Include="Domain\ImportRange.cs" />
             <Compile Include="Domain\ImportTemplateParameters.cs" />
     <Compile Include="Domain\LogTemplateDto.cs" />
-    <Compile Include="Domain\LoggerTreeNode.cs" />
-    <Compile Include="Domain\TemplateParseLayout.cs" />
+            <Compile Include="Domain\LoggerTreeNode.cs" />
+            <Compile Include="Domain\MessageGroup.cs" />
+            <Compile Include="Domain\TemplateParseLayout.cs" />
     <Compile Include="Services\StringUtils.cs" />
     <Compile Include="Services\XmlLogParser.cs" />
     <Compile Include="Services\LogExportText.cs" />
@@ -67,6 +68,8 @@
     <Compile Include="Services\LogImportService.cs" />
     <Compile Include="Services\LogQueryService.cs" />
     <Compile Include="Services\ErrorTimelineBuilder.cs" />
+    <Compile Include="Services\MessageFingerprint.cs" />
+    <Compile Include="Services\MessageGroupAggregator.cs" />
     <Compile Include="State\LogSession.cs" />
     <Compile Include="State\LoggerFilterState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

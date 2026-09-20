@@ -2172,5 +2172,65 @@ namespace LogViewer.Localization {
                 return ResourceManager.GetString("FilterPresetsHelpToolTip", resourceCulture);
             }
         }
+
+        internal static string MessageGroups {
+            get {
+                return ResourceManager.GetString("MessageGroups", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsToolTip {
+            get {
+                return ResourceManager.GetString("MessageGroupsToolTip", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsEmpty {
+            get {
+                return ResourceManager.GetString("MessageGroupsEmpty", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsFilter {
+            get {
+                return ResourceManager.GetString("MessageGroupsFilter", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsHeadline {
+            get {
+                return ResourceManager.GetString("MessageGroupsHeadline", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsFirstTime {
+            get {
+                return ResourceManager.GetString("MessageGroupsFirstTime", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsLastTime {
+            get {
+                return ResourceManager.GetString("MessageGroupsLastTime", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsShowFirst {
+            get {
+                return ResourceManager.GetString("MessageGroupsShowFirst", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsShowLast {
+            get {
+                return ResourceManager.GetString("MessageGroupsShowLast", resourceCulture);
+            }
+        }
+
+        internal static string MessageGroupsSummary {
+            get {
+                return ResourceManager.GetString("MessageGroupsSummary", resourceCulture);
+            }
+        }
     }
 }

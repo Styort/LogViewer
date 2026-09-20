@@ -1248,6 +1248,34 @@
         </Setter>
     </Style>
 
+    <Style x:Key="MessageGroupsButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
+        <Setter Property="ToolTip" Value="{localization:LocBinding MessageGroupsToolTip}"/>
+        <Setter Property="IsEnabled" Value="{Binding Path=CleanIsEnabled}"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                        <Image Source="{StaticResource MessageGroupsDrawingImage}" Cursor="Hand" Height="40"/>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="RootGrid" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="RootGrid" Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="FilterPresetsButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTip" Value="{localization:LocBinding FilterPresetsToolTip}"/>
         <Setter Property="Template">

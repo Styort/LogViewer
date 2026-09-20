@@ -24,6 +24,8 @@ namespace LogViewer.Factories
         public IClipboardService Clipboard { get; set; }
         /// <summary>Error-timeline timer; tests may leave it unstarted.</summary>
         public IUiTimer TimelineTimer { get; set; }
+        /// <summary>Repeats-window debounce; separate instance so timeline ticks do not rebuild groups.</summary>
+        public IUiTimer MessageGroupsTimer { get; set; }
         /// <summary>Canonical entry buffer. One per window.</summary>
         public LogSession Session { get; set; }
         public LogProcessingService Processing { get; set; }
@@ -62,6 +64,7 @@ namespace LogViewer.Factories
             var files = new WpfFileDialogService();
             var clipboard = new WpfClipboardService();
             var timer = new DispatcherUiTimer();
+            var groupsTimer = new DispatcherUiTimer();
 
             var session = new LogSession();
             session.AllowMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
@@ -93,6 +96,7 @@ namespace LogViewer.Factories
                 Files = files,
                 Clipboard = clipboard,
                 TimelineTimer = timer,
+                MessageGroupsTimer = groupsTimer,
                 Session = session,
                 Processing = processing,
                 Adapter = adapter,

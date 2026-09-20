@@ -77,13 +77,14 @@ namespace LogViewer.MVVM.ViewModels
             Receivers = new ReceiversViewModel(d.Processing, d.Adapter, d.Coordinator, d.UdpFactory, d.Dialogs, d.Settings.Receivers);
             Timeline = new ErrorTimelineViewModel(d.ViewState, d.Settings, d.TimelineTimer);
             Bookmarks = new BookmarksViewModel(d.ViewState, d.Dialogs);
+            MessageGroups = new MessageGroupsViewModel(d.ViewState, d.Dialogs, d.MessageGroupsTimer);
             Import = new ImportViewModel(d.ViewState, d.Session, d.Processing, d.ImportService, d.Adapter, d.FileWatch, d.Dialogs, d.Files, Receivers, FormatLogLineForClipboard);
             Search = new SearchViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.Projector, d.Query, d.Dialogs, d.Settings, () => SelectedMinLogLevel);
             Tree = new LoggerTreeViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.FileWatch, d.TreeBuilder, d.TreeMarker, d.Settings, Receivers, Import, Clean);
             FilterPresets = new FilterPresetsViewModel(d.Coordinator, d.Dialogs, Search, Tree, SetMinLevelFromPreset);
 
-            _parts = new IResettable[] { Receivers, Import, Tree, Search, Bookmarks, Timeline };
-            _presenter = new LogSessionPresenter(d.ViewState, d.Projector, Tree, Bookmarks, Timeline, v => CleanIsEnabled = v);
+            _parts = new IResettable[] { Receivers, Import, Tree, Search, Bookmarks, Timeline, MessageGroups };
+            _presenter = new LogSessionPresenter(d.ViewState, d.Projector, Tree, Bookmarks, Timeline, MessageGroups, v => CleanIsEnabled = v);
 
             _state.PropertyChanged += (sender, e) => OnPropertyChanged(e.PropertyName);
             Receivers.PropertyChanged += (sender, e) => RefreshTaskbar();
@@ -111,6 +112,7 @@ namespace LogViewer.MVVM.ViewModels
         public SearchViewModel Search { get; }
         public BookmarksViewModel Bookmarks { get; }
         public ErrorTimelineViewModel Timeline { get; }
+        public MessageGroupsViewModel MessageGroups { get; }
         public FilterPresetsViewModel FilterPresets { get; }
 
         /// <summary>Proxy for <see cref="LogViewState.Logs"/> — window DataContext was not changed, XAML still uses Logs.</summary>
@@ -256,6 +258,7 @@ namespace LogViewer.MVVM.ViewModels
         public void Dispose()
         {
             Timeline.DisposeTimer();
+            MessageGroups.DisposeTimer();
             Import.Watch.RemoveAll();
             _adapter?.FlushPending();
             _adapter?.Dispose();

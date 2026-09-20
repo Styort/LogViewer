@@ -11,12 +11,13 @@ using LogViewer.MVVM.Views;
 namespace LogViewer.Services.Wpf
 {
     /// <summary>
-    /// WPF dialogs. Statistics and bookmark windows are process singletons:
+    /// WPF dialogs. Statistics, repeats, and bookmark windows are process singletons:
     /// a second Show activates the existing window instead of stacking another.
     /// </summary>
     public sealed class WpfDialogService : IDialogService
     {
         private LoggerStatisticsWindow _statisticsWindow;
+        private MessageGroupsWindow _messageGroupsWindow;
         private BookmarkListWindow _bookmarkListWindow;
 
         public void ShowInformation(string message, string caption = null)
@@ -123,6 +124,22 @@ namespace LogViewer.Services.Wpf
             _statisticsWindow.Closed += (sender, args) => _statisticsWindow = null;
             _statisticsWindow.ShowLogEvent += (sender, message) => showLog?.Invoke(message);
             _statisticsWindow.Show();
+        }
+
+        public void ShowOrActivateMessageGroups(MessageGroupsViewModel viewModel, Action<LogMessage> showLog)
+        {
+            if (_messageGroupsWindow != null)
+            {
+                if (_messageGroupsWindow.WindowState == WindowState.Minimized)
+                    _messageGroupsWindow.WindowState = WindowState.Normal;
+                _messageGroupsWindow.Activate();
+                return;
+            }
+
+            _messageGroupsWindow = new MessageGroupsWindow(viewModel);
+            _messageGroupsWindow.Closed += (sender, args) => _messageGroupsWindow = null;
+            _messageGroupsWindow.ShowLogEvent += (sender, message) => showLog?.Invoke(message);
+            _messageGroupsWindow.Show();
         }
 
         public void ShowOrActivateBookmarks(BookmarkListViewModel viewModel)

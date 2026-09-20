@@ -876,4 +876,34 @@
   <data name="FilterPresetsHelpToolTip" xml:space="preserve">
     <value>Что такое пресеты и что в них сохраняется</value>
   </data>
+  <data name="MessageGroups" xml:space="preserve">
+    <value>Повторы</value>
+  </data>
+  <data name="MessageGroupsToolTip" xml:space="preserve">
+    <value>Группы одинаковых сообщений (счётчик повторов)</value>
+  </data>
+  <data name="MessageGroupsEmpty" xml:space="preserve">
+    <value>Нет сообщений для группировки</value>
+  </data>
+  <data name="MessageGroupsFilter" xml:space="preserve">
+    <value>Фильтр групп</value>
+  </data>
+  <data name="MessageGroupsHeadline" xml:space="preserve">
+    <value>Сообщение</value>
+  </data>
+  <data name="MessageGroupsFirstTime" xml:space="preserve">
+    <value>Первое</value>
+  </data>
+  <data name="MessageGroupsLastTime" xml:space="preserve">
+    <value>Последнее</value>
+  </data>
+  <data name="MessageGroupsShowFirst" xml:space="preserve">
+    <value>К первому</value>
+  </data>
+  <data name="MessageGroupsShowLast" xml:space="preserve">
+    <value>К последнему</value>
+  </data>
+  <data name="MessageGroupsSummary" xml:space="preserve">
+    <value>Групп: {0}, вхождений: {1}</value>
+  </data>
 </root>

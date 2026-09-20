@@ -20,6 +20,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         private readonly LoggerTreeViewModel _tree;
         private readonly BookmarksViewModel _bookmarks;
         private readonly ErrorTimelineViewModel _timeline;
+        private readonly MessageGroupsViewModel _groups;
         private readonly Action<bool> _setCleanEnabled;
 
         public LogSessionPresenter(
@@ -28,6 +29,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             LoggerTreeViewModel tree,
             BookmarksViewModel bookmarks,
             ErrorTimelineViewModel timeline,
+            MessageGroupsViewModel groups,
             Action<bool> setCleanEnabled)
         {
             _state = state;
@@ -35,6 +37,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             _tree = tree;
             _bookmarks = bookmarks;
             _timeline = timeline;
+            _groups = groups;
             _setCleanEnabled = setCleanEnabled;
         }
 
@@ -57,6 +60,7 @@ namespace LogViewer.MVVM.ViewModels.Log
 
             _setCleanEnabled(_state.AllLogs.Any());
             _timeline.ScheduleRebuild();
+            _groups.ScheduleRebuild();
         }
 
         /// <summary>Session is empty in Core: lists, tree, bookmarks, and timeline in the same frame.</summary>
@@ -68,6 +72,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             _tree.OnSessionCleared();
             _setCleanEnabled(false);
             _timeline.Rebuild();
+            _groups.Reset();
         }
 
         /// <summary>Max-buffer trim: drop count entries from the head of both lists, keep the selection anchor.</summary>
@@ -85,6 +90,8 @@ namespace LogViewer.MVVM.ViewModels.Log
             _state.AllLogs = new AsyncObservableCollection<LogMessage>(allList);
             _state.Logs = new AsyncObservableCollection<LogMessage>(logsList);
             _state.SelectedLog = _state.GetLastSelectedOrNearby();
+            _timeline.ScheduleRebuild();
+            _groups.ScheduleRebuild();
         }
 
         /// <summary>

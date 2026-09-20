@@ -877,4 +877,34 @@ Not saved: received messages, bookmarks, Don't Receive, or receiver settings. Pr
   <data name="FilterPresetsHelpToolTip" xml:space="preserve">
     <value>What presets are and what they store</value>
   </data>
+  <data name="MessageGroups" xml:space="preserve">
+    <value>Repeats</value>
+  </data>
+  <data name="MessageGroupsToolTip" xml:space="preserve">
+    <value>Groups of identical messages (repeat counts)</value>
+  </data>
+  <data name="MessageGroupsEmpty" xml:space="preserve">
+    <value>No messages to group</value>
+  </data>
+  <data name="MessageGroupsFilter" xml:space="preserve">
+    <value>Filter groups</value>
+  </data>
+  <data name="MessageGroupsHeadline" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="MessageGroupsFirstTime" xml:space="preserve">
+    <value>First</value>
+  </data>
+  <data name="MessageGroupsLastTime" xml:space="preserve">
+    <value>Last</value>
+  </data>
+  <data name="MessageGroupsShowFirst" xml:space="preserve">
+    <value>Go to first</value>
+  </data>
+  <data name="MessageGroupsShowLast" xml:space="preserve">
+    <value>Go to last</value>
+  </data>
+  <data name="MessageGroupsSummary" xml:space="preserve">
+    <value>Groups: {0}, occurrences: {1}</value>
+  </data>
 </root>

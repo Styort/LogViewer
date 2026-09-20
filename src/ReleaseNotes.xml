@@ -39,6 +39,10 @@
 				<ru>Сохранённые пресеты фильтра: именованный набор уровня, поиска и выбранных логгеров. Открываются иконкой в шапке окна, применяются одной командой, хранятся в filter_presets.xml рядом с настройками. Не сохраняют сами логи, закладки и Don't Receive.</ru>
 				<en>Saved filter presets: a named set of min level, search, and selected loggers. Open them from the toolbar icon, apply in one step; they are stored in filter_presets.xml next to settings. Presets do not save log rows, bookmarks, or Don't Receive.</en>
 			</Item>
+			<Item>
+				<ru>Окно повторов одинаковых сообщений: открывается иконкой в шапке. Группы считаются по уровню, логгеру и нормализованному тексту (GUID, даты и длинные числа схлопываются; у исключения — тип и сообщение без кадров стека). В таблице — счётчик, первое и последнее время, переход к первому или последнему вхождению. По умолчанию считается видимый список с фильтрами, есть тумблер «весь буфер». Главный список не сворачивается. Пересчёт с задержкой, чтобы UDP-шторм не блокировал UI.</ru>
+				<en>Repeats window for identical messages: open it from the toolbar icon. Groups use level, logger, and normalized text (GUIDs, dates, and long numbers are stripped; for throwables, type and message without stack frames). The table shows a count, first and last time, and jumps to the first or last occurrence. By default groups the visible filtered list; a toggle uses the whole buffer. The main list is not collapsed. Recalculation is debounced so a UDP storm does not freeze the UI.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

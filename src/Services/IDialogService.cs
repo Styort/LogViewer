@@ -80,6 +80,9 @@ namespace LogViewer.Services
         /// <summary>A second call activates the already open statistics window instead of creating another.</summary>
         void ShowOrActivateLoggerStatistics(LoggerStatisticsViewModel viewModel, Action<LogMessage> showLog);
 
+        /// <summary>A second call activates the already open repeats window instead of creating another.</summary>
+        void ShowOrActivateMessageGroups(MessageGroupsViewModel viewModel, Action<LogMessage> showLog);
+
         /// <summary>Same for the bookmark list: one window per process.</summary>
         void ShowOrActivateBookmarks(BookmarkListViewModel viewModel);
 

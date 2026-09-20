@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using LogViewer.Core.Domain;
 using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
@@ -511,6 +512,13 @@ namespace LogViewer.MVVM.ViewModels
 
         public string Version { get; set; } = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
+        public IReadOnlyList<ReceiverTransportOption> TransportList { get; } =
+            new[]
+            {
+                new ReceiverTransportOption(ReceiverTransport.Udp, "UDP"),
+                new ReceiverTransportOption(ReceiverTransport.Tcp, "TCP")
+            };
+
         public List<string> EncodingList { get; set; } =
             new List<string>
             {
@@ -649,7 +657,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private void Save(object obj)
         {
-            if (Receivers.Count != Receivers.DistinctBy(x => x.Port).Count())
+            if (Receivers.Count != Receivers.DistinctBy(x => (x.Port, x.Transport)).Count())
             {
                 MessageBox.Show(Locals.SettingsSaveErrorSamePortNumber, Locals.Error, MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
@@ -847,5 +855,17 @@ namespace LogViewer.MVVM.ViewModels
 
             return false;
         }
+    }
+
+    public sealed class ReceiverTransportOption
+    {
+        public ReceiverTransportOption(ReceiverTransport value, string displayName)
+        {
+            Value = value;
+            DisplayName = displayName;
+        }
+
+        public ReceiverTransport Value { get; }
+        public string DisplayName { get; }
     }
 }

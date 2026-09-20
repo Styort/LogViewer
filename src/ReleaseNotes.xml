@@ -43,6 +43,10 @@
 				<ru>Окно повторов одинаковых сообщений: открывается иконкой в шапке. Группы считаются по уровню, логгеру и нормализованному тексту (GUID, даты и длинные числа схлопываются; у исключения — тип и сообщение без кадров стека). В таблице — счётчик, первое и последнее время, переход к первому или последнему вхождению. По умолчанию считается видимый список с фильтрами, есть тумблер «весь буфер». Главный список не сворачивается. Пересчёт с задержкой, чтобы UDP-шторм не блокировал UI.</ru>
 				<en>Repeats window for identical messages: open it from the toolbar icon. Groups use level, logger, and normalized text (GUIDs, dates, and long numbers are stripped; for throwables, type and message without stack frames). The table shows a count, first and last time, and jumps to the first or last occurrence. By default groups the visible filtered list; a toggle uses the whole buffer. The main list is not collapsed. Recalculation is debounced so a UDP storm does not freeze the UI.</en>
 			</Item>
+			<Item>
+				<ru>Сетевой приёмник умеет UDP и TCP: транспорт выбирается в настройках приёмника. TCP принимает несколько клиентов на одном порту (NLog target NLogViewer, address="tcp://хост:порт"), события не теряются на границе сегмента. Старые настройки без транспорта работают как UDP. Start/Pause, Don't Receive, фильтры и игнор IP действуют так же, как для UDP.</ru>
+				<en>Network receivers support UDP and TCP: pick the transport in receiver settings. TCP accepts multiple clients on one port (NLog NLogViewer target, address="tcp://host:port"); events split across TCP segments are not lost. Existing settings without a transport still use UDP. Start/Pause, Don't Receive, filters, and ignored IPs work the same as for UDP.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

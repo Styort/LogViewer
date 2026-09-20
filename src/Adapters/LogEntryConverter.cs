@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using LogViewer.Core.Domain;
 using LogViewer.Enums;
 using LogViewer.MVVM.Models;
@@ -7,14 +6,14 @@ using LogViewer.MVVM.Models;
 namespace LogViewer.Adapters
 {
     /// <summary>
-    /// Converts Core LogEntry to UI LogMessage and back (minimal) for filtering. Resolves Receiver (color, name) from list by port.
+    /// Converts Core LogEntry to UI LogMessage and back (minimal) for filtering. Resolves Receiver (color, name) from list by port and transport.
     /// </summary>
     public static class LogEntryConverter
     {
         public static LogMessage ToLogMessage(LogEntry entry, IList<Receiver> receivers)
         {
             if (entry == null) return null;
-            var receiver = receivers?.FirstOrDefault(x => x.Port == entry.ReceiverPort) ?? new Receiver();
+            var receiver = Receiver.Find(receivers, entry.ReceiverPort, entry.ReceiverTransport) ?? new Receiver();
             var msg = new LogMessage
             {
                 Time = entry.Time,
@@ -50,6 +49,7 @@ namespace LogViewer.Adapters
                 ExecutableName = message.ExecutableName,
                 Address = message.Address,
                 ReceiverPort = message.Receiver?.Port ?? 0,
+                ReceiverTransport = message.Receiver?.Transport ?? ReceiverTransport.Udp,
                 Throwable = message.Throwable,
                 Properties = message.Properties != null
                     ? new Dictionary<string, string>(message.Properties)

@@ -398,6 +398,9 @@
   <data name="Receivers" xml:space="preserve">
     <value>Приёмники</value>
   </data>
+  <data name="ReceiverTransport" xml:space="preserve">
+    <value>Транспорт:</value>
+  </data>
   <data name="Remove" xml:space="preserve">
     <value>Удалить</value>
   </data>
@@ -432,7 +435,7 @@
     <value>Настройки</value>
   </data>
   <data name="SettingsSaveErrorSamePortNumber" xml:space="preserve">
-    <value>В сетевых приёмниках есть приёмники с одинаковыми портами.</value>
+    <value>В сетевых приёмниках есть приёмники с одинаковым портом и транспортом (UDP или TCP).</value>
   </data>
   <data name="ShowSourceColumn" xml:space="preserve">
     <value>Показывать колонку источника:</value>

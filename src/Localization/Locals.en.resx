@@ -189,6 +189,9 @@
   <data name="Receivers" xml:space="preserve">
     <value>Receivers</value>
   </data>
+  <data name="ReceiverTransport" xml:space="preserve">
+    <value>Transport:</value>
+  </data>
   <data name="Remove" xml:space="preserve">
     <value>Remove</value>
   </data>
@@ -208,7 +211,7 @@
     <value>Time</value>
   </data>
   <data name="UDPPortNumber" xml:space="preserve">
-    <value>UDP port number:</value>
+    <value>Port number:</value>
   </data>
   <data name="Version" xml:space="preserve">
     <value>Version: </value>
@@ -462,7 +465,7 @@ Click the Settings button to add a receiver.</value>
     <value>Set Time Interval</value>
   </data>
   <data name="SettingsSaveErrorSamePortNumber" xml:space="preserve">
-    <value>Two or more receivers use the same port.</value>
+    <value>Two or more receivers use the same port and transport (UDP or TCP).</value>
   </data>
   <data name="ShowOnlyThisLogger" xml:space="preserve">
     <value>Show only this logger</value>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using LogViewer.Adapters;
+using LogViewer.Core.Abstractions;
 using LogViewer.Core.Services;
 using LogViewer.Factories;
 using LogViewer.Helpers;
@@ -14,7 +15,7 @@ using LogViewer.Services;
 namespace LogViewer.MVVM.ViewModels.Log
 {
     /// <summary>
-    /// Start/pause UDP. <see cref="UdpSourceFactory"/> creates sources; the VM only holds sockets.
+    /// Start/pause live UDP/TCP. <see cref="LogSourceFactory"/> creates sources; the VM only holds sockets.
     /// </summary>
     public sealed class ReceiversViewModel : BaseViewModel, IResettable
     {
@@ -22,9 +23,9 @@ namespace LogViewer.MVVM.ViewModels.Log
         private readonly LogProcessingService _processing;
         private readonly CoreToUiAdapter _adapter;
         private readonly FilterCoordinator _filter;
-        private readonly UdpSourceFactory _udpFactory;
+        private readonly LogSourceFactory _sourceFactory;
         private readonly IDialogService _dialogs;
-        private readonly List<UdpLogSource> _udpSources = new List<UdpLogSource>();
+        private readonly List<INetworkLogSource> _networkSources = new List<INetworkLogSource>();
         private readonly List<Receiver> _receivers;
         private bool _startIsEnabled = true;
         private int _colorColumnWidth;
@@ -35,14 +36,14 @@ namespace LogViewer.MVVM.ViewModels.Log
             LogProcessingService processing,
             CoreToUiAdapter adapter,
             FilterCoordinator filter,
-            UdpSourceFactory udpFactory,
+            LogSourceFactory sourceFactory,
             IDialogService dialogs,
             List<Receiver> receivers)
         {
             _processing = processing;
             _adapter = adapter;
             _filter = filter;
-            _udpFactory = udpFactory;
+            _sourceFactory = sourceFactory;
             _dialogs = dialogs;
             _receivers = receivers;
             RecreateUdpSources();
@@ -81,10 +82,10 @@ namespace LogViewer.MVVM.ViewModels.Log
         public RelayCommand StartCommand => _startCommand ?? (_startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => _pauseCommand ?? (_pauseCommand = new RelayCommand(Pause));
 
-        /// <summary>Start all UDP. Apply the filter first so Don't Receive is in effect from the first packet.</summary>
+        /// <summary>Start all live sources. Apply the filter first so Don't Receive is in effect from the first packet.</summary>
         public void Start()
         {
-            if (!_udpSources.Any())
+            if (!_networkSources.Any())
             {
                 _dialogs.ShowInformation(Locals.NoReceiversMessageBoxInfo, Locals.Information);
                 return;
@@ -102,16 +103,16 @@ namespace LogViewer.MVVM.ViewModels.Log
             StartIsEnabled = true;
         }
 
-        /// <summary>After settings: new ports/ignore-IP. Empty UDP list is a no-op; file sources are not touched.</summary>
+        /// <summary>After settings: new ports/transport/ignore-IP. Empty list is a no-op; file sources are not touched.</summary>
         public void RecreateUdpSources()
         {
-            var results = _udpFactory.CreateFromSettings(_receivers);
+            var results = _sourceFactory.CreateFromSettings(_receivers);
             if (results == null || !results.Any())
                 return;
 
-            // Historically: a non-empty UDP list removes all sources, including file follow.
+            // Historically: a non-empty live list removes all sources, including file follow.
             _processing.RemoveAllSources();
-            _udpSources.Clear();
+            _networkSources.Clear();
 
             foreach (var result in results)
             {
@@ -122,7 +123,7 @@ namespace LogViewer.MVVM.ViewModels.Log
                     continue;
                 }
                 _processing.AddSource(result.Source);
-                _udpSources.Add(result.Source);
+                _networkSources.Add(result.Source);
             }
         }
 
@@ -147,7 +148,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         /// <inheritdoc />
         public void Reset()
         {
-            // Clean does not tear down UDP sockets: the user expects receive to continue on an empty list.
+            // Clean does not tear down live sockets: the user expects receive to continue on an empty list.
         }
     }
 }

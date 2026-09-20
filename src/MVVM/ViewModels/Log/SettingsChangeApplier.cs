@@ -11,14 +11,14 @@ namespace LogViewer.MVVM.ViewModels.Log
 {
     /// <summary>
     /// Apply the settings window to the session, columns, and receivers.
-    /// UDP is recreated entirely: port/ignore-IP cannot be changed on a live socket.
+    /// Live UDP/TCP is recreated entirely: port/transport/ignore-IP cannot be changed on a live socket.
     /// </summary>
     public sealed class SettingsChangeApplier
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// Apply settings OK. UDP is recreated at the end: changing the port on a live socket causes PortIsBusy.
+        /// Apply settings OK. Live sources are recreated at the end: changing the port on a live socket causes PortIsBusy.
         /// </summary>
         public void Apply(
             IAppSettings settings,
@@ -50,7 +50,7 @@ namespace LogViewer.MVVM.ViewModels.Log
 
                 foreach (var receiver in settings.Receivers)
                 {
-                    var foundReceiver = receivers.Receivers.FirstOrDefault(x => x.Port == receiver.Port);
+                    var foundReceiver = Receiver.Find(receivers.Receivers, receiver.Port, receiver.Transport);
                     if (foundReceiver == null)
                         receivers.Receivers.Add(receiver);
                     else
@@ -58,25 +58,28 @@ namespace LogViewer.MVVM.ViewModels.Log
                         if (foundReceiver.Color.Color != receiver.Color.Color)
                         {
                             foundReceiver.Color = receiver.Color;
-                            foreach (var logMessage in state.AllLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                            foreach (var logMessage in state.AllLogs.Where(x => x.Receiver.Port == foundReceiver.Port && x.Receiver.Transport == foundReceiver.Transport))
                                 logMessage.Receiver.Color = foundReceiver.Color;
-                            foreach (var logMessage in state.Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                            foreach (var logMessage in state.Logs.Where(x => x.Receiver.Port == foundReceiver.Port && x.Receiver.Transport == foundReceiver.Transport))
                                 logMessage.Receiver.Color = foundReceiver.Color;
                         }
                         if (foundReceiver.Name != receiver.Name)
                         {
                             foundReceiver.Name = receiver.Name;
-                            foreach (var log in state.AllLogs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                            foreach (var log in state.AllLogs.Where(x => x.Receiver.Port == foundReceiver.Port && x.Receiver.Transport == foundReceiver.Transport))
                                 log.Receiver.Name = foundReceiver.Name;
-                            foreach (var log in state.Logs.Where(x => x.Receiver.Port == foundReceiver.Port))
+                            foreach (var log in state.Logs.Where(x => x.Receiver.Port == foundReceiver.Port && x.Receiver.Transport == foundReceiver.Transport))
                                 log.Receiver.Name = foundReceiver.Name;
                         }
+                        foundReceiver.Encoding = receiver.Encoding;
+                        foundReceiver.IsActive = receiver.IsActive;
+                        foundReceiver.Transport = receiver.Transport;
                     }
                 }
 
                 foreach (var receiver in receivers.Receivers.ToList())
                 {
-                    if (settings.Receivers.All(x => x.Port != receiver.Port))
+                    if (settings.Receivers.All(x => x.Port != receiver.Port || x.Transport != receiver.Transport))
                         receivers.Receivers.Remove(receiver);
                 }
 

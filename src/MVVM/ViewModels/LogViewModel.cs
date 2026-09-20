@@ -74,7 +74,7 @@ namespace LogViewer.MVVM.ViewModels
             IsSourceVisible = _settings.IsShowSourceColumn;
             IsThreadVisible = _settings.IsShowThreadColumn;
 
-            Receivers = new ReceiversViewModel(d.Processing, d.Adapter, d.Coordinator, d.UdpFactory, d.Dialogs, d.Settings.Receivers);
+            Receivers = new ReceiversViewModel(d.Processing, d.Adapter, d.Coordinator, d.SourceFactory, d.Dialogs, d.Settings.Receivers);
             Timeline = new ErrorTimelineViewModel(d.ViewState, d.Settings, d.TimelineTimer);
             Bookmarks = new BookmarksViewModel(d.ViewState, d.Dialogs);
             MessageGroups = new MessageGroupsViewModel(d.ViewState, d.Dialogs, d.MessageGroupsTimer);

@@ -154,7 +154,7 @@ namespace LogViewer.App.Tests
                 var dialogs = new FakeDialogs();
                 var sync = new SynchronizationContext();
                 var adapter = new CoreToUiAdapter(sync, processing);
-                var receivers = new ReceiversViewModel(processing, adapter, coordinator, new Factories.UdpSourceFactory(settings), dialogs, settings.Receivers);
+                var receivers = new ReceiversViewModel(processing, adapter, coordinator, new Factories.LogSourceFactory(settings), dialogs, settings.Receivers);
                 var watch = new LogFileWatchService(processing);
                 var import = new ImportViewModel(state, session, processing, new LogImportService(session), adapter, watch, dialogs, new FakeFiles(), receivers, m => "");
                 var tree = new LoggerTreeViewModel(state, coordinator, session, processing, watch, new LoggerTreeBuilder(), new LoggerTreeMarker(state, settings), settings, receivers, import, () => { });

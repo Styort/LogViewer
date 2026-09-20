@@ -187,7 +187,7 @@
     <Compile Include="Adapters\RowHighlightApplier.cs" />
     <Compile Include="Adapters\LogTemplateAdapter.cs" />
     <Compile Include="Adapters\ReceiverConfigAdapter.cs" />
-    <Compile Include="Factories\UdpSourceFactory.cs" />
+    <Compile Include="Factories\LogSourceFactory.cs" />
     <Compile Include="Factories\LogViewModelFactory.cs" />
     <Compile Include="Converters\CountToVisibilityConverter.cs" />
     <Compile Include="Converters\DataConverter.cs" />

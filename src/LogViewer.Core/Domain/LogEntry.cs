@@ -53,9 +53,13 @@ namespace LogViewer.Core.Domain
         public Dictionary<string, string> Properties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
-        /// Receiver identifier (e.g. port) so UI can resolve color/name from Settings.
+        /// Receiver identifier (port + transport) so UI can resolve color/name from Settings.
+        /// UDP and TCP may share a port number.
         /// </summary>
         public int ReceiverPort { get; set; }
+
+        /// <summary>Which live source produced the entry. File import leaves the default (Udp).</summary>
+        public ReceiverTransport ReceiverTransport { get; set; }
 
         public string FullPath
         {

@@ -10,7 +10,7 @@ using LogViewer.Core.Abstractions;
 
 namespace LogViewer.Core.Services
 {
-    public class UdpLogSource : ILogSource
+    public class UdpLogSource : INetworkLogSource
     {
         private UdpClient _udpClient;
         private IPEndPoint _remoteIpEndPoint;
@@ -59,7 +59,16 @@ namespace LogViewer.Core.Services
 
         public void Start()
         {
-            if (_udpClient == null) return;
+            if (_udpClient == null)
+            {
+                string unused;
+                if (!TryInit(out unused))
+                    return;
+            }
+
+            if (_running)
+                return;
+
             _running = true;
             _receiveThread = new Thread(ReceiveLoop) { IsBackground = true };
             _receiveThread.Start();
@@ -91,27 +100,8 @@ namespace LogViewer.Core.Services
                     string incomingLog = encoding.GetString(receiveBytes);
                     string address = _separateAddressByPort ? $"{remoteAddress}:{_config.Port}" : remoteAddress;
 
-                    LogEntry entry;
-                    try
-                    {
-                        entry = _parser.Parse(incomingLog);
-                    }
-                    catch (Exception ex)
-                    {
-                        entry = new LogEntry
-                        {
-                            Logger = "UDP Logger",
-                            Address = address,
-                            Thread = -1,
-                            Message = $"An error occurred while parsing log: {incomingLog}. {Environment.NewLine} Exception: {ex}",
-                            Time = DateTime.Now,
-                            Level = LogLevel.Error,
-                            ExecutableName = "LogViewer"
-                        };
-                    }
-
-                    entry.Address = address;
-                    entry.ReceiverPort = _config.Port;
+                    LogEntry entry = LiveXmlLogEntryFactory.Create(
+                        _parser, incomingLog, address, _config.Port, ReceiverTransport.Udp, "UDP Logger");
                     LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry });
                 }
                 catch (ObjectDisposedException)

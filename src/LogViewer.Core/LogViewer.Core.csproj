@@ -36,11 +36,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstractions\ILogSource.cs" />
+    <Compile Include="Abstractions\INetworkLogSource.cs" />
     <Compile Include="Abstractions\ILogParser.cs" />
     <Compile Include="Abstractions\ILogFilter.cs" />
     <Compile Include="Abstractions\IReceiverConfig.cs" />
     <Compile Include="Abstractions\ILogImportService.cs" />
     <Compile Include="Domain\LogLevel.cs" />
+    <Compile Include="Domain\ReceiverTransport.cs" />
     <Compile Include="Domain\LogEntry.cs" />
             <Compile Include="Domain\HighlightRule.cs" />
             <Compile Include="Domain\FilterPreset.cs" />
@@ -62,6 +64,9 @@
             <Compile Include="Services\FilterPresetXmlStore.cs" />
     <Compile Include="Services\SearchMatcher.cs" />
     <Compile Include="Services\UdpLogSource.cs" />
+    <Compile Include="Services\TcpLogSource.cs" />
+    <Compile Include="Services\Log4jXmlFrameSplitter.cs" />
+    <Compile Include="Services\LiveXmlLogEntryFactory.cs" />
     <Compile Include="Services\FileLogSource.cs" />
     <Compile Include="Services\LogProcessingService.cs" />
     <Compile Include="Services\LogEntryBatcher.cs" />

@@ -11,7 +11,8 @@ namespace LogViewer.Core.Abstractions
         void Start();
         void Stop();
         /// <summary>
-        /// Raised when a new log entry is available. Raised on background thread.
+        /// Raised when a new log entry is available. Raised on a background thread
+        /// (UDP receive, TCP accept/read). UI batching marshals onto the dispatcher.
         /// </summary>
         event EventHandler<LogEntryReceivedEventArgs> LogReceived;
     }

@@ -31,7 +31,7 @@ namespace LogViewer.Factories
         public LogProcessingService Processing { get; set; }
         public CoreToUiAdapter Adapter { get; set; }
         public ILogImportService ImportService { get; set; }
-        public UdpSourceFactory UdpFactory { get; set; }
+        public LogSourceFactory SourceFactory { get; set; }
         public LogQueryService Query { get; set; }
         public LogViewState ViewState { get; set; }
         public FilterCoordinator Coordinator { get; set; }
@@ -76,7 +76,7 @@ namespace LogViewer.Factories
             // Must run on the UI thread; a static ctor would capture a null context.
             var adapter = new CoreToUiAdapter(SynchronizationContext.Current, processing);
             var importService = new LogImportService(session);
-            var udpFactory = new UdpSourceFactory(settings);
+            var sourceFactory = new LogSourceFactory(settings);
             var query = new LogQueryService();
             var loggerFilter = new LoggerFilterState();
             var viewState = new LogViewState();
@@ -101,7 +101,7 @@ namespace LogViewer.Factories
                 Processing = processing,
                 Adapter = adapter,
                 ImportService = importService,
-                UdpFactory = udpFactory,
+                SourceFactory = sourceFactory,
                 Query = query,
                 ViewState = viewState,
                 Coordinator = coordinator,

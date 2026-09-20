@@ -1447,6 +1447,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Транспорт:.
+        /// </summary>
+        internal static string ReceiverTransport {
+            get {
+                return ResourceManager.GetString("ReceiverTransport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Release Notes.
         /// </summary>
         internal static string ReleaseNotes {
@@ -1600,7 +1609,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to В сетевых приёмниках есть приёмники с одинаковыми портами..
+        ///   Looks up a localized string similar to В сетевых приёмниках есть приёмники с одинаковым портом и транспортом (UDP или TCP)..
         /// </summary>
         internal static string SettingsSaveErrorSamePortNumber {
             get {

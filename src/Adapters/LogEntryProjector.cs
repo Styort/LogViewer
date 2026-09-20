@@ -32,7 +32,7 @@ namespace LogViewer.Adapters
             var msg = LogEntryConverter.ToLogMessage(entry, _receivers);
             if (msg == null)
                 return null;
-            var rec = _receivers?.FirstOrDefault(x => x.Port == entry.ReceiverPort);
+            var rec = Receiver.Find(_receivers, entry.ReceiverPort, entry.ReceiverTransport);
             if (rec != null)
             {
                 msg.Receiver.Color = rec.Color;

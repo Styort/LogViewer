@@ -69,6 +69,15 @@ namespace LogViewer.MVVM.ViewModels.Log
             _files = files;
             _receivers = receivers;
             _formatLine = formatLine;
+            // Toolbar binds Import.FileWatchers / HasFileWatchers; the list lives on _watch.
+            _watch.PropertyChanged += (_, e) =>
+            {
+                if (e.PropertyName == nameof(LogFileWatchService.FileWatchers) || string.IsNullOrEmpty(e.PropertyName))
+                {
+                    OnPropertyChanged(nameof(FileWatchers));
+                    OnPropertyChanged(nameof(HasFileWatchers));
+                }
+            };
         }
 
         /// <summary>For host Dispose: stop follow without going through the Import API.</summary>
@@ -76,6 +85,9 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         /// <summary>The Start/Pause file toolbar looks at Count.</summary>
         public List<WatchedFileInfo> FileWatchers => _watch.FileWatchers;
+
+        /// <summary>True while at least one imported file is followed. Drives the file Start/Stop button.</summary>
+        public bool HasFileWatchers => _watch.FileWatchers.Count > 0;
 
         /// <summary>true = follow is paused. Same idea as StartIsEnabled for UDP.</summary>
         public bool StartReadFromFileIsEnabled

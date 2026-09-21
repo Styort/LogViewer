@@ -156,17 +156,17 @@
                 <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ImportCommand}" ToolTip="{localization:LocBinding ImportLogsToolTip}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource ImportDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                        <TextBlock Text="{localization:LocBinding HeaderImport}"/>
+                        <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderImport}"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ExportCommand}" ToolTip="{localization:LocBinding ExportLogsToFileToolTip}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource ExportDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                        <TextBlock Text="{localization:LocBinding HeaderExportVisible}"/>
+                        <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderExportVisible}"/>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource CompactToolbarButtonStyle}" Click="OnHeaderDropDownClick" ToolTip="{localization:LocBinding HeaderSessionToolTip}">
-                    <TextBlock Text="{localization:LocBinding HeaderSession}"/>
+                    <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderSession}"/>
                     <Button.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}"
                                      DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
@@ -191,14 +191,14 @@
                             IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding LoggerStatisticsToolTip}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource LoggerStatisticsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                            <TextBlock Text="{localization:LocBinding HeaderStatistics}"/>
+                            <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderStatistics}"/>
                         </StackPanel>
                     </Button>
                     <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=MessageGroups.OpenCommand}"
                             IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding MessageGroupsToolTip}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource MessageGroupsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                            <TextBlock Text="{localization:LocBinding HeaderRepeats}"/>
+                            <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderRepeats}"/>
                         </StackPanel>
                     </Button>
                     <Button Command="{Binding Path=FilterPresets.OpenCommand}" ToolTip="{localization:LocBinding FilterPresetsToolTip}">
@@ -213,12 +213,12 @@
                         </Button.Style>
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource FilterPresetsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                            <TextBlock Text="{localization:LocBinding FilterPresets}"/>
+                            <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding FilterPresets}"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
                 <Button x:Name="HeaderMoreMenu" Style="{StaticResource CompactToolbarButtonStyle}" Click="OnHeaderDropDownClick" Visibility="Collapsed">
-                    <TextBlock Text="{localization:LocBinding HeaderMore}"/>
+                    <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderMore}"/>
                     <Button.ContextMenu>
                         <ContextMenu Style="{StaticResource BaseContextMenu}"
                                      DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
@@ -246,14 +246,125 @@
                         Visibility="{Binding Path=Bookmarks.Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource BookmarkDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
-                        <TextBlock Text="{localization:LocBinding HeaderBookmarks}"/>
+                        <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderBookmarks}"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
 
             <StackPanel x:Name="HeaderRightPanel" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" SizeChanged="HeaderToolbar_OnSizeChanged">
-                <Button Style="{StaticResource CompactUdpReceiverButtonStyle}"/>
-                <Button Style="{StaticResource CompactFileReceiverButtonStyle}" Visibility="{Binding Path=Import.FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+                <Button Style="{StaticResource CompactUdpReceiverButtonStyle}">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid>
+                            <Image Source="{StaticResource PlayWhiteImage}">
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource CompactToolbarIconStyle}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <Image Source="{StaticResource PauseWhiteImage}">
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource CompactToolbarIconStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="{localization:LocBinding HeaderStart}" Foreground="White" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource CompactToolbarCaptionStyle}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{localization:LocBinding HeaderStop}" Foreground="White" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource CompactToolbarCaptionStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource CompactFileReceiverButtonStyle}"
+                        Visibility="{Binding Path=Import.HasFileWatchers, Converter={StaticResource BooleanToVisibility}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid>
+                            <Image Source="{StaticResource PlayWhiteImage}">
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource CompactToolbarIconStyle}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                            <Image Source="{StaticResource PauseWhiteImage}">
+                                <Image.Style>
+                                    <Style TargetType="Image" BasedOn="{StaticResource CompactToolbarIconStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Image.Style>
+                            </Image>
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="{localization:LocBinding HeaderFileStart}" Foreground="White" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource CompactToolbarCaptionStyle}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Hidden"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                            <TextBlock Text="{localization:LocBinding HeaderFileStop}" Foreground="White" HorizontalAlignment="Center">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock" BasedOn="{StaticResource CompactToolbarCaptionStyle}">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </StackPanel>
+                </Button>
 
                 <Rectangle Style="{StaticResource CompactToolbarSeparatorStyle}"/>
 
@@ -264,9 +375,9 @@
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource AutoDownImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
                         <Grid>
-                            <TextBlock Text="{localization:LocBinding HeaderFollowOff}" Visibility="Hidden"/>
-                            <TextBlock Text="{localization:LocBinding HeaderFollowOn}" Visibility="Hidden"/>
-                            <TextBlock x:Name="AutoScrollButtonText" Text="{localization:LocBinding HeaderFollowOff}" HorizontalAlignment="Center"/>
+                            <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderFollowOff}" Visibility="Hidden"/>
+                            <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderFollowOn}" Visibility="Hidden"/>
+                            <TextBlock x:Name="AutoScrollButtonText" Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderFollowOff}" HorizontalAlignment="Center"/>
                         </Grid>
                     </StackPanel>
                 </Button>

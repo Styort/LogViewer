@@ -115,7 +115,7 @@ namespace LogViewer.App.Tests
 
             var roots = env.Tree.CollectIncludedRoots();
             Assert.That(roots.OrderBy(x => x).ToArray(),
-                Is.EqualTo(new[] { "SecurityLog", "Terminal" }));
+                Is.EqualTo(new[] { file + ".SecurityLog", file + ".Terminal" }));
         }
 
         [Test]
@@ -131,6 +131,37 @@ namespace LogViewer.App.Tests
             Assert.That(env.Settings.IgnoredIPs.Count, Is.EqualTo(1));
             Assert.That(env.Settings.IgnoredIPs[0].IP, Is.EqualTo("127.0.0.1"));
             Assert.That(env.Settings.IgnoredIPs[0].IsActive, Is.True);
+        }
+
+        [Test]
+        public void CollectUncheckedLoggerPaths_ListsUncheckedNodes()
+        {
+            var env = TreeEnv.Create();
+            var app = Child(env.Tree.Loggers[0], "App", "ip.App");
+            var other = Child(env.Tree.Loggers[0], "Other", "ip.Other");
+            env.Tree.Loggers[0].Children.Add(app);
+            env.Tree.Loggers[0].Children.Add(other);
+            app.IsChecked = false;
+            env.Tree.Loggers[0].IsChecked = null;
+
+            var uncheckedPaths = env.Tree.CollectUncheckedLoggerPaths();
+            Assert.That(uncheckedPaths, Does.Contain("ip.App"));
+            Assert.That(uncheckedPaths, Does.Not.Contain("ip.Other"));
+        }
+
+        [Test]
+        public void QueueDisplayFilterRestore_SurvivesOnSessionCleared()
+        {
+            var env = TreeEnv.Create();
+            env.Coordinator.Loggers.ExcludeSubtree("ip.Hide", null);
+            env.Coordinator.Loggers.SetIncludeOnly(new[] { "ip.Keep" });
+            env.Tree.QueueDisplayFilterRestore();
+
+            env.Coordinator.Loggers.ClearDisplayExclusions();
+            env.Tree.OnSessionCleared();
+
+            Assert.That(env.Coordinator.Loggers.ExcludedPaths, Does.Contain("ip.Hide"));
+            Assert.That(env.Coordinator.Loggers.IncludeOnlyPaths, Does.Contain("ip.Keep"));
         }
 
         private static Node Child(Node parent, string text, string logger)

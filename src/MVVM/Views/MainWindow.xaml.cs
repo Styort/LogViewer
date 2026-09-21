@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Deployment.Application;
 using System.Diagnostics;
@@ -19,6 +20,7 @@ using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.ViewModels;
+using LogViewer.MVVM.ViewModels.Log;
 using NLog;
 using Application = System.Windows.Application;
 using Binding = System.Windows.Data.Binding;
@@ -63,16 +65,21 @@ namespace LogViewer.MVVM.Views
             if (AppDomain.CurrentDomain.SetupInformation.ActivationArguments?.ActivationData != null)
             {
                 string[] activationData = AppDomain.CurrentDomain.SetupInformation.ActivationArguments.ActivationData;
+                if (TryOpenDroppedFiles(activationData))
+                    return;
                 var files = activationData.Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
                 if (files.Any())
                     ((LogViewModel)DataContext).ImportLogs(files);
                 return;
             }
 
-            var args = Environment.GetCommandLineArgs().Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
-            if (args.Any())
+            var args = Environment.GetCommandLineArgs();
+            if (TryOpenDroppedFiles(args))
+                return;
+            var importArgs = args.Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
+            if (importArgs.Any())
             {
-                ((LogViewModel)DataContext).ImportLogs(args);
+                ((LogViewModel)DataContext).ImportLogs(importArgs);
                 return;
             }
 
@@ -320,31 +327,62 @@ namespace LogViewer.MVVM.Views
 
         #region Drag and Drop
 
+        private void Window_OnDragOver(object sender, DragEventArgs e)
+        {
+            e.Effects = HasDroppableFiles(e) ? DragDropEffects.Copy : DragDropEffects.None;
+            e.Handled = true;
+        }
+
+        private void Window_OnDrop(object sender, DragEventArgs e)
+        {
+            HandleFileDrop(e);
+        }
+
         private void LogsListView_OnDragOver(object sender, DragEventArgs e)
         {
-            var file = ((string[])e.Data.GetData(DataFormats.FileDrop))?.FirstOrDefault(
-                x => ArchiveLogExtractor.IsImportableFile(x));
-
-            e.Effects = file != null ? DragDropEffects.Copy : DragDropEffects.None;
-
+            e.Effects = HasDroppableFiles(e) ? DragDropEffects.Copy : DragDropEffects.None;
             e.Handled = true;
         }
 
         private void LogsListView_OnDrop(object sender, DragEventArgs e)
         {
+            HandleFileDrop(e);
+        }
+
+        private static bool HasDroppableFiles(DragEventArgs e)
+        {
+            var files = GetDroppedFiles(e);
+            return files.Any(x => SessionViewModel.IsSessionFile(x) || ArchiveLogExtractor.IsImportableFile(x));
+        }
+
+        private void HandleFileDrop(DragEventArgs e)
+        {
             e.Effects = DragDropEffects.Copy;
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
-            {
-                string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files != null && files.Any())
-                {
-                    var logFiles = files.Where(x => ArchiveLogExtractor.IsImportableFile(x));
-                    if (logFiles.Any())
-                    {
-                        ((LogViewModel)this.DataContext).ImportLogs(logFiles);
-                    }
-                }
-            }
+            e.Handled = true;
+            var files = GetDroppedFiles(e);
+            if (files.Length == 0)
+                return;
+            if (TryOpenDroppedFiles(files))
+                return;
+            var logFiles = files.Where(x => ArchiveLogExtractor.IsImportableFile(x)).ToList();
+            if (logFiles.Any())
+                ((LogViewModel)DataContext).ImportLogs(logFiles);
+        }
+
+        private bool TryOpenDroppedFiles(IEnumerable<string> files)
+        {
+            var session = files?.FirstOrDefault(x => SessionViewModel.IsSessionFile(x) && File.Exists(x));
+            if (session == null)
+                return false;
+            ((LogViewModel)DataContext).Session.OpenFromPath(session);
+            return true;
+        }
+
+        private static string[] GetDroppedFiles(DragEventArgs e)
+        {
+            if (e?.Data == null || !e.Data.GetDataPresent(DataFormats.FileDrop))
+                return Array.Empty<string>();
+            return (string[])e.Data.GetData(DataFormats.FileDrop) ?? Array.Empty<string>();
         }
 
         #endregion
@@ -371,6 +409,13 @@ namespace LogViewer.MVVM.Views
         {
             if (Application.Current?.MainWindow is MainWindow mainWindow && args != null && args.Length > 0)
             {
+                var session = args.FirstOrDefault(x => SessionViewModel.IsSessionFile(x) && File.Exists(x));
+                if (session != null)
+                {
+                    ((LogViewModel)mainWindow.DataContext).Session.OpenFromPath(session);
+                    return;
+                }
+
                 var files = args.Where(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)).ToList();
                 if (files.Any())
                     ((LogViewModel)mainWindow.DataContext).ImportLogs(files);

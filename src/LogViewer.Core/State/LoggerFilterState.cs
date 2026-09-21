@@ -155,6 +155,24 @@ namespace LogViewer.Core.State
         }
 
         /// <summary>
+        /// Replace Don't Show, Don't Receive, and include-only from a saved session (task 13).
+        /// Unlike a filter preset, Don't Receive is replaced rather than merged so Open does not
+        /// keep stale exclusions from the previous process lifetime.
+        /// Does not drop rows already in the buffer — restore this after <c>AddEntries</c>.
+        /// </summary>
+        public void RestoreFromSession(IEnumerable<string> displayExcluded, IEnumerable<string> dontReceive, IEnumerable<string> includeOnly)
+        {
+            _excluded.Clear();
+            _excludedWithBuffer.Clear();
+            _includeOnly.Clear();
+            AddAll(_excluded, displayExcluded);
+            AddAll(_excludedWithBuffer, dontReceive);
+            foreach (var bufferPath in _excludedWithBuffer)
+                _excluded.Add(bufferPath);
+            AddAll(_includeOnly, includeOnly);
+        }
+
+        /// <summary>
         /// Replace Don't Show paths from a filter preset. Don't Receive stays as-is and is merged back
         /// into the display set so those loggers remain hidden.
         /// </summary>

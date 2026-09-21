@@ -130,18 +130,20 @@ namespace LogViewer.MVVM.ViewModels.Log
                 }
                 _state.AllLogs = new AsyncObservableCollection<LogMessage>(all);
                 _tree.RebuildFromCore();
+                _tree.TryApplyQueuedDisplayRestore();
+                _tree.RememberPathsFromTree();
+                _tree.SyncCheckboxesFromExclusions();
+                _bookmarks.TryApplyQueuedRestore();
             }
             else
             {
-                filtered = new List<LogMessage>(e.Entries.Count);
-                for (int i = 0; i < e.Entries.Count; i++)
-                {
-                    var msg = _projector.Project(e.Entries[i]);
-                    if (msg != null) filtered.Add(msg);
-                }
+                // Reuse AllLogs instances (same order subsequence). A new Project() would break
+                // bookmark navigation: Logs.Contains uses reference equality.
+                filtered = MapFilteredToAllLogs(e.Entries);
             }
 
             _state.Logs = new AsyncObservableCollection<LogMessage>(filtered);
+            _tree.SyncCheckboxesFromExclusions();
             _setCleanEnabled(_state.AllLogs.Any());
             if (_tree.TreeCheckJustDone)
             {
@@ -149,6 +151,50 @@ namespace LogViewer.MVVM.ViewModels.Log
                 _tree.TreeCheckJustDone = false;
                 _state.SelectedLog = _state.GetLastSelectedOrNearby();
             }
+        }
+
+        /// <summary>
+        /// Filtered Core entries are a subsequence of the session buffer. Walk AllLogs once and keep
+        /// the same LogMessage objects the bookmarks already hold.
+        /// </summary>
+        private List<LogMessage> MapFilteredToAllLogs(IReadOnlyList<LogEntry> entries)
+        {
+            var filtered = new List<LogMessage>(entries.Count);
+            var all = _state.AllLogs;
+            int iAll = 0;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                if (entry == null)
+                    continue;
+                while (iAll < all.Count && !Matches(all[iAll], entry))
+                    iAll++;
+                if (iAll < all.Count)
+                {
+                    filtered.Add(all[iAll]);
+                    iAll++;
+                    continue;
+                }
+
+                var msg = _projector.Project(entry);
+                if (msg != null)
+                    filtered.Add(msg);
+            }
+
+            return filtered;
+        }
+
+        private static bool Matches(LogMessage message, LogEntry entry)
+        {
+            if (message == null || entry == null)
+                return false;
+            return message.Time == entry.Time
+                   && (int)message.Level == (int)entry.Level
+                   && message.Thread == entry.Thread
+                   && message.ProcessID == entry.ProcessID
+                   && message.Logger == entry.Logger
+                   && message.Address == entry.Address
+                   && message.Message == entry.Message;
         }
     }
 }

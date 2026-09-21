@@ -20,6 +20,7 @@ Current ClickOnce line: **1.2.8.x**. Settings: `%Documents%\LogViewer\settings.x
  * Bookmarks with a comment, jump list, and Ctrl+B.
  * Logger statistics window; Warn/Error/Fatal density strip above the list.
  * Copy selected rows (Ctrl+C) and export the **currently visible** filtered list to `.txt` (Ctrl+S).
+ * Save / open a session file (buffer, bookmarks, logger tree, Don't Receive). Chosen with Save As / Open — not auto-written to Documents. Not a filter preset.
  * Themes, font family/size for the list and details pane, show/hide source and thread columns.
 
 ## Hotkeys
@@ -31,6 +32,8 @@ Current ClickOnce line: **1.2.8.x**. Settings: `%Documents%\LogViewer\settings.x
  * **Shift+R** — Clear search text and search result
  * **Ctrl+R** — Clear all logs
  * **Ctrl+S** — Export visible logs to a file
+ * **Ctrl+Shift+S** — Save session
+ * **Ctrl+O** — Open session
  * **Ctrl+W** — Next warning
  * **Ctrl+E** — Next error
  * **Ctrl+T** — Go to timestamp

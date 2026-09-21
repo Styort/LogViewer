@@ -41,7 +41,11 @@ namespace LogViewer.App.Tests
         public DateTime? TimestampToReturn;
         public TimeIntervalDialogResult IntervalToReturn = new TimeIntervalDialogResult { Confirmed = false };
 
-        public void ShowInformation(string message, string caption = null) { }
+        public string LastInformation;
+        public void ShowInformation(string message, string caption = null)
+        {
+            LastInformation = message;
+        }
         public void ShowError(string message, string caption = null) { }
         public void ShowWarning(string message, string caption = null) { }
         public bool TryPromptComment(string initial, out string comment)
@@ -87,9 +91,14 @@ namespace LogViewer.App.Tests
 
     internal sealed class FakeFiles : IFileDialogService
     {
-        public string[] OpenFiles(string filter) => null;
-        public string SaveFile(string defaultExt, string filter, string fileName) => null;
+        public string[] OpenFiles(string filter) => OpenFilesResult;
+        public string OpenFile(string filter) => OpenFilePath;
+        public string SaveFile(string defaultExt, string filter, string fileName) => SaveFilePath;
         public void OpenFolder(string directoryPath) { }
+
+        public string[] OpenFilesResult;
+        public string OpenFilePath;
+        public string SaveFilePath;
     }
 
     internal sealed class FakeClipboard : IClipboardService

@@ -379,6 +379,22 @@
             </DrawingGroup>
         </DrawingImage.Drawing>
     </DrawingImage>
+
+    <DrawingImage x:Key="SaveSessionDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="M3,3 L17,3 L21,7 L21,21 L3,21 Z M7,3 L7,9 L15,9 L15,3 Z M6,13 L18,13 L18,21 L6,21 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
+
+    <DrawingImage x:Key="OpenSessionDrawingImage">
+        <DrawingImage.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="{Binding Path=IconColor}" Geometry="M3,6 L9,6 L11,8 L21,8 L21,20 L3,20 Z"/>
+            </DrawingGroup>
+        </DrawingImage.Drawing>
+    </DrawingImage>
     
     <DrawingImage x:Key="ImportWhiteDrawingImage">
         <DrawingImage.Drawing>

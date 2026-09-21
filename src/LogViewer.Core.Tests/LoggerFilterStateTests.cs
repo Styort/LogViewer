@@ -107,6 +107,21 @@ namespace LogViewer.Core.Tests
         }
 
         [Test]
+        public void RestoreFromSession_ReplacesDontReceiveInsteadOfMerging()
+        {
+            var state = new LoggerFilterState();
+            state.DontReceive("ip.Old", null);
+
+            state.RestoreFromSession(new[] { "ip.Hide" }, new[] { "ip.Drop" }, new[] { "ip.Keep" });
+
+            Assert.That(state.ExcludedWithBufferPaths, Does.Not.Contain("ip.Old"));
+            Assert.That(state.ExcludedWithBufferPaths, Does.Contain("ip.Drop"));
+            Assert.That(state.ExcludedPaths, Does.Contain("ip.Hide"));
+            Assert.That(state.ExcludedPaths, Does.Contain("ip.Drop"));
+            Assert.That(state.IncludeOnlyPaths, Does.Contain("ip.Keep"));
+        }
+
+        [Test]
         public void ReplaceDisplayExclusions_KeepsDontReceiveHidden()
         {
             var state = new LoggerFilterState();

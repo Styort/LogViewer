@@ -1219,6 +1219,52 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="SaveSessionButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
+        <Setter Property="ToolTip" Value="{localization:LocBinding SaveSessionToolTip}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                        <Image Source="{StaticResource SaveSessionDrawingImage}" Cursor="Hand" Height="40"/>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="RootGrid" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="OpenSessionButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
+        <Setter Property="ToolTip" Value="{localization:LocBinding OpenSessionToolTip}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Grid RenderTransformOrigin="0.5,0.5" x:Name="RootGrid">
+                        <Image Source="{StaticResource OpenSessionDrawingImage}" Cursor="Hand" Height="40"/>
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="RootGrid" Property="RenderTransform">
+                                <Setter.Value>
+                                    <ScaleTransform ScaleX="0.95" ScaleY="0.95"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="LoggerStatisticsButtonStyle" TargetType="{x:Type Button}" BasedOn="{StaticResource CircleImageButtonStyle}">
         <Setter Property="ToolTip" Value="{localization:LocBinding LoggerStatisticsToolTip}"/>
         <Setter Property="IsEnabled" Value="{Binding Path=CleanIsEnabled}"/>

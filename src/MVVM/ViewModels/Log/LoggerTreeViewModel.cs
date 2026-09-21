@@ -57,6 +57,13 @@ namespace LogViewer.MVVM.ViewModels.Log
         private RelayCommand _toggleMarkCommand;
         private RelayCommand _findInTreeCommand;
 
+        /// <summary>
+        /// Display exclusions captured before Clean's async SessionCleared wipes LoggerFilterState.
+        /// Don't Receive is not queued — it must stay off until AddEntries finishes.
+        /// </summary>
+        private List<string> _pendingExcluded;
+        private List<string> _pendingIncluded;
+
         public LoggerTreeViewModel(
             LogViewState state,
             FilterCoordinator filter,
@@ -195,20 +202,68 @@ namespace LogViewer.MVVM.ViewModels.Log
         /// <summary>
         /// When Core sent SessionChanged(Cleared). Independent of <see cref="Reset"/>:
         /// same end UI whichever order the calls arrive in.
+        /// A queued session restore wins: Clean posts this after Open already wrote Don't Show.
         /// </summary>
         public void OnSessionCleared()
         {
-            _filter.Loggers.ClearDisplayExclusions();
             _availableLoggers.Clear();
             var root = Loggers[0];
             root.Children.Clear();
+            if (!TryApplyQueuedDisplayRestore())
+            {
+                _filter.Loggers.ClearDisplayExclusions();
+                _filter.Apply();
+            }
+        }
+
+        /// <summary>
+        /// Remember Don't Show / include-only so async SessionCleared cannot drop them during Open session.
+        /// </summary>
+        public void QueueDisplayFilterRestore()
+        {
+            _pendingExcluded = _filter.Loggers.ExcludedPaths.ToList();
+            _pendingIncluded = _filter.Loggers.IncludeOnlyPaths.ToList();
+        }
+
+        /// <summary>Re-apply queued Don't Show after the tree exists. No-op when nothing is queued.</summary>
+        public bool TryApplyQueuedDisplayRestore()
+        {
+            if (_pendingExcluded == null && _pendingIncluded == null)
+                return false;
+            _filter.Loggers.RestoreFromSession(_pendingExcluded, null, _pendingIncluded);
+            _pendingExcluded = null;
+            _pendingIncluded = null;
             _filter.Apply();
+            SyncCheckboxesFromExclusions();
+            return true;
         }
 
         /// <summary>Don't Receive rebuilt the Core hierarchy — redraw the WPF tree with the same checkboxes.</summary>
         public void RebuildFromCore()
         {
             _builder.RebuildFromCore(Loggers[0], _session.GetLoggerHierarchy(), _filter.Loggers);
+        }
+
+        /// <summary>
+        /// After a full tree rebuild (import / Open session), remember FullPaths so live UDP
+        /// does not create duplicate nodes.
+        /// </summary>
+        public void RememberPathsFromTree()
+        {
+            _availableLoggers.Clear();
+            if (Loggers.Count == 0)
+                return;
+            CollectLoggerPaths(Loggers[0], _availableLoggers);
+        }
+
+        private static void CollectLoggerPaths(Node node, HashSet<string> paths)
+        {
+            if (node == null)
+                return;
+            if (!string.IsNullOrEmpty(node.Logger) && node.Logger != "Root")
+                paths.Add(node.Logger);
+            foreach (var child in node.Children)
+                CollectLoggerPaths(child, paths);
         }
 
         /// <summary>
@@ -315,10 +370,9 @@ namespace LogViewer.MVVM.ViewModels.Log
                 return;
             if (!isRoot && node.IsChecked == true)
             {
-                string key = LoggerFilterState.ToPortableLoggerKey(node.Logger);
-                if (!string.IsNullOrEmpty(key) && key != "Root")
+                if (!string.IsNullOrEmpty(node.Logger) && node.Logger != "Root")
                 {
-                    result.Add(key);
+                    result.Add(node.Logger);
                     return;
                 }
             }
@@ -333,6 +387,29 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         /// <summary>Known FullPaths currently in the tree — used when a preset include-only list is applied.</summary>
         public IReadOnlyCollection<string> AvailableLoggerPaths => _availableLoggers;
+
+        /// <summary>
+        /// Every node with IsChecked == false (Don't Show). Session files store these FullPaths so Open
+        /// does not depend on portable keys or on Root.IsChecked.
+        /// </summary>
+        public List<string> CollectUncheckedLoggerPaths()
+        {
+            var result = new List<string>();
+            if (Loggers.Count == 0)
+                return result;
+            CollectUncheckedLoggerPaths(Loggers[0], result, isRoot: true);
+            return result;
+        }
+
+        private static void CollectUncheckedLoggerPaths(Node node, List<string> result, bool isRoot)
+        {
+            if (node == null)
+                return;
+            if (!isRoot && node.IsChecked == false && !string.IsNullOrEmpty(node.Logger) && node.Logger != "Root")
+                result.Add(node.Logger);
+            foreach (var child in node.Children)
+                CollectUncheckedLoggerPaths(child, result, isRoot: false);
+        }
 
         /// <summary>
         /// Restore tree checkboxes from the active preset. Included leaves are checked, their ancestors
@@ -418,7 +495,16 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         private static bool IsExcluded(IReadOnlyCollection<string> excluded, string path)
         {
-            return !string.IsNullOrEmpty(path) && path != "Root" && excluded != null && excluded.Contains(path);
+            if (string.IsNullOrEmpty(path) || path == "Root" || excluded == null)
+                return false;
+            if (excluded.Contains(path))
+                return true;
+            foreach (var root in excluded)
+            {
+                if (LoggerFilterState.IsInSubtree(path, root))
+                    return true;
+            }
+            return false;
         }
 
         private static void ExpandAncestors(Node node)

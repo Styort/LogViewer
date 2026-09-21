@@ -239,6 +239,148 @@ namespace LogViewer.MVVM.ViewModels.Log
             Apply();
         }
 
+        /// <summary>
+        /// Snapshot search/interval/tree into a session file. Does not include receivers (those stay in settings.xml).
+        /// Checked loggers come from the WPF tree (<paramref name="includedRootsFromTree"/>), not only
+        /// Show-only state: unchecking nodes leaves IncludeOnlyPaths empty.
+        /// </summary>
+        public void CaptureSessionFilter(
+            SavedSessionDocument document,
+            IEnumerable<string> includedRootsFromTree = null,
+            IEnumerable<string> uncheckedFromTree = null)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+            document.MinLevel = FilterPresetMapper.FormatMinLevel((LogLevel)(int)_minLevel);
+            document.SearchText = _searchText;
+            document.MatchCase = _matchCase;
+            document.MatchWholeWord = _wholeWord;
+            document.UseRegex = _regex;
+            document.MatchLogLevel = _matchLevel;
+            document.IsSearchActive = _searchActive;
+            document.IsTimeIntervalActive = _timeIntervalActive;
+            document.TimeRangeFrom = _from;
+            document.TimeRangeTo = _to;
+            document.DontReceiveLoggerFullPaths = Loggers.ExcludedWithBufferPaths
+                .Where(p => !string.IsNullOrEmpty(p))
+                .ToList();
+
+            var excluded = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var path in Loggers.ExcludedPaths)
+            {
+                if (!string.IsNullOrEmpty(path) && path != "Root")
+                    excluded.Add(path);
+            }
+            if (uncheckedFromTree != null)
+            {
+                foreach (var path in uncheckedFromTree)
+                {
+                    if (!string.IsNullOrEmpty(path) && path != "Root")
+                        excluded.Add(path);
+                }
+            }
+            document.ExcludedLoggerFullPaths = excluded.ToList();
+
+            // Session keeps FullPath (same buffer, same sources). Do not strip to portable keys —
+            // that is for filter presets that must apply to another file.
+            List<string> included;
+            if (includedRootsFromTree != null)
+            {
+                included = includedRootsFromTree
+                    .Where(p => !string.IsNullOrEmpty(p) && p != "Root")
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
+            }
+            else
+            {
+                included = Loggers.IncludeOnlyPaths
+                    .Where(p => !string.IsNullOrEmpty(p) && p != "Root")
+                    .ToList();
+            }
+            document.IncludedLoggerFullPaths = included;
+        }
+
+        /// <summary>
+        /// Restore search/interval/Don't Show from a session. Pass <paramref name="applyDontReceive"/> false
+        /// until the buffer is filled — Don't Receive would skip restored rows on AddEntries.
+        /// </summary>
+        public void ApplySessionFilter(
+            SavedSessionDocument document,
+            IEnumerable<string> knownLoggerPaths = null,
+            bool applyDontReceive = true)
+        {
+            if (document == null)
+                throw new ArgumentNullException(nameof(document));
+
+            _minLevel = (eLogLevel)(int)FilterPresetMapper.ParseMinLevel(document.MinLevel);
+            _searchText = document.SearchText ?? string.Empty;
+            _matchCase = document.MatchCase;
+            _wholeWord = document.MatchWholeWord;
+            _regex = document.UseRegex;
+            _matchLevel = document.MatchLogLevel;
+            _searchActive = document.IsSearchActive;
+            _timeIntervalActive = document.IsTimeIntervalActive;
+            _from = document.TimeRangeFrom;
+            _to = document.TimeRangeTo;
+            if (_timeIntervalActive)
+                _searchActive = true;
+
+            var preset = new FilterPreset
+            {
+                IncludedLoggerFullPaths = document.IncludedLoggerFullPaths,
+                ExcludedLoggerFullPaths = document.ExcludedLoggerFullPaths
+            };
+            var included = (document.IncludedLoggerFullPaths ?? new List<string>())
+                .Where(p => !string.IsNullOrEmpty(p) && p != "Root")
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+            var excluded = new HashSet<string>(StringComparer.Ordinal);
+            if (document.ExcludedLoggerFullPaths != null)
+            {
+                foreach (var path in document.ExcludedLoggerFullPaths)
+                {
+                    if (!string.IsNullOrEmpty(path) && path != "Root")
+                        excluded.Add(path);
+                }
+            }
+            if (included.Count > 0)
+            {
+                foreach (var path in FilterPresetMapper.ComputeExcluded(preset, knownLoggerPaths))
+                    excluded.Add(path);
+            }
+            var dontReceive = applyDontReceive
+                ? document.DontReceiveLoggerFullPaths
+                : null;
+
+            Loggers.RestoreFromSession(excluded, dontReceive, included);
+            Apply();
+        }
+
+        /// <summary>
+        /// Apply Don't Receive after AddEntries so saved rows stay in the buffer, then live UDP is excluded again.
+        /// </summary>
+        public void ApplySessionDontReceive(SavedSessionDocument document)
+        {
+            if (document?.DontReceiveLoggerFullPaths == null)
+                return;
+            foreach (var path in document.DontReceiveLoggerFullPaths)
+            {
+                if (!string.IsNullOrEmpty(path))
+                    Loggers.DontReceive(path, null);
+            }
+            Apply();
+        }
+
+        /// <summary>
+        /// Drop Don't Receive before loading a session file so AddEntries does not skip restored rows.
+        /// </summary>
+        public void ClearLoggerExclusions()
+        {
+            Loggers.ClearAll();
+            Apply();
+        }
+
         public eLogLevel CurrentMinLevel => _minLevel;
     }
 }

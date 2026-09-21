@@ -21,6 +21,19 @@ namespace LogViewer.Services.Wpf
         }
 
         /// <inheritdoc />
+        public string OpenFile(string filter)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = filter,
+                Multiselect = false
+            };
+            if (dialog.ShowDialog() == true)
+                return dialog.FileName;
+            return null;
+        }
+
+        /// <inheritdoc />
         public string SaveFile(string defaultExt, string filter, string fileName)
         {
             var dialog = new SaveFileDialog

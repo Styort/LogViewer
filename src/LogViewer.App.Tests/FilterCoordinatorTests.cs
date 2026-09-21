@@ -121,5 +121,62 @@ namespace LogViewer.App.Tests
             Assert.That(session.FilterCriteria.IncludedLoggerFullPaths, Does.Contain("Payments"));
             Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("ip.Other"));
         }
+
+        [Test]
+        public void ApplySessionFilter_ReplacesDontReceive()
+        {
+            var session = new LogSession();
+            var processing = new LogProcessingService(session, new LogFilter());
+            var loggers = new LoggerFilterState();
+            loggers.ExcludeFromBuffer("ip.Old");
+            var coordinator = new FilterCoordinator(processing, loggers);
+
+            coordinator.ApplySessionFilter(new SavedSessionDocument
+            {
+                MinLevel = "Warn",
+                SearchText = "boom",
+                IsSearchActive = true,
+                ExcludedLoggerFullPaths = new List<string> { "ip.Hide" },
+                DontReceiveLoggerFullPaths = new List<string> { "ip.Drop" }
+            });
+
+            Assert.That(session.FilterCriteria.MinLevel, Is.EqualTo(LogLevel.Warn));
+            Assert.That(session.FilterCriteria.SearchText, Is.EqualTo("boom"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPathsWithBuffer, Does.Contain("ip.Drop"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPathsWithBuffer, Does.Not.Contain("ip.Old"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("ip.Hide"));
+        }
+
+        [Test]
+        public void ApplySessionFilter_ComputesExcludedFromIncludedRoots()
+        {
+            var session = new LogSession();
+            var processing = new LogProcessingService(session, new LogFilter());
+            var coordinator = new FilterCoordinator(processing, new LoggerFilterState());
+            var known = new[] { "127.0.0.1.Pay", "127.0.0.1.Other" };
+
+            coordinator.ApplySessionFilter(new SavedSessionDocument
+            {
+                IncludedLoggerFullPaths = new List<string> { "Pay" },
+                ExcludedLoggerFullPaths = new List<string>()
+            }, known, applyDontReceive: false);
+
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("127.0.0.1.Other"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Not.Contain("127.0.0.1.Pay"));
+            Assert.That(session.FilterCriteria.IncludedLoggerFullPaths, Does.Contain("Pay"));
+        }
+
+        [Test]
+        public void CaptureSessionFilter_UsesTreeIncludedRoots()
+        {
+            var session = new LogSession();
+            var processing = new LogProcessingService(session, new LogFilter());
+            var coordinator = new FilterCoordinator(processing, new LoggerFilterState());
+            var document = new SavedSessionDocument();
+
+            coordinator.CaptureSessionFilter(document, new[] { "Pay", "Core.Navigator" });
+
+            Assert.That(document.IncludedLoggerFullPaths, Is.EqualTo(new[] { "Pay", "Core.Navigator" }));
+        }
     }
 }

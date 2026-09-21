@@ -82,11 +82,18 @@ namespace LogViewer.MVVM.ViewModels
             Search = new SearchViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.Projector, d.Query, d.Dialogs, d.Settings, () => SelectedMinLogLevel);
             Tree = new LoggerTreeViewModel(d.ViewState, d.Coordinator, d.Session, d.Processing, d.FileWatch, d.TreeBuilder, d.TreeMarker, d.Settings, Receivers, Import, Clean);
             FilterPresets = new FilterPresetsViewModel(d.Coordinator, d.Dialogs, Search, Tree, SetMinLevelFromPreset);
+            Session = new SessionViewModel(d.Session, d.ViewState, d.Coordinator, Search, Bookmarks, Tree, d.Dialogs, d.Files, Receivers, Clean, SetMinLevelFromPreset);
 
             _parts = new IResettable[] { Receivers, Import, Tree, Search, Bookmarks, Timeline, MessageGroups };
             _presenter = new LogSessionPresenter(d.ViewState, d.Projector, Tree, Bookmarks, Timeline, MessageGroups, v => CleanIsEnabled = v);
 
-            _state.PropertyChanged += (sender, e) => OnPropertyChanged(e.PropertyName);
+            _state.PropertyChanged += (sender, e) =>
+            {
+                OnPropertyChanged(e.PropertyName);
+                // XAML binds IsVisibleLoader; IsBusy lives on LogViewState.
+                if (e.PropertyName == nameof(LogViewState.IsBusy))
+                    OnPropertyChanged(nameof(IsVisibleLoader));
+            };
             Receivers.PropertyChanged += (sender, e) => RefreshTaskbar();
             Import.PropertyChanged += (sender, e) =>
             {
@@ -114,6 +121,7 @@ namespace LogViewer.MVVM.ViewModels
         public ErrorTimelineViewModel Timeline { get; }
         public MessageGroupsViewModel MessageGroups { get; }
         public FilterPresetsViewModel FilterPresets { get; }
+        public SessionViewModel Session { get; }
 
         /// <summary>Proxy for <see cref="LogViewState.Logs"/> — window DataContext was not changed, XAML still uses Logs.</summary>
         public AsyncObservableCollection<LogMessage> Logs { get => _state.Logs; set => _state.Logs = value; }

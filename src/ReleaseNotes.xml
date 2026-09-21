@@ -47,6 +47,10 @@
 				<ru>Сетевой приёмник умеет UDP и TCP: транспорт выбирается в настройках приёмника. TCP принимает несколько клиентов на одном порту (NLog target NLogViewer, address="tcp://хост:порт"), события не теряются на границе сегмента. Старые настройки без транспорта работают как UDP. Start/Pause, Don't Receive, фильтры и игнор IP действуют так же, как для UDP.</ru>
 				<en>Network receivers support UDP and TCP: pick the transport in receiver settings. TCP accepts multiple clients on one port (NLog NLogViewer target, address="tcp://host:port"); events split across TCP segments are not lost. Existing settings without a transport still use UDP. Start/Pause, Don't Receive, filters, and ignored IPs work the same as for UDP.</en>
 			</Item>
+			<Item>
+				<ru>Сохранение и открытие сессии: буфер логов, закладки с комментариями, скрытые логгеры и Don't Receive. Файл выбирается вручную (Save As / Open), без автозаписи в Documents. Ctrl+S по-прежнему экспортирует видимый txt.</ru>
+				<en>Save and open a session: log buffer, bookmarks with comments, hidden loggers, and Don't Receive. The file is chosen with Save As / Open — nothing is auto-written to Documents. Ctrl+S still exports the visible txt.</en>
+			</Item>
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>

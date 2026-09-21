@@ -18,6 +18,7 @@ using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.Views;
+using LogViewer.MVVM.ViewModels.Log;
 using Microsoft.Win32;
 using NLog;
 
@@ -48,7 +49,7 @@ namespace LogViewer
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
-            if (e.Args.Any(x => ArchiveLogExtractor.IsImportableFile(x) && File.Exists(x)))
+            if (e.Args.Any(x => File.Exists(x) && (ArchiveLogExtractor.IsImportableFile(x) || SessionViewModel.IsSessionFile(x))))
             {
                 IsManualStartup = true;
 

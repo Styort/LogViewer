@@ -10,7 +10,8 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d" 
-        Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized" Loaded="MainWindow_OnLoaded">
+        Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized" Loaded="MainWindow_OnLoaded"
+        AllowDrop="True" DragOver="Window_OnDragOver" Drop="Window_OnDrop">
     <Window.DataContext>
         <viewModels:LogViewModel/>
     </Window.DataContext>
@@ -125,6 +126,8 @@
         <KeyBinding Command="{Binding Path=Search.FindPreviousCommand}" Modifiers="Shift" Key="D"/>
         <KeyBinding Command="{Binding Path=Search.ClearSearchResultCommand}" Modifiers="Shift" Key="R"/>
         <KeyBinding Command="{Binding Path=Import.ExportCommand}" Modifiers="Control" Key="S"/>
+        <KeyBinding Command="{Binding Path=Session.SaveCommand}" Modifiers="Control+Shift" Key="S"/>
+        <KeyBinding Command="{Binding Path=Session.OpenCommand}" Modifiers="Control" Key="O"/>
         <KeyBinding Command="{Binding Path=CleanCommand}" Modifiers="Control" Key="R"/>
         <KeyBinding Command="{Binding Path=Search.GoToTimestampCommand}" Modifiers="Control" Key="T"/>
         <KeyBinding Command="{Binding Path=Search.SetTimeIntervalCommand}" Modifiers="Control+Shift" Key="T"/>
@@ -147,6 +150,8 @@
             <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
                 <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=Import.ImportCommand}"/>
                 <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=Import.ExportCommand}"/>
+                <Button Style="{StaticResource SaveSessionButtonStyle}" Command="{Binding Path=Session.SaveCommand}"/>
+                <Button Style="{StaticResource OpenSessionButtonStyle}" Command="{Binding Path=Session.OpenCommand}"/>
                 <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
                 <Button Style="{StaticResource MessageGroupsButtonStyle}" Command="{Binding Path=MessageGroups.OpenCommand}"/>
                 <Button Style="{StaticResource FilterPresetsButtonStyle}" Command="{Binding Path=FilterPresets.OpenCommand}"

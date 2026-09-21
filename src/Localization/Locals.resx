@@ -909,4 +909,28 @@
   <data name="MessageGroupsSummary" xml:space="preserve">
     <value>Групп: {0}, вхождений: {1}</value>
   </data>
+  <data name="SaveSessionToolTip" xml:space="preserve">
+    <value>Сохранить сессию в файл (Ctrl+Shift+S): буфер, закладки и дерево логгеров. Не путать с пресетами фильтра и с экспортом Ctrl+S.</value>
+  </data>
+  <data name="OpenSessionToolTip" xml:space="preserve">
+    <value>Открыть сохранённую сессию (Ctrl+O). Текущий буфер заменяется после подтверждения.</value>
+  </data>
+  <data name="SessionReplaceConfirm" xml:space="preserve">
+    <value>Текущие логи будут заменены содержимым файла. Продолжить?</value>
+  </data>
+  <data name="SessionLargeBufferWarning" xml:space="preserve">
+    <value>В буфере {0} записей — файл сессии будет очень большим. Всё равно сохранить?</value>
+  </data>
+  <data name="SessionInvalidFile" xml:space="preserve">
+    <value>Не удалось прочитать файл сессии. Текущие логи не изменены.</value>
+  </data>
+  <data name="SessionUnsupportedVersion" xml:space="preserve">
+    <value>Файл сессии версии {0} эта программа не умеет открывать. Обновите LogViewer. Текущие логи не изменены.</value>
+  </data>
+  <data name="SessionSaveFailed" xml:space="preserve">
+    <value>Не удалось сохранить сессию: {0}</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Предупреждение</value>
+  </data>
 </root>

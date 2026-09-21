@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using LogViewer.Core.Domain;
 using LogViewer.Helpers;
 using LogViewer.Localization;
 using LogViewer.MVVM.Commands;
@@ -33,6 +34,12 @@ namespace LogViewer.MVVM.ViewModels.Log
             _state.LogsChanged += (sender, args) => SyncWithAllLogs();
         }
 
+        /// <summary>
+        /// Bookmarks from a session file, applied after AllLogs is rebuilt (adapter Posts FilteredViewUpdated).
+        /// Survives <see cref="Reset"/> so Clean during Open does not drop the queued restore.
+        /// </summary>
+        private IReadOnlyList<SavedSessionBookmark> _pendingRestore;
+
         /// <summary>Bookmarks in insertion order. After filtering, Log inside may be a new object.</summary>
         public ObservableCollection<LogBookmark> Bookmarks { get; } = new ObservableCollection<LogBookmark>();
 
@@ -49,6 +56,47 @@ namespace LogViewer.MVVM.ViewModels.Log
         public void Reset()
         {
             ClearAll();
+        }
+
+        /// <summary>
+        /// Remember bookmark indexes from the session file until AllLogs exists.
+        /// Index is into the saved entry array, which matches AllLogs order after a full rebuild.
+        /// </summary>
+        public void QueueRestore(IReadOnlyList<SavedSessionBookmark> bookmarks)
+        {
+            _pendingRestore = bookmarks;
+            TryApplyQueuedRestore();
+        }
+
+        /// <summary>Called after AllLogs is replaced. Out-of-range indexes are skipped (no NRE).</summary>
+        public void TryApplyQueuedRestore()
+        {
+            if (_pendingRestore == null)
+                return;
+            if (_pendingRestore.Count > 0 && _state.AllLogs.Count == 0)
+                return;
+
+            ClearAll();
+            for (int i = 0; i < _pendingRestore.Count; i++)
+            {
+                var item = _pendingRestore[i];
+                if (item == null)
+                    continue;
+                if (item.Index < 0 || item.Index >= _state.AllLogs.Count)
+                    continue;
+                var log = _state.AllLogs[item.Index];
+                if (log == null || log.HasBookmark)
+                    continue;
+                Bookmarks.Add(new LogBookmark
+                {
+                    Log = log,
+                    Comment = item.Comment ?? string.Empty
+                });
+                log.HasBookmark = true;
+            }
+
+            _pendingRestore = null;
+            NotifyChanged();
         }
 
         /// <summary>
@@ -204,17 +252,37 @@ namespace LogViewer.MVVM.ViewModels.Log
             return Bookmarks.FirstOrDefault(x => x.Log == log);
         }
 
-        private void NavigateToBookmark(LogBookmark bookmark)
+        internal void NavigateToBookmark(LogBookmark bookmark)
         {
             var message = bookmark?.Log;
             if (message == null)
                 return;
 
-            if (!_state.Logs.Contains(message) && _state.AllLogs.Contains(message))
-                _dialogs.ShowInformation(Locals.BookmarkNotVisible, Locals.Information);
+            var visible = FindSameLog(_state.Logs, message);
+            if (visible == null)
+            {
+                var inBuffer = FindSameLog(_state.AllLogs, message);
+                if (inBuffer != null)
+                    _dialogs.ShowInformation(Locals.BookmarkNotVisible, Locals.Information);
+            }
 
             Application.Current?.MainWindow?.Activate();
-            _state.SelectedLog = message;
+            _state.SelectedLog = visible ?? message;
+        }
+
+        private static LogMessage FindSameLog(IEnumerable<LogMessage> source, LogMessage target)
+        {
+            if (source == null || target == null)
+                return null;
+            LogMessage byFields = null;
+            foreach (var item in source)
+            {
+                if (ReferenceEquals(item, target))
+                    return item;
+                if (byFields == null && SameLogIdentity(item, target))
+                    byFields = item;
+            }
+            return byFields;
         }
 
         private void ClearAll()

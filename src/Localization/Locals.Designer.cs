@@ -2241,5 +2241,53 @@ namespace LogViewer.Localization {
                 return ResourceManager.GetString("MessageGroupsSummary", resourceCulture);
             }
         }
+
+        internal static string SaveSessionToolTip {
+            get {
+                return ResourceManager.GetString("SaveSessionToolTip", resourceCulture);
+            }
+        }
+
+        internal static string OpenSessionToolTip {
+            get {
+                return ResourceManager.GetString("OpenSessionToolTip", resourceCulture);
+            }
+        }
+
+        internal static string SessionReplaceConfirm {
+            get {
+                return ResourceManager.GetString("SessionReplaceConfirm", resourceCulture);
+            }
+        }
+
+        internal static string SessionLargeBufferWarning {
+            get {
+                return ResourceManager.GetString("SessionLargeBufferWarning", resourceCulture);
+            }
+        }
+
+        internal static string SessionInvalidFile {
+            get {
+                return ResourceManager.GetString("SessionInvalidFile", resourceCulture);
+            }
+        }
+
+        internal static string SessionUnsupportedVersion {
+            get {
+                return ResourceManager.GetString("SessionUnsupportedVersion", resourceCulture);
+            }
+        }
+
+        internal static string SessionSaveFailed {
+            get {
+                return ResourceManager.GetString("SessionSaveFailed", resourceCulture);
+            }
+        }
+
+        internal static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
+            }
+        }
     }
 }

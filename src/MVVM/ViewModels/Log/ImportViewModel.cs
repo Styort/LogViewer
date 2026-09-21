@@ -281,8 +281,20 @@ namespace LogViewer.MVVM.ViewModels.Log
                 var progress = new Progress<int>(p => ProcessBarValue = p);
                 var fileProgress = new Progress<ImportFileProgress>(p =>
                 {
-                    if ((uint)p.FileIndex < (uint)importLogFiles.Count)
-                        importLogFiles[p.FileIndex].Process = p.Percent;
+                    // Reports are throttled, so files that finished between ticks are not in this sample.
+                    // Import is sequential: everything before FileIndex is already done.
+                    int count = importLogFiles.Count;
+                    int index = p.FileIndex;
+                    if (index < 0)
+                        return;
+                    int completedBefore = index < count ? index : count;
+                    for (int i = 0; i < completedBefore; i++)
+                    {
+                        if (importLogFiles[i].Process < 100)
+                            importLogFiles[i].Process = 100;
+                    }
+                    if ((uint)index < (uint)count)
+                        importLogFiles[index].Process = p.Percent;
                 });
 
                 try

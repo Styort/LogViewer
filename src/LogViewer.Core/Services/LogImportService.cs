@@ -42,66 +42,96 @@ namespace LogViewer.Core.Services
             var encoding = Encoding.GetEncoding(template.Encoding ?? "UTF-8");
             int completed = 0;
             int totalEntries = 0;
+            // One session add at the end. Each AddEntries posts a full list rebuild, and those
+            // Normal-priority posts starve Render, so the import dialog only paints a few frames.
+            var pending = new List<LogEntry>();
+            int lastProgressTick = 0;
 
-            foreach (var filePath in paths)
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-
-                var entries = new List<LogEntry>();
-                using (var stream = TemplateFileLogReader.OpenRead(filePath))
+                foreach (var filePath in paths)
                 {
-                    var seek = TemplateFileLogReader.SeekToRange(
-                        stream, range, encoding, _parser, layout, cancellationToken);
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                    Action<LogEntry> onEntry = entries.Add;
-                    if (seek.FilterByMinTime)
+                    var entries = new List<LogEntry>();
+                    using (var stream = TemplateFileLogReader.OpenRead(filePath))
                     {
-                        var cutoff = seek.MinTime;
-                        onEntry = e =>
+                        var seek = TemplateFileLogReader.SeekToRange(
+                            stream, range, encoding, _parser, layout, cancellationToken);
+
+                        Action<LogEntry> onEntry = entries.Add;
+                        if (seek.FilterByMinTime)
                         {
-                            if (e.Time >= cutoff)
-                                entries.Add(e);
-                        };
+                            var cutoff = seek.MinTime;
+                            onEntry = e =>
+                            {
+                                if (e.Time >= cutoff)
+                                    entries.Add(e);
+                            };
+                        }
+
+                        TemplateFileLogReader.Read(
+                            stream,
+                            encoding,
+                            _parser,
+                            layout,
+                            filePath,
+                            onEntry,
+                            cancellationToken,
+                            (pos, len) =>
+                            {
+                                int pct = len <= 0 ? 100 : (int)((double)pos / len * 100);
+                                if (pct > 100)
+                                    pct = 100;
+                                ReportProgress(completed, pct, false);
+                            });
                     }
 
-                    TemplateFileLogReader.Read(
-                        stream,
-                        encoding,
-                        _parser,
-                        layout,
-                        filePath,
-                        onEntry,
-                        cancellationToken,
-                        (pos, len) =>
-                        {
-                            int pct = len <= 0 ? 100 : (int)((double)pos / len * 100);
-                            if (pct > 100)
-                                pct = 100;
-                            progress?.Report(Math.Min(100, (completed * 100 + pct) / paths.Count));
-                            fileProgress?.Report(new ImportFileProgress(completed, pct));
-                        });
-                }
+                    cancellationToken.ThrowIfCancellationRequested();
 
-                cancellationToken.ThrowIfCancellationRequested();
-
-                if (entries.Count > 0)
-                {
-                    // Import respects Don't Receive the same way live UDP does (before session storage).
-                    entries.RemoveAll(e => !_session.ShouldStoreInBuffer(e));
                     if (entries.Count > 0)
                     {
-                        _session.AddEntries(entries);
-                        totalEntries += entries.Count;
+                        // Import respects Don't Receive the same way live UDP does (before session storage).
+                        entries.RemoveAll(e => !_session.ShouldStoreInBuffer(e));
+                        if (entries.Count > 0)
+                        {
+                            pending.AddRange(entries);
+                            totalEntries += entries.Count;
+                        }
                     }
-                }
 
-                completed++;
-                progress?.Report((completed * 100) / paths.Count);
-                fileProgress?.Report(new ImportFileProgress(completed - 1, 100));
+                    completed++;
+                    ReportProgress(completed - 1, 100, false);
+                }
+            }
+            finally
+            {
+                // Cancel drops the batch; the caller also removes by path. Any other exit keeps files already read.
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    if (completed > 0)
+                        ReportProgress(completed - 1, 100, true);
+                    if (pending.Count > 0)
+                        _session.AddEntries(pending);
+                }
             }
 
             return totalEntries;
+
+            void ReportProgress(int fileIndex, int pct, bool force)
+            {
+                // Progress<T> Posts at DispatcherPriority.Normal, above Render. Unthrottled reports
+                // (every 64 KB, every file) keep the dispatcher from painting the progress window.
+                int now = Environment.TickCount;
+                if (!force && lastProgressTick != 0 && unchecked(now - lastProgressTick) < ProgressIntervalMs)
+                    return;
+                lastProgressTick = now == 0 ? 1 : now;
+                progress?.Report(Math.Min(100, (fileIndex * 100 + pct) / paths.Count));
+                fileProgress?.Report(new ImportFileProgress(fileIndex, pct));
+            }
         }
+
+        private const int ProgressIntervalMs = 80;
 
         public Task<int> ImportFromFilesAsync(
             IEnumerable<string> filePaths,

@@ -494,7 +494,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Кликните, чтобы перейти к ошибкам в этом интервале.
+        ///   Looks up a localized string similar to Кликните, чтобы перейти к первому сообщению в этом интервале.
         /// </summary>
         internal static string ErrorTimelineHint {
             get {
@@ -503,7 +503,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} – {1}: Warn {2}, Error {3}, Fatal {4}.
+        ///   Looks up a localized string similar to {0} – {1}: всего {2}, Warn {3}, Error {4}, Fatal {5}, ~{6:0.##} сообщ./с.
         /// </summary>
         internal static string ErrorTimelineToolTip {
             get {
@@ -1618,7 +1618,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Показывать таймлайн ошибок:.
+        ///   Looks up a localized string similar to Показывать таймлайн:.
         /// </summary>
         internal static string ShowErrorTimeline {
             get {
@@ -1627,7 +1627,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Полоса плотности Warn/Error/Fatal под списком логов.
+        ///   Looks up a localized string similar to Полоса под списком: фон — все сообщения, поверх — Warn/Error/Fatal. Клик переходит к первому сообщению в выбранном интервале.
         /// </summary>
         internal static string ShowErrorTimelineToolTip {
             get {

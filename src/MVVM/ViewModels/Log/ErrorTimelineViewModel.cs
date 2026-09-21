@@ -9,7 +9,7 @@ using LogViewer.Services;
 namespace LogViewer.MVVM.ViewModels.Log
 {
     /// <summary>
-    /// Warn/Error/Fatal density strip. Rebuilding on every UDP batch is too expensive —
+    /// Error density over a messages/sec fill. Rebuilding on every UDP batch is too expensive —
     /// <see cref="ScheduleRebuild"/> coalesces ticks for 1.5s.
     /// </summary>
     public sealed class ErrorTimelineViewModel : BaseViewModel, IResettable
@@ -34,7 +34,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             _state.LogsChanged += (sender, args) => Rebuild();
         }
 
-        /// <summary>Strip buckets. Empty collection if the setting is off or there are no Warn/Error/Fatal.</summary>
+        /// <summary>Strip buckets (error stack + rate). Empty if the setting is off or there are no timestamps.</summary>
         public ObservableCollection<ErrorTimelineBucket> ErrorTimelineBuckets
         {
             get => _buckets;
@@ -97,18 +97,9 @@ namespace LogViewer.MVVM.ViewModels.Log
             }
 
             var buckets = ErrorTimelineBuilder.Build(source, _bucketCount, _settings.DataFormat);
-            bool visible = false;
-            for (int i = 0; i < buckets.Count; i++)
-            {
-                if (buckets[i].Warn > 0 || buckets[i].Error > 0 || buckets[i].Fatal > 0)
-                {
-                    visible = true;
-                    break;
-                }
-            }
-
             ErrorTimelineBuckets = new ObservableCollection<ErrorTimelineBucket>(buckets);
-            IsErrorTimelineVisible = visible;
+            // Info-only traffic must still show the strip (rate fill, empty error stack).
+            IsErrorTimelineVisible = buckets.Count > 0;
         }
 
         /// <inheritdoc />

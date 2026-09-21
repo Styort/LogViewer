@@ -7,9 +7,14 @@ using LogViewer.MVVM.Models;
 
 namespace LogViewer.Helpers
 {
+    /// <summary>
+    /// One strip, two overlays on the same absolute-time buckets: muted rate fill, then Warn/Error/Fatal stack.
+    /// Independent height scales — X matches Core From/To, not the list index.
+    /// </summary>
     public class ErrorTimelineControl : FrameworkElement
     {
         private static readonly Brush EmptyFill = CreateFrozenBrush(240, 240, 240);
+        private static readonly Brush RateFill = CreateFrozenBrush(90, 92, 107, 192);
         private static readonly Brush WarnFill = CreateFrozenBrush(Colors.Orange);
         private static readonly Brush ErrorFill = CreateFrozenBrush(Colors.Red);
         private static readonly Brush FatalFill = CreateFrozenBrush(Colors.DarkRed);
@@ -85,13 +90,15 @@ namespace LogViewer.Helpers
             {
                 var bucket = buckets[i];
                 double x = i * bucketWidth;
-                var rect = new Rect(x, 0, Math.Max(1, bucketWidth - 1), height);
-                drawingContext.DrawRectangle(EmptyFill, BucketPen, rect);
+                double barWidth = Math.Max(1, bucketWidth - 1);
+                drawingContext.DrawRectangle(EmptyFill, BucketPen, new Rect(x, 0, barWidth, height));
 
+                // Rate first so Warn/Error/Fatal stay readable on top of volume.
+                DrawStack(drawingContext, x, barWidth, height, bucket.RateHeight, RateFill);
                 double y = height;
-                y = DrawStack(drawingContext, x, bucketWidth - 1, y, bucket.WarnHeight, WarnFill);
-                y = DrawStack(drawingContext, x, bucketWidth - 1, y, bucket.ErrorHeight, ErrorFill);
-                DrawStack(drawingContext, x, bucketWidth - 1, y, bucket.FatalHeight, FatalFill);
+                y = DrawStack(drawingContext, x, barWidth, y, bucket.WarnHeight, WarnFill);
+                y = DrawStack(drawingContext, x, barWidth, y, bucket.ErrorHeight, ErrorFill);
+                DrawStack(drawingContext, x, barWidth, y, bucket.FatalHeight, FatalFill);
             }
         }
 
@@ -176,7 +183,12 @@ namespace LogViewer.Helpers
 
         private static Brush CreateFrozenBrush(byte r, byte g, byte b)
         {
-            var brush = new SolidColorBrush(Color.FromRgb(r, g, b));
+            return CreateFrozenBrush(255, r, g, b);
+        }
+
+        private static Brush CreateFrozenBrush(byte a, byte r, byte g, byte b)
+        {
+            var brush = new SolidColorBrush(Color.FromArgb(a, r, g, b));
             brush.Freeze();
             return brush;
         }

@@ -739,16 +739,16 @@ Restart now?</value>
     <value>The message is hidden by the current filter.</value>
   </data>
   <data name="ErrorTimelineHint" xml:space="preserve">
-    <value>Click to jump to errors in this interval.</value>
+    <value>Click to jump to the first message in this interval.</value>
   </data>
   <data name="ErrorTimelineToolTip" xml:space="preserve">
-    <value>{0} – {1}: Warn {2}, Error {3}, Fatal {4}</value>
+    <value>{0} – {1}: total {2}, Warn {3}, Error {4}, Fatal {5}, ~{6:0.##} msg/s</value>
   </data>
   <data name="ShowErrorTimeline" xml:space="preserve">
-    <value>Show error timeline:</value>
+    <value>Show timeline:</value>
   </data>
   <data name="ShowErrorTimelineToolTip" xml:space="preserve">
-    <value>Warn/Error/Fatal density strip below the log list. Click to jump to messages in that interval.</value>
+    <value>Strip below the log list: all messages as the background, Warn/Error/Fatal on top. Click to jump to the first message in that interval.</value>
   </data>
   <data name="NewFeatures" xml:space="preserve">
     <value>New features:</value>

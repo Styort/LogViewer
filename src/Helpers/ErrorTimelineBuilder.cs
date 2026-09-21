@@ -14,7 +14,10 @@ namespace LogViewer.Helpers
     /// </summary>
     public static class ErrorTimelineBuilder
     {
-        /// <summary>Stacked bar cap in px; Core buckets have no heights.</summary>
+        /// <summary>
+        /// Pixel cap for both overlays. Error stack and rate share the cap but not the scale:
+        /// each uses its own max so Info volume does not flatten Warn/Error/Fatal.
+        /// </summary>
         public const double BarHeight = 28;
 
         /// <summary>
@@ -53,6 +56,7 @@ namespace LogViewer.Helpers
                 {
                     From = core.From,
                     To = core.To,
+                    TotalCount = core.TotalCount,
                     Warn = core.Warn,
                     Error = core.Error,
                     Fatal = core.Fatal
@@ -69,37 +73,46 @@ namespace LogViewer.Helpers
 
         private static void ApplyHeights(IList<ErrorTimelineBucket> buckets)
         {
+            int maxErrors = 0;
             int maxTotal = 0;
             for (int i = 0; i < buckets.Count; i++)
             {
-                int total = buckets[i].Warn + buckets[i].Error + buckets[i].Fatal;
-                if (total > maxTotal)
-                    maxTotal = total;
+                int errors = buckets[i].Warn + buckets[i].Error + buckets[i].Fatal;
+                if (errors > maxErrors)
+                    maxErrors = errors;
+                if (buckets[i].TotalCount > maxTotal)
+                    maxTotal = buckets[i].TotalCount;
             }
 
-            if (maxTotal <= 0)
-                return;
+            // Two maxima, one strip: Info flood must not flatten errors, and an Error burst
+            // must not hide volume. Same From/To so the overlays stay aligned on X.
+            double errorScale = maxErrors > 0 ? BarHeight / maxErrors : 0;
+            double rateScale = maxTotal > 0 ? BarHeight / maxTotal : 0;
 
-            double scale = 28d / maxTotal;
             for (int i = 0; i < buckets.Count; i++)
             {
                 var bucket = buckets[i];
                 // Floor 2px: a single Warn in a busy window would otherwise be a 0-height bar.
                 if (bucket.Warn > 0)
-                    bucket.WarnHeight = Math.Max(2, bucket.Warn * scale);
+                    bucket.WarnHeight = Math.Max(2, bucket.Warn * errorScale);
                 if (bucket.Error > 0)
-                    bucket.ErrorHeight = Math.Max(2, bucket.Error * scale);
+                    bucket.ErrorHeight = Math.Max(2, bucket.Error * errorScale);
                 if (bucket.Fatal > 0)
-                    bucket.FatalHeight = Math.Max(2, bucket.Fatal * scale);
+                    bucket.FatalHeight = Math.Max(2, bucket.Fatal * errorScale);
 
                 double stacked = bucket.WarnHeight + bucket.ErrorHeight + bucket.FatalHeight;
-                if (stacked > 28 && stacked > 0)
+                if (stacked > BarHeight && stacked > 0)
                 {
-                    double fit = 28 / stacked;
+                    double fit = BarHeight / stacked;
                     bucket.WarnHeight *= fit;
                     bucket.ErrorHeight *= fit;
                     bucket.FatalHeight *= fit;
                 }
+
+                if (bucket.TotalCount > 0 && rateScale > 0)
+                    bucket.RateHeight = Math.Max(2, bucket.TotalCount * rateScale);
+                if (bucket.RateHeight > BarHeight)
+                    bucket.RateHeight = BarHeight;
             }
         }
 
@@ -109,13 +122,18 @@ namespace LogViewer.Helpers
             for (int i = 0; i < buckets.Count; i++)
             {
                 var bucket = buckets[i];
+                double seconds = (bucket.To - bucket.From).TotalSeconds;
+                // Zero-length slice (every event on the same tick): never divide by zero.
+                double rate = seconds > 0 ? bucket.TotalCount / seconds : 0;
                 bucket.ToolTip = string.Format(
                     Locals.ErrorTimelineToolTip,
                     bucket.From.ToString(format),
                     bucket.To.ToString(format),
+                    bucket.TotalCount,
                     bucket.Warn,
                     bucket.Error,
-                    bucket.Fatal);
+                    bucket.Fatal,
+                    rate);
             }
         }
     }

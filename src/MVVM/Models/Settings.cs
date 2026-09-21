@@ -60,7 +60,7 @@ namespace LogViewer.MVVM.Models
         public bool IsShowTaskbarProgress { get; set; } = true;
 
         /// <summary>
-        /// Whether to show the Warn/Error/Fatal density strip.
+        /// Whether to show the timeline (error density over messages/sec). Missing value in old settings.xml keeps the default (true).
         /// </summary>
         public bool IsShowErrorTimeline { get; set; } = true;
 

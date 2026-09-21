@@ -13,7 +13,7 @@ namespace LogViewer.Core.Services
         /// <summary>Absolute timestamp; list order is ignored when placing the event on X.</summary>
         public DateTime Time;
 
-        /// <summary>Used only to count Warn/Error/Fatal; other levels can still supply FirstHit fallback.</summary>
+        /// <summary>Warn/Error/Fatal feed the error stack; every level increments TotalCount.</summary>
         public LogLevel Level;
 
         /// <summary>Index in the caller's displayed list (not Core session index).</summary>
@@ -29,18 +29,37 @@ namespace LogViewer.Core.Services
         /// <summary>Inclusive end of the slice.</summary>
         public DateTime To { get; set; }
 
+        /// <summary>All levels in this slice. Rate height uses this, not Warn+Error+Fatal.</summary>
+        public int TotalCount { get; set; }
+
         public int Warn { get; set; }
         public int Error { get; set; }
         public int Fatal { get; set; }
 
         /// <summary>
-        /// Index of the first Warn/Error/Fatal in this slice, or a quiet row if none; -1 if the slice is empty.
+        /// Index of the first row in this slice (any level) in list order; -1 if the slice is empty.
+        /// Click target for the overlay strip; error stack and rate share From/To.
         /// </summary>
         public int FirstHitIndex { get; set; } = -1;
+
+        /// <summary>
+        /// Approximate messages/sec for the tooltip. A zero-length slice (min==max) returns 0 so callers never divide by zero.
+        /// </summary>
+        public double MessagesPerSecond
+        {
+            get
+            {
+                double seconds = (To - From).TotalSeconds;
+                if (seconds <= 0)
+                    return 0;
+                return TotalCount / seconds;
+            }
+        }
     }
 
     /// <summary>
-    /// Warn/Error/Fatal density buckets on absolute timestamps (not list order).
+    /// Time-slice buckets on absolute timestamps (not list order): TotalCount for the rate fill plus Warn/Error/Fatal.
+    /// Both overlays share From/To so they stay aligned on X.
     /// </summary>
     /// <remarks>
     /// Sorting the Time column must not reshuffle the strip: X is min..max of <see cref="TimelineEvent.Time"/>.
@@ -115,24 +134,15 @@ namespace LogViewer.Core.Services
                     continue;
 
                 var bucket = buckets[index];
+                bucket.TotalCount++;
                 if (IsWarnPlus(ev.Level))
-                {
-                    if (bucket.FirstHitIndex < 0)
-                        bucket.FirstHitIndex = ev.Index;
                     CountLevel(ev.Level, bucket);
-                }
-                else if (firstAny[index] < 0)
-                {
-                    // Quiet rows are a fallback click target when the slice has no Warn/Error/Fatal.
+                if (firstAny[index] < 0)
                     firstAny[index] = ev.Index;
-                }
             }
 
             for (int i = 0; i < count; i++)
-            {
-                if (buckets[i].FirstHitIndex < 0)
-                    buckets[i].FirstHitIndex = firstAny[i];
-            }
+                buckets[i].FirstHitIndex = firstAny[i];
 
             return buckets;
         }
@@ -145,20 +155,14 @@ namespace LogViewer.Core.Services
                 var ev = events[i];
                 if (ev.Time == default(DateTime))
                     continue;
+                bucket.TotalCount++;
                 if (IsWarnPlus(ev.Level))
-                {
-                    if (bucket.FirstHitIndex < 0)
-                        bucket.FirstHitIndex = ev.Index;
                     CountLevel(ev.Level, bucket);
-                }
-                else if (firstAny < 0)
-                {
+                if (firstAny < 0)
                     firstAny = ev.Index;
-                }
             }
 
-            if (bucket.FirstHitIndex < 0)
-                bucket.FirstHitIndex = firstAny;
+            bucket.FirstHitIndex = firstAny;
         }
 
         private static bool IsWarnPlus(LogLevel level)

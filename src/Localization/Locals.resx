@@ -738,16 +738,16 @@
     <value>Сообщение скрыто фильтром</value>
   </data>
   <data name="ErrorTimelineHint" xml:space="preserve">
-    <value>Кликните, чтобы перейти к ошибкам в этом интервале</value>
+    <value>Кликните, чтобы перейти к первому сообщению в этом интервале</value>
   </data>
   <data name="ErrorTimelineToolTip" xml:space="preserve">
-    <value>{0} – {1}: Warn {2}, Error {3}, Fatal {4}</value>
+    <value>{0} – {1}: всего {2}, Warn {3}, Error {4}, Fatal {5}, ~{6:0.##} сообщ./с</value>
   </data>
   <data name="ShowErrorTimeline" xml:space="preserve">
-    <value>Показывать таймлайн ошибок:</value>
+    <value>Показывать таймлайн:</value>
   </data>
   <data name="ShowErrorTimelineToolTip" xml:space="preserve">
-    <value>Полоса плотности Warn/Error/Fatal под списком логов. Клик переходит к сообщениям в выбранном интервале.</value>
+    <value>Полоса под списком: фон — все сообщения, поверх — Warn/Error/Fatal. Клик переходит к первому сообщению в выбранном интервале.</value>
   </data>
   <data name="NewFeatures" xml:space="preserve">
     <value>Новые возможности:</value>

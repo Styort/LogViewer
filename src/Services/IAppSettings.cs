@@ -55,7 +55,7 @@ namespace LogViewer.Services
         /// <summary>Progress on the taskbar icon during receive/import.</summary>
         bool IsShowTaskbarProgress { get; }
 
-        /// <summary>Warn/Error/Fatal density strip under the list.</summary>
+        /// <summary>Error density + messages/sec overlay under the list.</summary>
         bool IsShowErrorTimeline { get; }
 
         /// <summary>Light row fill with the receiver color (otherwise only the color column).</summary>

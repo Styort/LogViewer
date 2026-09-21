@@ -28,8 +28,8 @@
 				<en>Bookmarks on specific log lines with a comment, a jump list, and the Ctrl+B shortcut</en>
 			</Item>
 			<Item>
-				<ru>Полоса плотности Warn/Error/Fatal над списком логов: клик по интервалу переходит к первому сообщению</ru>
-				<en>Warn/Error/Fatal density strip above the log list: clicking an interval jumps to the first matching message</en>
+				<ru>Таймлайн под списком: плотность всех сообщений фоном и стек Warn/Error/Fatal поверх, в тех же временных корзинах. Клик прыгает к первому сообщению интервала.</ru>
+				<en>Timeline under the list: all-message density as the background and Warn/Error/Fatal stacked on top, on the same time buckets. Click jumps to the first message in the interval.</en>
 			</Item>
 			<Item>
 				<ru>Правила подсветки строк: постоянный цвет фона по уровню, логгеру или тексту сообщения (подстрока или regex). Настраиваются во вкладке «Подсветка», включаются и выключаются, порядок в списке задаёт приоритет. Можно задать непрозрачность цвета. Правила не фильтруют список и не зависят от текущего поиска.</ru>

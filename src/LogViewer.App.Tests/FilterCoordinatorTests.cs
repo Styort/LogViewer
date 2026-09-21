@@ -83,6 +83,35 @@ namespace LogViewer.App.Tests
         }
 
         [Test]
+        public void ClearAppliedPreset_RestoresDefaultsAndKeepsDontReceive()
+        {
+            var session = new LogSession();
+            var processing = new LogProcessingService(session, new LogFilter());
+            var loggers = new LoggerFilterState();
+            loggers.ExcludeFromBuffer("ip.Drop");
+            var coordinator = new FilterCoordinator(processing, loggers);
+
+            coordinator.ApplyPreset(new FilterPreset
+            {
+                Name = "Error + search timeout",
+                MinLevel = "Error",
+                SearchText = "timeout",
+                IsSearchActive = true,
+                IncludedLoggerFullPaths = new List<string> { "ip.Payments" }
+            }, DateTime.Now, new[] { "ip.Other", "ip.Payments" });
+
+            coordinator.ClearAppliedPreset();
+
+            Assert.That(session.FilterCriteria.MinLevel, Is.EqualTo(LogLevel.Trace));
+            Assert.That(session.FilterCriteria.SearchText, Is.EqualTo(string.Empty));
+            Assert.That(session.FilterCriteria.IsSearchActive, Is.False);
+            Assert.That(session.FilterCriteria.IsTimeIntervalActive, Is.False);
+            Assert.That(session.FilterCriteria.IncludedLoggerFullPaths, Is.Empty);
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPathsWithBuffer, Does.Contain("ip.Drop"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("ip.Drop"));
+        }
+
+        [Test]
         public void ApplyPreset_InvalidRegex_SetsIndicatorAndDoesNotActivateSearch()
         {
             var session = new LogSession();

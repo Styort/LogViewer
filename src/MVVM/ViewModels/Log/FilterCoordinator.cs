@@ -240,6 +240,28 @@ namespace LogViewer.MVVM.ViewModels.Log
         }
 
         /// <summary>
+        /// Drop preset display criteria: Trace, empty search, no interval, all loggers visible.
+        /// Don't Receive stays — same rule as ApplyPreset.
+        /// </summary>
+        public void ClearAppliedPreset()
+        {
+            _minLevel = eLogLevel.Trace;
+            _searchText = string.Empty;
+            _matchCase = false;
+            _wholeWord = false;
+            _regex = false;
+            _matchLevel = true;
+            _searchActive = false;
+            _timeIntervalActive = false;
+            _from = default(DateTime);
+            _to = default(DateTime);
+            RefreshSearchPatternValidity();
+            Loggers.SetIncludeOnly(null);
+            Loggers.ReplaceDisplayExclusions(null);
+            Apply();
+        }
+
+        /// <summary>
         /// Snapshot search/interval/tree into a session file. Does not include receivers (those stay in settings.xml).
         /// Checked loggers come from the WPF tree (<paramref name="includedRootsFromTree"/>), not only
         /// Show-only state: unchecking nodes leaves IncludeOnlyPaths empty.

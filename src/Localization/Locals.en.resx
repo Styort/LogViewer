@@ -335,7 +335,7 @@
     <value>Export this logger to a file</value>
   </data>
   <data name="ExportLogsToFileToolTip" xml:space="preserve">
-    <value>Export displayed logs to a file (Ctrl+S).</value>
+    <value>Export only currently visible (filtered) rows to a text file (Ctrl+S). Does not save the session.</value>
   </data>
   <data name="FindAllHotKeys" xml:space="preserve">
     <value>Find All (Ctrl+F)</value>
@@ -374,7 +374,7 @@
     <value>Go to Timestamp</value>
   </data>
   <data name="ImportLogsToolTip" xml:space="preserve">
-    <value>Import logs from a file.</value>
+    <value>Import a log file into the buffer.</value>
   </data>
   <data name="InAnotherWindowHotKeys" xml:space="preserve">
     <value>In a separate window (Ctrl+Shift+F)</value>
@@ -606,16 +606,16 @@ Restart now?</value>
     <value>Watch the file and append new log entries.</value>
   </data>
   <data name="StartReadingLogsFromFile" xml:space="preserve">
-    <value>Start Reading Logs from File</value>
+    <value>Start reading logs from the watched file (not from network receivers)</value>
   </data>
   <data name="StartReadingLogsFromUDP" xml:space="preserve">
-    <value>Start Reading Logs from UDP</value>
+    <value>Start receiving logs from network receivers (UDP or TCP), not from a file</value>
   </data>
   <data name="StopReadingLogsFromFile" xml:space="preserve">
-    <value>Stop Reading Logs from File</value>
+    <value>Stop reading logs from the watched file (not from network receivers)</value>
   </data>
   <data name="StopReadingLogsFromUDP" xml:space="preserve">
-    <value>Stop Reading Logs from UDP</value>
+    <value>Stop receiving logs from network receivers (UDP or TCP), not the file</value>
   </data>
   <data name="Encoding" xml:space="preserve">
     <value>Encoding:</value>
@@ -823,10 +823,16 @@ Restart now?</value>
     <value>Presets</value>
   </data>
   <data name="FilterPresetsToolTip" xml:space="preserve">
-    <value>Named display filter: level, search, logger tree. Does not save log rows. Example: “Payments errors” — Error+, regex timeout|declined.</value>
+    <value>Presets — saved filter criteria: level, search, logger tree. Does not save log rows. Example: “Payments errors” — Error+, regex timeout|declined.</value>
   </data>
   <data name="FilterPresetApply" xml:space="preserve">
     <value>Apply</value>
+  </data>
+  <data name="FilterPresetClear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="FilterPresetClearToolTip" xml:space="preserve">
+    <value>Clear the active preset: Trace level, empty search, all loggers visible. Don't Receive is unchanged.</value>
   </data>
   <data name="FilterPresetSaveAs" xml:space="preserve">
     <value>Save current as…</value>
@@ -933,5 +939,65 @@ Not saved: received messages, bookmarks, Don't Receive, or receiver settings. Pr
   </data>
   <data name="Warning" xml:space="preserve">
     <value>Warning</value>
+  </data>
+  <data name="HeaderFileGroup" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="HeaderAnalyzeGroup" xml:space="preserve">
+    <value>Analyze</value>
+  </data>
+  <data name="HeaderImport" xml:space="preserve">
+    <value>Import</value>
+  </data>
+  <data name="HeaderExportVisible" xml:space="preserve">
+    <value>Export visible</value>
+  </data>
+  <data name="HeaderSession" xml:space="preserve">
+    <value>Session ▾</value>
+  </data>
+  <data name="HeaderSessionToolTip" xml:space="preserve">
+    <value>Open or save the whole session. Not the same as exporting visible rows (Ctrl+S).</value>
+  </data>
+  <data name="HeaderSaveSession" xml:space="preserve">
+    <value>Save session</value>
+  </data>
+  <data name="HeaderOpenSession" xml:space="preserve">
+    <value>Open session</value>
+  </data>
+  <data name="HeaderStatistics" xml:space="preserve">
+    <value>Statistics</value>
+  </data>
+  <data name="HeaderRepeats" xml:space="preserve">
+    <value>Repeats</value>
+  </data>
+  <data name="HeaderBookmarks" xml:space="preserve">
+    <value>Bookmarks</value>
+  </data>
+  <data name="HeaderViews" xml:space="preserve">
+    <value>Presets</value>
+  </data>
+  <data name="HeaderMore" xml:space="preserve">
+    <value>More ▾</value>
+  </data>
+  <data name="HeaderUdpSource" xml:space="preserve">
+    <value>UDP</value>
+  </data>
+  <data name="HeaderStart" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="HeaderStop" xml:space="preserve">
+    <value>Stop</value>
+  </data>
+  <data name="HeaderFileStart" xml:space="preserve">
+    <value>File: start</value>
+  </data>
+  <data name="HeaderFileStop" xml:space="preserve">
+    <value>File: stop</value>
+  </data>
+  <data name="HeaderFollowOn" xml:space="preserve">
+    <value>Follow: on</value>
+  </data>
+  <data name="HeaderFollowOff" xml:space="preserve">
+    <value>Follow: off</value>
   </data>
 </root>

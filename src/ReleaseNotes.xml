@@ -54,6 +54,10 @@
 		</NewFeatures>
 		<ChangedFeatures>
 			<Item>
+				<ru>Шапка главного окна стала компактнее: кнопки с иконкой и подписью, меню «Сессия» отдельно от экспорта видимых строк (Ctrl+S), сетевой приём «Начать/Остановить» для UDP и TCP, переключатель «Следить» с явным вкл/выкл. На узком окне статистика, повторы и пресеты уходят в «Ещё».</ru>
+				<en>The main window toolbar is more compact: icon-plus-label buttons, a Session menu separate from exporting visible rows (Ctrl+S), network Start/Stop for UDP and TCP, and a Follow on/off toggle. On a narrow window, Statistics, Repeats, and Presets move into More.</en>
+			</Item>
+			<Item>
 				<ru>Оптимизировано открытие окна Release Notes: содержимое кэшируется, добавлена локализация заголовков и пунктов</ru>
 				<en>Faster Release Notes window: notes are cached, and section headings and items are localized</en>
 			</Item>

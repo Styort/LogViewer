@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         ShowInTaskbar="False"
-        Height="540" Width="560">
+        Height="540" Width="640">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -45,6 +45,9 @@
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,12,0,0" HorizontalAlignment="Right">
             <Button MinWidth="100" Height="30" Margin="0,0,8,0" Content="{localization:LocBinding FilterPresetApply}"
                     Command="{Binding ApplyCommand}" IsDefault="True"/>
+            <Button MinWidth="100" Height="30" Margin="0,0,8,0" Content="{localization:LocBinding FilterPresetClear}"
+                    Command="{Binding ClearCommand}"
+                    ToolTip="{localization:LocBinding FilterPresetClearToolTip}"/>
             <Button MinWidth="100" Height="30" Margin="0,0,8,0" Content="{localization:LocBinding FilterPresetRename}"
                     Command="{Binding RenameCommand}"/>
             <Button MinWidth="100" Height="30" Content="{localization:LocBinding FilterPresetDelete}"

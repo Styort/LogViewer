@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
@@ -47,12 +48,14 @@ namespace LogViewer.MVVM.Views
         public MainWindow()
         {
             InitializeComponent();
-            AutoScrollButton.ToolTip = Locals.EnableAutoScroll;
+            UpdateAutoScrollChrome();
+            TranslationSource.Instance.LanguageChanged += (_, __) => UpdateAutoScrollChrome();
 
             this.Loaded += (s, e) =>
             {
                 MainWindow.WindowHandle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
                 HwndSource.FromHwnd(MainWindow.WindowHandle)?.AddHook(HandleMessages);
+                UpdateHeaderOverflow();
             };
         }
 
@@ -155,6 +158,8 @@ namespace LogViewer.MVVM.Views
         #region Log list scrolling
 
         private bool autoScrollEnabled = false;
+        private bool updatingHeaderOverflow;
+        private int headerOverflowMode = -1;
 
         protected bool AutoScrollEnabled
         {
@@ -162,17 +167,94 @@ namespace LogViewer.MVVM.Views
             set
             {
                 autoScrollEnabled = value;
-                if (autoScrollEnabled)
-                {
-                    AutoScrollButton.Opacity = 0.5;
-                    AutoScrollButton.ToolTip = Locals.DisableAutoScroll;
-                }
-                else
-                {
-                    AutoScrollButton.ToolTip = Locals.EnableAutoScroll;
-                    AutoScrollButton.Opacity = 1;
-                }
+                UpdateAutoScrollChrome();
             }
+        }
+
+        /// <summary>
+        /// Keeps Follow caption, tooltip, and toggle chrome in sync with AutoScrollEnabled.
+        /// Domain follow rules stay in the existing click/selection/scroll handlers.
+        /// </summary>
+        private void UpdateAutoScrollChrome()
+        {
+            if (AutoScrollButton == null)
+                return;
+
+            AutoScrollButton.Tag = autoScrollEnabled ? "True" : "False";
+            AutoScrollButton.ToolTip = autoScrollEnabled
+                ? TranslationSource.Instance["DisableAutoScroll"]
+                : TranslationSource.Instance["EnableAutoScroll"];
+            if (AutoScrollButtonText != null)
+            {
+                AutoScrollButtonText.Text = autoScrollEnabled
+                    ? TranslationSource.Instance["HeaderFollowOn"] as string
+                    : TranslationSource.Instance["HeaderFollowOff"] as string;
+            }
+        }
+
+        private void HeaderToolbar_OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateHeaderOverflow();
+        }
+
+        /// <summary>
+        /// Opens a header drop-down from a compact button so Session/More share the same chrome as the other toolbar buttons.
+        /// </summary>
+        private void OnHeaderDropDownClick(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            if (element?.ContextMenu == null)
+                return;
+
+            element.ContextMenu.PlacementTarget = element;
+            element.ContextMenu.Placement = PlacementMode.Bottom;
+            element.ContextMenu.IsOpen = true;
+        }
+
+        /// <summary>
+        /// Narrow windows move Statistics/Repeats/Views into More.
+        /// Import, export, session, receivers, scroll, and settings stay on the bar.
+        /// </summary>
+        private void UpdateHeaderOverflow()
+        {
+            if (updatingHeaderOverflow || HeaderToolbar == null || HeaderLeftPanel == null || HeaderRightPanel == null)
+                return;
+
+            updatingHeaderOverflow = true;
+            try
+            {
+                double toolbarWidth = HeaderToolbar.ActualWidth;
+                if (toolbarWidth <= 0)
+                    return;
+
+                const double gap = 8;
+                HeaderRightPanel.Measure(new Size(double.PositiveInfinity, HeaderToolbar.ActualHeight));
+                double rightWidth = HeaderRightPanel.DesiredSize.Width;
+
+                ApplyHeaderOverflowMode(0);
+                HeaderLeftPanel.Measure(new Size(double.PositiveInfinity, HeaderToolbar.ActualHeight));
+                if (HeaderLeftPanel.DesiredSize.Width + rightWidth + gap <= toolbarWidth)
+                    return;
+
+                ApplyHeaderOverflowMode(1);
+            }
+            finally
+            {
+                updatingHeaderOverflow = false;
+            }
+        }
+
+        private void ApplyHeaderOverflowMode(int mode)
+        {
+            if (headerOverflowMode == mode)
+                return;
+
+            headerOverflowMode = mode;
+            Visibility analyzeButtons = mode == 0 ? Visibility.Visible : Visibility.Collapsed;
+            Visibility moreMenu = mode == 1 ? Visibility.Visible : Visibility.Collapsed;
+
+            HeaderAnalyzeButtons.Visibility = analyzeButtons;
+            HeaderMoreMenu.Visibility = moreMenu;
         }
 
         private void OnScrollToTopButtonClick(object sender, RoutedEventArgs e)

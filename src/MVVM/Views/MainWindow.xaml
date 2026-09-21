@@ -140,35 +140,143 @@
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60"/>
+            <RowDefinition Height="52"/>
             <RowDefinition Height="0.85*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="225"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.ColumnSpan="3" Margin="5">
-            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Left">
-                <Button Style="{StaticResource ImportButtonStyle}" Command="{Binding Path=Import.ImportCommand}"/>
-                <Button Style="{StaticResource ExportButtonStyle}" Command="{Binding Path=Import.ExportCommand}"/>
-                <Button Style="{StaticResource SaveSessionButtonStyle}" Command="{Binding Path=Session.SaveCommand}"/>
-                <Button Style="{StaticResource OpenSessionButtonStyle}" Command="{Binding Path=Session.OpenCommand}"/>
-                <Button Style="{StaticResource LoggerStatisticsButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"/>
-                <Button Style="{StaticResource MessageGroupsButtonStyle}" Command="{Binding Path=MessageGroups.OpenCommand}"/>
-                <Button Style="{StaticResource FilterPresetsButtonStyle}" Command="{Binding Path=FilterPresets.OpenCommand}"
-                        ToolTip="{localization:LocBinding FilterPresetsToolTip}"/>
-                <Button Style="{StaticResource BookmarksButtonStyle}" Command="{Binding Path=Bookmarks.OpenBookmarksCommand}"
-                        Visibility="{Binding Path=Bookmarks.Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
+        <Grid x:Name="HeaderToolbar" Grid.ColumnSpan="3" Margin="6,4" SizeChanged="HeaderToolbar_OnSizeChanged">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel x:Name="HeaderLeftPanel" Orientation="Horizontal" VerticalAlignment="Center" SizeChanged="HeaderToolbar_OnSizeChanged">
+                <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ImportCommand}" ToolTip="{localization:LocBinding ImportLogsToolTip}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource ImportDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                        <TextBlock Text="{localization:LocBinding HeaderImport}"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ExportCommand}" ToolTip="{localization:LocBinding ExportLogsToFileToolTip}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource ExportDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                        <TextBlock Text="{localization:LocBinding HeaderExportVisible}"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource CompactToolbarButtonStyle}" Click="OnHeaderDropDownClick" ToolTip="{localization:LocBinding HeaderSessionToolTip}">
+                    <TextBlock Text="{localization:LocBinding HeaderSession}"/>
+                    <Button.ContextMenu>
+                        <ContextMenu Style="{StaticResource BaseContextMenu}"
+                                     DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            <MenuItem Header="{localization:LocBinding HeaderSaveSession}" Command="{Binding Path=Session.SaveCommand}" InputGestureText="Ctrl+Shift+S" ToolTip="{localization:LocBinding SaveSessionToolTip}" ToolTipService.ShowOnDisabled="True">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource SaveSessionDrawingImage}" Width="18" Height="18"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{localization:LocBinding HeaderOpenSession}" Command="{Binding Path=Session.OpenCommand}" InputGestureText="Ctrl+O" ToolTip="{localization:LocBinding OpenSessionToolTip}" ToolTipService.ShowOnDisabled="True">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource OpenSessionDrawingImage}" Width="18" Height="18"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+
+                <Rectangle Style="{StaticResource CompactToolbarSeparatorStyle}"/>
+
+                <StackPanel x:Name="HeaderAnalyzeButtons" Orientation="Horizontal">
+                    <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=OpenLoggerStatisticsCommand}"
+                            IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding LoggerStatisticsToolTip}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource LoggerStatisticsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderStatistics}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=MessageGroups.OpenCommand}"
+                            IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding MessageGroupsToolTip}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource MessageGroupsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderRepeats}"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{Binding Path=FilterPresets.OpenCommand}" ToolTip="{localization:LocBinding FilterPresetsToolTip}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource CompactToolbarToggleButtonStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=FilterPresets.HasActivePreset}" Value="True">
+                                        <Setter Property="Tag" Value="True"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource FilterPresetsDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding FilterPresets}"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <Button x:Name="HeaderMoreMenu" Style="{StaticResource CompactToolbarButtonStyle}" Click="OnHeaderDropDownClick" Visibility="Collapsed">
+                    <TextBlock Text="{localization:LocBinding HeaderMore}"/>
+                    <Button.ContextMenu>
+                        <ContextMenu Style="{StaticResource BaseContextMenu}"
+                                     DataContext="{Binding PlacementTarget.DataContext, RelativeSource={RelativeSource Self}}">
+                            <MenuItem Header="{localization:LocBinding HeaderStatistics}" Command="{Binding Path=OpenLoggerStatisticsCommand}"
+                                      IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding LoggerStatisticsToolTip}" ToolTipService.ShowOnDisabled="True">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource LoggerStatisticsDrawingImage}" Width="18" Height="18"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{localization:LocBinding HeaderRepeats}" Command="{Binding Path=MessageGroups.OpenCommand}"
+                                      IsEnabled="{Binding Path=CleanIsEnabled}" ToolTip="{localization:LocBinding MessageGroupsToolTip}" ToolTipService.ShowOnDisabled="True">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource MessageGroupsDrawingImage}" Width="18" Height="18"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{localization:LocBinding FilterPresets}" Command="{Binding Path=FilterPresets.OpenCommand}" ToolTip="{localization:LocBinding FilterPresetsToolTip}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource FilterPresetsDrawingImage}" Width="18" Height="18"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+                <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Bookmarks.OpenBookmarksCommand}" ToolTip="{localization:LocBinding BookmarksToolTip}"
+                        Visibility="{Binding Path=Bookmarks.Bookmarks.Count, Converter={StaticResource CountToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource BookmarkDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                        <TextBlock Text="{localization:LocBinding HeaderBookmarks}"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal" Grid.ColumnSpan="3" HorizontalAlignment="Center">
-                <Button Style="{StaticResource StartPauseNetworkReceiverButtonStyle}"/>
-                <Button Style="{StaticResource StartPauseFileReceiverButtonStyle}" Visibility="{Binding Path=Import.FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
-                <Button Style="{StaticResource ScrollToTop}" Click="OnScrollToTopButtonClick"/>
-                <Button Style="{StaticResource AutoScrollToBottom}" Click="OnAutoScrollToBottomButtonClick" x:Name="AutoScrollButton"/>
-                <Button Style="{StaticResource ScrollToBottom}" Click="OnScrollToBottomButtonClick"/>
-            </StackPanel>
+            <StackPanel x:Name="HeaderRightPanel" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" SizeChanged="HeaderToolbar_OnSizeChanged">
+                <Button Style="{StaticResource CompactUdpReceiverButtonStyle}"/>
+                <Button Style="{StaticResource CompactFileReceiverButtonStyle}" Visibility="{Binding Path=Import.FileWatchers.Count, Converter={StaticResource CountToVisibilityConverter}}"/>
 
-            <Button Style="{StaticResource SettingsButtonStyle}" Command="{Binding Path=OpenSettingsCommand}"/>
+                <Rectangle Style="{StaticResource CompactToolbarSeparatorStyle}"/>
+
+                <Button Style="{StaticResource CompactToolbarIconButtonStyle}" Click="OnScrollToTopButtonClick" ToolTip="{localization:LocBinding ScrollToFirstLogMessage}">
+                    <Image Source="{StaticResource UpImage}" Width="20" Height="20"/>
+                </Button>
+                <Button x:Name="AutoScrollButton" Style="{StaticResource CompactToolbarToggleButtonStyle}" Click="OnAutoScrollToBottomButtonClick" Tag="False">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource AutoDownImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                        <Grid>
+                            <TextBlock Text="{localization:LocBinding HeaderFollowOff}" Visibility="Hidden"/>
+                            <TextBlock Text="{localization:LocBinding HeaderFollowOn}" Visibility="Hidden"/>
+                            <TextBlock x:Name="AutoScrollButtonText" Text="{localization:LocBinding HeaderFollowOff}" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource CompactToolbarIconButtonStyle}" Click="OnScrollToBottomButtonClick" ToolTip="{localization:LocBinding ScrollToLastLogMessage}">
+                    <Image Source="{StaticResource DownImage}" Width="20" Height="20"/>
+                </Button>
+                <Button Style="{StaticResource CompactToolbarIconButtonStyle}" Command="{Binding Path=OpenSettingsCommand}" ToolTip="{localization:LocBinding Settings}">
+                    <Image Source="{StaticResource SettingImage}" Width="20" Height="20"/>
+                </Button>
+            </StackPanel>
         </Grid>
 
 

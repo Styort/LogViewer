@@ -30,10 +30,12 @@ namespace LogViewer.MVVM.ViewModels.Log
         private string _relativeMinutesText = "15";
         private RelayCommand _openCommand;
         private RelayCommand _applyCommand;
+        private RelayCommand _clearCommand;
         private RelayCommand _saveCommand;
         private RelayCommand _deleteCommand;
         private RelayCommand _renameCommand;
         private RelayCommand _helpCommand;
+        private string _activePresetName;
 
         public FilterPresetsViewModel(
             FilterCoordinator coordinator,
@@ -99,8 +101,25 @@ namespace LogViewer.MVVM.ViewModels.Log
             set { _relativeMinutesText = value; OnPropertyChanged(); }
         }
 
-        public RelayCommand OpenCommand => _openCommand ?? (_openCommand = new RelayCommand(_ => _dialogs.ShowFilterPresets(this)));
+        /// <summary>Name of the last applied preset, or null when none is active.</summary>
+        public string ActivePresetName
+        {
+            get => _activePresetName;
+            private set
+            {
+                if (string.Equals(_activePresetName, value, StringComparison.Ordinal))
+                    return;
+                _activePresetName = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasActivePreset));
+            }
+        }
+
+        public bool HasActivePreset => !string.IsNullOrEmpty(_activePresetName);
+
+        public RelayCommand OpenCommand => _openCommand ?? (_openCommand = new RelayCommand(_ => OpenManager()));
         public RelayCommand ApplyCommand => _applyCommand ?? (_applyCommand = new RelayCommand(_ => ApplySelected(), _ => Selected != null));
+        public RelayCommand ClearCommand => _clearCommand ?? (_clearCommand = new RelayCommand(_ => ClearActive(), _ => HasActivePreset));
         public RelayCommand SaveCurrentCommand => _saveCommand ?? (_saveCommand = new RelayCommand(_ => SaveCurrent()));
         public RelayCommand DeleteCommand => _deleteCommand ?? (_deleteCommand = new RelayCommand(_ => DeleteSelected(), _ => Selected != null));
         public RelayCommand RenameCommand => _renameCommand ?? (_renameCommand = new RelayCommand(_ => RenameSelected(), _ => Selected != null));
@@ -112,6 +131,18 @@ namespace LogViewer.MVVM.ViewModels.Log
             if (Selected == null)
                 return;
             ApplyPreset(Selected);
+            CloseRequested?.Invoke();
+        }
+
+        public void ClearActive()
+        {
+            if (!HasActivePreset)
+                return;
+            _coordinator.ClearAppliedPreset();
+            _search.LoadFromPreset(string.Empty, false, false, false, true, false);
+            _setMinLevelUi(_coordinator.CurrentMinLevel);
+            _tree.SyncCheckboxesFromExclusions();
+            ActivePresetName = null;
             CloseRequested?.Invoke();
         }
 
@@ -128,6 +159,18 @@ namespace LogViewer.MVVM.ViewModels.Log
                 searchActive);
             _setMinLevelUi(_coordinator.CurrentMinLevel);
             _tree.SyncCheckboxesFromExclusions();
+            ActivePresetName = preset.Name;
+        }
+
+        private void OpenManager()
+        {
+            if (HasActivePreset)
+            {
+                var active = FindByName(ActivePresetName);
+                if (active != null)
+                    Selected = active;
+            }
+            _dialogs.ShowFilterPresets(this);
         }
 
         private void SaveCurrent()
@@ -174,7 +217,10 @@ namespace LogViewer.MVVM.ViewModels.Log
                 return;
             if (!_dialogs.Confirm(string.Format(Locals.FilterPresetDeleteConfirm, Selected.Name), Locals.FilterPresets))
                 return;
-            Items.Remove(Selected);
+            var removed = Selected;
+            Items.Remove(removed);
+            if (string.Equals(removed.Name, ActivePresetName, StringComparison.OrdinalIgnoreCase))
+                ActivePresetName = null;
             Selected = Items.FirstOrDefault();
             Persist();
         }
@@ -201,8 +247,11 @@ namespace LogViewer.MVVM.ViewModels.Log
                 Items.Remove(clash);
             }
 
+            bool wasActive = string.Equals(Selected.Name, ActivePresetName, StringComparison.OrdinalIgnoreCase);
             Selected.Name = name;
             DraftName = name;
+            if (wasActive)
+                ActivePresetName = name;
             OnPropertyChanged(nameof(Selected));
             Persist();
             RefreshItems();

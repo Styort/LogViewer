@@ -209,7 +209,7 @@
     <value>Экспорт выбранного логгера в файл</value>
   </data>
   <data name="ExportLogsToFileToolTip" xml:space="preserve">
-    <value>Экспорт отображаемых логов в файл (Ctrl+S)</value>
+    <value>Экспорт только видимых (отфильтрованных) строк в текстовый файл (Ctrl+S). Не сохраняет сессию.</value>
   </data>
   <data name="FeaturesStr1" xml:space="preserve">
     <value>- Считывание логов по UDP по шаблону log4j;</value>
@@ -269,7 +269,7 @@
     <value>Игнор</value>
   </data>
   <data name="ImportLogsToolTip" xml:space="preserve">
-    <value>Импорт логов из файла</value>
+    <value>Импорт файла в буфер логов</value>
   </data>
   <data name="InAnotherWindowHotKeys" xml:space="preserve">
     <value>В отдельном окне (Ctrl+Shift+F)</value>
@@ -605,16 +605,16 @@
     <value>Добавлять новые логи при изменении файла</value>
   </data>
   <data name="StartReadingLogsFromFile" xml:space="preserve">
-    <value>Запустить считывание логов из файла</value>
+    <value>Начать чтение из отслеживаемого файла (не сетевой приём)</value>
   </data>
   <data name="StartReadingLogsFromUDP" xml:space="preserve">
-    <value>Запустить считывание логов по UDP</value>
+    <value>Начать приём логов по сети (UDP или TCP), не из файла</value>
   </data>
   <data name="StopReadingLogsFromFile" xml:space="preserve">
-    <value>Остановить считывание логов из файла</value>
+    <value>Остановить чтение из отслеживаемого файла (не сетевой приём)</value>
   </data>
   <data name="StopReadingLogsFromUDP" xml:space="preserve">
-    <value>Остановить считывание логов по UDP</value>
+    <value>Остановить приём логов по сети (UDP или TCP), не файл</value>
   </data>
   <data name="Encoding" xml:space="preserve">
     <value>Кодировка:</value>
@@ -822,10 +822,16 @@
     <value>Пресеты</value>
   </data>
   <data name="FilterPresetsToolTip" xml:space="preserve">
-    <value>Именованный фильтр: уровень, поиск, дерево логгеров. Не сохраняет сами логи. Пример: «Payments errors» — Error+, regex timeout|declined.</value>
+    <value>Пресеты — сохранённые критерии фильтрации: уровень, поиск, дерево логгеров. Не сохраняет сами логи. Пример: «Payments errors» — Error+, regex timeout|declined.</value>
   </data>
   <data name="FilterPresetApply" xml:space="preserve">
     <value>Применить</value>
+  </data>
+  <data name="FilterPresetClear" xml:space="preserve">
+    <value>Сбросить</value>
+  </data>
+  <data name="FilterPresetClearToolTip" xml:space="preserve">
+    <value>Снять активный пресет: уровень Trace, пустой поиск, все логгеры видны. Don't Receive не меняется.</value>
   </data>
   <data name="FilterPresetSaveAs" xml:space="preserve">
     <value>Сохранить текущий как…</value>
@@ -932,5 +938,65 @@
   </data>
   <data name="Warning" xml:space="preserve">
     <value>Предупреждение</value>
+  </data>
+  <data name="HeaderFileGroup" xml:space="preserve">
+    <value>Файл</value>
+  </data>
+  <data name="HeaderAnalyzeGroup" xml:space="preserve">
+    <value>Анализ</value>
+  </data>
+  <data name="HeaderImport" xml:space="preserve">
+    <value>Импорт</value>
+  </data>
+  <data name="HeaderExportVisible" xml:space="preserve">
+    <value>Экспорт видимых</value>
+  </data>
+  <data name="HeaderSession" xml:space="preserve">
+    <value>Сессия ▾</value>
+  </data>
+  <data name="HeaderSessionToolTip" xml:space="preserve">
+    <value>Открыть или сохранить всю сессию. Не путать с экспортом видимых строк (Ctrl+S).</value>
+  </data>
+  <data name="HeaderSaveSession" xml:space="preserve">
+    <value>Сохранить сессию</value>
+  </data>
+  <data name="HeaderOpenSession" xml:space="preserve">
+    <value>Открыть сессию</value>
+  </data>
+  <data name="HeaderStatistics" xml:space="preserve">
+    <value>Статистика</value>
+  </data>
+  <data name="HeaderRepeats" xml:space="preserve">
+    <value>Повторы</value>
+  </data>
+  <data name="HeaderBookmarks" xml:space="preserve">
+    <value>Закладки</value>
+  </data>
+  <data name="HeaderViews" xml:space="preserve">
+    <value>Пресеты</value>
+  </data>
+  <data name="HeaderMore" xml:space="preserve">
+    <value>Ещё ▾</value>
+  </data>
+  <data name="HeaderUdpSource" xml:space="preserve">
+    <value>UDP</value>
+  </data>
+  <data name="HeaderStart" xml:space="preserve">
+    <value>Начать</value>
+  </data>
+  <data name="HeaderStop" xml:space="preserve">
+    <value>Остановить</value>
+  </data>
+  <data name="HeaderFileStart" xml:space="preserve">
+    <value>Файл: начать</value>
+  </data>
+  <data name="HeaderFileStop" xml:space="preserve">
+    <value>Файл: остановить</value>
+  </data>
+  <data name="HeaderFollowOn" xml:space="preserve">
+    <value>Следить: вкл</value>
+  </data>
+  <data name="HeaderFollowOff" xml:space="preserve">
+    <value>Следить: выкл</value>
   </data>
 </root>

@@ -1397,4 +1397,261 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+
+    <!-- Compact header controls: icon + caption, not the 40px circular templates. -->
+    <Style x:Key="CompactToolbarIconStyle" TargetType="Image">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Stretch" Value="Uniform"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,6,0"/>
+    </Style>
+
+    <Style x:Key="CompactToolbarGroupLabelStyle" TargetType="TextBlock">
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="Foreground" Value="#89000000"/>
+        <Setter Property="Margin" Value="4,0,6,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+
+    <Style x:Key="CompactToolbarSeparatorStyle" TargetType="Rectangle">
+        <Setter Property="Width" Value="1"/>
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="Fill" Value="#33000000"/>
+        <Setter Property="Margin" Value="8,0"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="CompactToolbarButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="#DE000000"/>
+        <Setter Property="Height" Value="34"/>
+        <Setter Property="MinHeight" Value="32"/>
+        <Setter Property="MinWidth" Value="0"/>
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="Margin" Value="2,0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#14000000"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#22000000"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CompactToolbarIconButtonStyle" TargetType="Button" BasedOn="{StaticResource CompactToolbarButtonStyle}">
+        <Setter Property="Padding" Value="6,4"/>
+        <Setter Property="ToolTipService.ShowOnDisabled" Value="True"/>
+    </Style>
+
+    <!-- Explicit on-state instead of opacity-only, so Follow reads as a mode rather than a third arrow. -->
+    <Style x:Key="CompactToolbarToggleButtonStyle" TargetType="Button" BasedOn="{StaticResource CompactToolbarButtonStyle}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#14000000"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#22000000"/>
+                        </Trigger>
+                        <Trigger Property="Tag" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#1A3F51B5"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Tag" Value="True"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bd" Property="Background" Value="#333F51B5"/>
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        </MultiTrigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CompactAccentToolbarButtonStyle" TargetType="Button" BasedOn="{StaticResource CompactToolbarButtonStyle}">
+        <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="3"
+                            Padding="{TemplateBinding Padding}"
+                            SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.9"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Opacity" Value="0.8"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="White"/>
+                            <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.35"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="CompactUdpReceiverButtonStyle" TargetType="Button" BasedOn="{StaticResource CompactAccentToolbarButtonStyle}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="True">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromUDP}"/>
+                <Setter Property="Command" Value="{Binding Path=Receivers.StartCommand}"/>
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource PlayWhiteImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderStart}" VerticalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=Receivers.StartIsEnabled}" Value="False">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromUDP}"/>
+                <Setter Property="Command" Value="{Binding Path=Receivers.PauseCommand}"/>
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource PauseWhiteImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderStop}" VerticalAlignment="Center" Foreground="White"/>
+                        </StackPanel>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CompactFileReceiverButtonStyle" TargetType="Button" BasedOn="{StaticResource CompactToolbarButtonStyle}">
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="True">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StartReadingLogsFromFile}"/>
+                <Setter Property="Command" Value="{Binding Path=Import.StartFileReadingCommand}"/>
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource StartReadFromFileImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderFileStart}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Path=Import.StartReadFromFileIsEnabled}" Value="False">
+                <Setter Property="ToolTip" Value="{localization:LocBinding StopReadingLogsFromFile}"/>
+                <Setter Property="Command" Value="{Binding Path=Import.PauseFileReadingCommand}"/>
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource PauseReadingFromFileImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
+                            <TextBlock Text="{localization:LocBinding HeaderFileStop}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Setter.Value>
+                </Setter>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="CompactToolbarMenuStyle" TargetType="Menu">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Height" Value="34"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="0"/>
+    </Style>
+
+    <Style x:Key="CompactToolbarMenuHeaderStyle" TargetType="MenuItem">
+        <Setter Property="Padding" Value="8,4"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="#DE000000"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Bd" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="3" Padding="{TemplateBinding Padding}">
+                        <Grid>
+                            <ContentPresenter ContentSource="Header" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+                            <Popup x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" HorizontalOffset="0" VerticalOffset="0"
+                                   IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Placement="Bottom"
+                                   PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
+                                <Border Background="White" BorderBrush="#33000000" BorderThickness="1">
+                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#14000000"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource PrimaryHueMidBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsSubmenuOpen" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#22000000"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

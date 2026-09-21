@@ -264,21 +264,32 @@ namespace LogViewer.MVVM.ViewModels.Log
                     }
                 }
 
+                // Modeless: the bars must keep updating while ImportFromFilesAsync runs, then the window has to close.
+                IDisposable importProgressWindow = null;
                 if (importLogFiles.Count > 1)
-                    _dialogs.ShowImportProgress(importLogFiles, () => _cancelImport.Cancel());
+                    importProgressWindow = _dialogs.ShowImportProgress(importLogFiles, () => _cancelImport.Cancel());
 
                 var paths = importLogFiles.Select(x => x.FilePath).ToList();
                 var dto = LogTemplateAdapter.ToDto(template);
-                if (dto == null) return;
+                if (dto == null)
+                {
+                    importProgressWindow?.Dispose();
+                    return;
+                }
 
                 IsVisibleProcessBar = true;
                 var progress = new Progress<int>(p => ProcessBarValue = p);
+                var fileProgress = new Progress<ImportFileProgress>(p =>
+                {
+                    if ((uint)p.FileIndex < (uint)importLogFiles.Count)
+                        importLogFiles[p.FileIndex].Process = p.Percent;
+                });
 
                 try
                 {
                     var importRange = templateResult.ImportRange ?? ImportRange.Entire;
                     int importedCount = await _importService.ImportFromFilesAsync(
-                        paths, dto, progress, _cancelImport.Token, importRange);
+                        paths, dto, progress, _cancelImport.Token, importRange, fileProgress);
                     if (importedCount == 0 && importRange.Mode != ImportRangeMode.EntireFile)
                         _dialogs.ShowWarning(Locals.ImportRangeNoEntries, Locals.Information);
                 }
@@ -296,6 +307,7 @@ namespace LogViewer.MVVM.ViewModels.Log
                 }
                 finally
                 {
+                    importProgressWindow?.Dispose();
                     IsVisibleProcessBar = false;
                     if (templateResult.NeedUpdateFile)
                     {

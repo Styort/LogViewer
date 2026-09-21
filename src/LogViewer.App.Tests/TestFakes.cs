@@ -56,7 +56,13 @@ namespace LogViewer.App.Tests
         public DateTime? SelectTimestamp(DateTime? current) => TimestampToReturn;
         public TimeIntervalDialogResult SelectTimeInterval(DateTime? current) => IntervalToReturn;
         public ImportTemplateDialogResult ShowImportTemplate(string samplePath) => new ImportTemplateDialogResult { Confirmed = false };
-        public void ShowImportProgress(List<ImportLogFile> files, Action cancel) { }
+        public IDisposable ShowImportProgress(List<ImportLogFile> files, Action cancel) => EmptyDisposable.Instance;
+
+        private sealed class EmptyDisposable : IDisposable
+        {
+            public static readonly EmptyDisposable Instance = new EmptyDisposable();
+            public void Dispose() { }
+        }
         public void ShowSearchResults(List<LogMessage> messages, string searchText, bool matchCase, bool useRegex, bool matchWholeWord, Action<LogMessage> showLog) { }
         public void ShowOrActivateLoggerStatistics(LoggerStatisticsViewModel viewModel, Action<LogMessage> showLog) { }
         public void ShowOrActivateMessageGroups(MessageGroupsViewModel viewModel, Action<LogMessage> showLog) { }

@@ -21,7 +21,8 @@ namespace LogViewer.Core.Abstractions
             LogTemplateDto template,
             IProgress<int> progress,
             CancellationToken cancellationToken,
-            ImportRange range = null);
+            ImportRange range = null,
+            IProgress<ImportFileProgress> fileProgress = null);
 
         /// <summary>
         /// Async wrapper for ImportFromFiles so UI can await without blocking.
@@ -31,6 +32,7 @@ namespace LogViewer.Core.Abstractions
             LogTemplateDto template,
             IProgress<int> progress,
             CancellationToken cancellationToken,
-            ImportRange range = null);
+            ImportRange range = null,
+            IProgress<ImportFileProgress> fileProgress = null);
     }
 }

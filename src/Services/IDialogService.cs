@@ -69,8 +69,11 @@ namespace LogViewer.Services
         /// </summary>
         ImportTemplateDialogResult ShowImportTemplate(string samplePath);
 
-        /// <summary>Modal import progress. <paramref name="cancel"/> is invoked from the Cancel button.</summary>
-        void ShowImportProgress(List<ImportLogFile> files, Action cancel);
+        /// <summary>
+        /// Modeless per-file import progress. <paramref name="cancel"/> is invoked from the Cancel button.
+        /// Dispose closes the window; import itself does not, so a finished import would otherwise leave the bars on screen.
+        /// </summary>
+        IDisposable ShowImportProgress(List<ImportLogFile> files, Action cancel);
 
         /// <summary>
         /// Separate Find All window. <paramref name="showLog"/> jumps to the main list on click.

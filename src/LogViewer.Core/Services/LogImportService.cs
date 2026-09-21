@@ -28,7 +28,8 @@ namespace LogViewer.Core.Services
             LogTemplateDto template,
             IProgress<int> progress,
             CancellationToken cancellationToken,
-            ImportRange range = null)
+            ImportRange range = null,
+            IProgress<ImportFileProgress> fileProgress = null)
         {
             if (filePaths == null || template == null) return 0;
 
@@ -73,8 +74,11 @@ namespace LogViewer.Core.Services
                         cancellationToken,
                         (pos, len) =>
                         {
-                            int pct = (int)((double)pos / len * 100);
+                            int pct = len <= 0 ? 100 : (int)((double)pos / len * 100);
+                            if (pct > 100)
+                                pct = 100;
                             progress?.Report(Math.Min(100, (completed * 100 + pct) / paths.Count));
+                            fileProgress?.Report(new ImportFileProgress(completed, pct));
                         });
                 }
 
@@ -93,6 +97,7 @@ namespace LogViewer.Core.Services
 
                 completed++;
                 progress?.Report((completed * 100) / paths.Count);
+                fileProgress?.Report(new ImportFileProgress(completed - 1, 100));
             }
 
             return totalEntries;
@@ -103,9 +108,12 @@ namespace LogViewer.Core.Services
             LogTemplateDto template,
             IProgress<int> progress,
             CancellationToken cancellationToken,
-            ImportRange range = null)
+            ImportRange range = null,
+            IProgress<ImportFileProgress> fileProgress = null)
         {
-            return Task.Run(() => ImportFromFiles(filePaths, template, progress, cancellationToken, range), cancellationToken);
+            return Task.Run(
+                () => ImportFromFiles(filePaths, template, progress, cancellationToken, range, fileProgress),
+                cancellationToken);
         }
     }
 }

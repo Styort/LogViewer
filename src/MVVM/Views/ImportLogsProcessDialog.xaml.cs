@@ -27,8 +27,9 @@ namespace LogViewer.MVVM.Views
         public ImportLogsProcessDialog(List<ImportLogFile> importLogFiles)
         {
             InitializeComponent();
-            this.DataContext = new ImportLogsProcessViewModel();
-            ((ImportLogsProcessViewModel)DataContext).ImportFiles = new List<ImportLogFile>(importLogFiles);
+            var viewModel = new ImportLogsProcessViewModel();
+            viewModel.ImportFiles = new List<ImportLogFile>(importLogFiles);
+            DataContext = viewModel;
         }
 
         private void OkButtonClick(object sender, RoutedEventArgs e)

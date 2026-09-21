@@ -92,7 +92,7 @@ namespace LogViewer.Services.Wpf
             };
         }
 
-        public void ShowImportProgress(List<ImportLogFile> files, Action cancel)
+        public IDisposable ShowImportProgress(List<ImportLogFile> files, Action cancel)
         {
             var dialog = new ImportLogsProcessDialog(files);
             dialog.ImportProcessDialogResult += (sender, result) =>
@@ -101,6 +101,40 @@ namespace LogViewer.Services.Wpf
                     cancel?.Invoke();
             };
             dialog.Show();
+            return new ImportProgressWindow(dialog);
+        }
+
+        /// <summary>
+        /// Closes the modeless import window when import finishes. Close is idempotent:
+        /// Cancel already closes the window before the token fires.
+        /// </summary>
+        private sealed class ImportProgressWindow : IDisposable
+        {
+            private ImportLogsProcessDialog _dialog;
+
+            public ImportProgressWindow(ImportLogsProcessDialog dialog)
+            {
+                _dialog = dialog;
+            }
+
+            public void Dispose()
+            {
+                var dialog = _dialog;
+                _dialog = null;
+                if (dialog == null)
+                    return;
+
+                if (dialog.Dispatcher.CheckAccess())
+                    Close(dialog);
+                else
+                    dialog.Dispatcher.Invoke(() => Close(dialog));
+            }
+
+            private static void Close(Window dialog)
+            {
+                if (dialog.IsLoaded)
+                    dialog.Close();
+            }
         }
 
         public void ShowSearchResults(List<LogMessage> messages, string searchText, bool matchCase, bool useRegex, bool matchWholeWord, Action<LogMessage> showLog)

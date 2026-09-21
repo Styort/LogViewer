@@ -45,7 +45,7 @@ namespace LogViewer.Helpers
         {
             var result = new ExtractedArchive { ExtractDirectory = extractDirectory };
 
-            using (var archive = ArchiveFactory.Open(archivePath))
+            using (var archive = ArchiveFactory.OpenArchive(archivePath))
             {
                 foreach (var entry in archive.Entries)
                 {

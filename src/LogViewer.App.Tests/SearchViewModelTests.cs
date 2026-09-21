@@ -49,6 +49,26 @@ namespace LogViewer.App.Tests
         }
 
         [Test]
+        public void SearchInNewWindow_UsesTheVisibleListRow()
+        {
+            var env = Create();
+            var time = new DateTime(2026, 9, 22, 1, 2, 3);
+            var other = new LogMessage { Message = "other", Level = eLogLevel.Info, Time = time, Address = "127.0.0.1", Logger = "App", Thread = 1 };
+            var visible = new LogMessage { Message = "needle", Level = eLogLevel.Info, Time = time.AddSeconds(1), Address = "127.0.0.1", Logger = "App", Thread = 2 };
+            env.State.Logs = new AsyncObservableCollection<LogMessage> { other, visible };
+            env.Session.AddEntry(new LogEntry { Message = "other", Level = LogLevel.Info, Time = time, Address = "127.0.0.1", Logger = "App", Thread = 1 });
+            env.Session.AddEntry(new LogEntry { Message = "needle", Level = LogLevel.Info, Time = time.AddSeconds(1), Address = "127.0.0.1", Logger = "App", Thread = 2 });
+            env.Search.SearchText = "needle";
+
+            env.Search.SearchLogCommand.Execute(true);
+
+            Assert.That(env.Dialogs.LastSearchResults, Has.Count.EqualTo(1));
+            Assert.That(env.Dialogs.LastSearchResults[0], Is.SameAs(visible));
+            env.Dialogs.LastShowLog(env.Dialogs.LastSearchResults[0]);
+            Assert.That(env.State.SelectedLog, Is.SameAs(visible));
+        }
+
+        [Test]
         public void ClearSearchResult_ClearsText()
         {
             var env = Create();
@@ -64,9 +84,10 @@ namespace LogViewer.App.Tests
             var state = new LogViewState();
             var coordinator = new FilterCoordinator(processing, new LoggerFilterState());
             var settings = new FakeAppSettings();
+            var dialogs = new FakeDialogs();
             var projector = new LogEntryProjector(settings.Receivers, settings);
-            var search = new SearchViewModel(state, coordinator, session, processing, projector, new LogQueryService(), new FakeDialogs(), settings, () => eLogLevel.Trace);
-            return new SearchEnv { State = state, Search = search };
+            var search = new SearchViewModel(state, coordinator, session, processing, projector, new LogQueryService(), dialogs, settings, () => eLogLevel.Trace);
+            return new SearchEnv { State = state, Search = search, Session = session, Dialogs = dialogs };
         }
 
         private static LogMessage Msg(string text)
@@ -85,6 +106,8 @@ namespace LogViewer.App.Tests
         {
             public LogViewState State;
             public SearchViewModel Search;
+            public LogSession Session;
+            public FakeDialogs Dialogs;
         }
     }
 }

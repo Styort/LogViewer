@@ -159,7 +159,7 @@
                         <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderImport}"/>
                     </StackPanel>
                 </Button>
-                <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ExportCommand}" ToolTip="{localization:LocBinding ExportLogsToFileToolTip}">
+                <Button Style="{StaticResource CompactToolbarButtonStyle}" Command="{Binding Path=Import.ExportCommand}" IsEnabled="{Binding Path=Import.ExportVisibleIsEnabled}" ToolTip="{localization:LocBinding ExportLogsToFileToolTip}">
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource ExportDrawingImage}" Style="{StaticResource CompactToolbarIconStyle}"/>
                         <TextBlock Style="{StaticResource CompactToolbarCaptionStyle}" Text="{localization:LocBinding HeaderExportVisible}"/>

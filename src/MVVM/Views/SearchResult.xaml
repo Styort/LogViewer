@@ -15,6 +15,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../../Styles/Styles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <!-- Shared LogMessageDataTemplate binds Window.DataContext.Search.*, which exists only on the main window. -->
+            <DataTemplate x:Key="LogMessageDataTemplate">
+                <helpers:SearchableTextControl Text="{Binding Path=Message, Converter={StaticResource LengthConverter}, ConverterParameter=140}"
+                                               ToolTip="{Binding Path=Message}" IsHighlight="True"
+                                               SearchText="{Binding Path=DataContext.HighlightSearchText, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               VerticalAlignment="Center"
+                                               IsMatchCase="{Binding Path=DataContext.IsMatchCase, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               UseRegex="{Binding Path=DataContext.UseRegularExpressions, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               IsMatchWholeWord="{Binding Path=DataContext.IsMatchWholeWord, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               FontFamily="{Binding Path=DataContext.MessageFontFamily, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               FontSize="{Binding Path=DataContext.MessageFontSize, RelativeSource={RelativeSource AncestorType=Window}}"/>
+            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
 

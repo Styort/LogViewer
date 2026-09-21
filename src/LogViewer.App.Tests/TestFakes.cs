@@ -63,7 +63,13 @@ namespace LogViewer.App.Tests
             public static readonly EmptyDisposable Instance = new EmptyDisposable();
             public void Dispose() { }
         }
-        public void ShowSearchResults(List<LogMessage> messages, string searchText, bool matchCase, bool useRegex, bool matchWholeWord, Action<LogMessage> showLog) { }
+        public List<LogMessage> LastSearchResults;
+        public Action<LogMessage> LastShowLog;
+        public void ShowSearchResults(List<LogMessage> messages, string searchText, bool matchCase, bool useRegex, bool matchWholeWord, Action<LogMessage> showLog)
+        {
+            LastSearchResults = messages;
+            LastShowLog = showLog;
+        }
         public void ShowOrActivateLoggerStatistics(LoggerStatisticsViewModel viewModel, Action<LogMessage> showLog) { }
         public void ShowOrActivateMessageGroups(MessageGroupsViewModel viewModel, Action<LogMessage> showLog) { }
         public void ShowOrActivateBookmarks(BookmarkListViewModel viewModel) { }

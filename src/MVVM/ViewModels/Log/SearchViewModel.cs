@@ -277,8 +277,10 @@ namespace LogViewer.MVVM.ViewModels.Log
                 var entries = _session.GetAllEntries()
                     .Where(e => _processing.Filter.ShouldInclude(e, searchCriteria))
                     .ToList();
-                var logMessages = entries.Select(e => _projector.Project(e)).Where(m => m != null).ToList();
-                if (logMessages.Any())
+                // Same LogMessage instances as the main list. A new Project() updates Message Details
+                // but ListView selection is reference equality, so the row never highlights.
+                var logMessages = TakeVisibleMessages(entries);
+                if (logMessages.Count > 0)
                     _dialogs.ShowSearchResults(logMessages, SearchText, IsMatchCase, UseRegularExpressions, IsMatchWholeWord, m => _state.SelectedLog = m);
                 else
                     _dialogs.ShowInformation(Locals.NothingFoundMessageBoxInfo, Locals.Search);
@@ -289,6 +291,48 @@ namespace LogViewer.MVVM.ViewModels.Log
                 SyncSearchToCoordinator(apply: true);
                 HighlightSearchText = SearchText;
             }
+        }
+
+        private List<LogMessage> TakeVisibleMessages(List<LogEntry> entries)
+        {
+            var result = new List<LogMessage>(entries.Count);
+            var logs = _state.Logs;
+            int iLog = 0;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                LogMessage match = null;
+                if (logs != null)
+                {
+                    while (iLog < logs.Count && !SameRow(logs[iLog], entry))
+                        iLog++;
+                    if (iLog < logs.Count)
+                    {
+                        match = logs[iLog];
+                        iLog++;
+                    }
+                }
+
+                if (match == null)
+                    match = _projector.Project(entry);
+                if (match != null)
+                    result.Add(match);
+            }
+
+            return result;
+        }
+
+        private static bool SameRow(LogMessage message, LogEntry entry)
+        {
+            if (message == null || entry == null)
+                return false;
+            return message.Time == entry.Time
+                   && (int)message.Level == (int)entry.Level
+                   && message.Thread == entry.Thread
+                   && message.ProcessID == entry.ProcessID
+                   && message.Logger == entry.Logger
+                   && message.Address == entry.Address
+                   && message.Message == entry.Message;
         }
 
         private void FindNext()

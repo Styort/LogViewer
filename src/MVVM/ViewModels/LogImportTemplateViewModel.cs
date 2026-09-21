@@ -478,7 +478,7 @@ namespace LogViewer.MVVM.ViewModels
                 {
                     LogTemplate.TemplateParameterses.Add(TemplateLogItems[i].SelectedTemplateParameter.Parameter, i);
                 }
-                catch (Exception exception)
+                catch (Exception)
                 {
                     LogTemplate.TemplateParameterses.Clear();
                     MessageBox.Show(Locals.MessageTemplateErrorSameParameters);
@@ -663,7 +663,7 @@ namespace LogViewer.MVVM.ViewModels
                         dateTemplateParameter = eImportTemplateParameters.ticks;
                         return i;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     }
                 }

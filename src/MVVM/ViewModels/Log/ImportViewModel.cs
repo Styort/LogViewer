@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,8 @@ namespace LogViewer.MVVM.ViewModels.Log
         private RelayCommand _pauseFileCommand;
         private RelayCommand _importCommand;
         private RelayCommand _exportCommand;
+        private AsyncObservableCollection<LogMessage> _visibleLogs;
+        private bool _exportVisibleIsEnabled;
 
         public ImportViewModel(
             LogViewState state,
@@ -78,6 +81,9 @@ namespace LogViewer.MVVM.ViewModels.Log
                     OnPropertyChanged(nameof(HasFileWatchers));
                 }
             };
+            // Logs is replaced on filter refresh and mutated on each live row. Both must refresh the button.
+            _state.LogsChanged += (_, __) => AttachVisibleLogs();
+            AttachVisibleLogs();
         }
 
         /// <summary>For host Dispose: stop follow without going through the Import API.</summary>
@@ -134,6 +140,19 @@ namespace LogViewer.MVVM.ViewModels.Log
         public RelayCommand PauseFileReadingCommand => _pauseFileCommand ?? (_pauseFileCommand = new RelayCommand(StopFileReading));
         public RelayCommand ImportCommand => _importCommand ?? (_importCommand = new RelayCommand(ImportLogs));
         public RelayCommand ExportCommand => _exportCommand ?? (_exportCommand = new RelayCommand(ExportLogs));
+
+        /// <summary>Header "Export visible" writes <see cref="LogViewState.Logs"/>. Off while that list is empty.</summary>
+        public bool ExportVisibleIsEnabled
+        {
+            get => _exportVisibleIsEnabled;
+            private set
+            {
+                if (_exportVisibleIsEnabled == value)
+                    return;
+                _exportVisibleIsEnabled = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>The tree drops an imported slice: whether this path was in the last import.</summary>
         public bool ContainsImportPath(string path) => _importData.ContainsKey(path);
@@ -341,7 +360,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         private void ExportLogs(object obj)
         {
             Logger.Debug($"ExportLogs with {obj}");
-            if (_state.IsBusy) return;
+            if (_state.IsBusy || _state.Logs == null || _state.Logs.Count == 0) return;
 
             _receivers.Pause();
 
@@ -376,6 +395,21 @@ namespace LogViewer.MVVM.ViewModels.Log
                 Process = 0,
                 FileName = Path.GetFileName(filePath)
             });
+        }
+
+        private void AttachVisibleLogs()
+        {
+            if (_visibleLogs != null)
+                _visibleLogs.CollectionChanged -= OnVisibleLogsChanged;
+            _visibleLogs = _state.Logs;
+            if (_visibleLogs != null)
+                _visibleLogs.CollectionChanged += OnVisibleLogsChanged;
+            ExportVisibleIsEnabled = _visibleLogs != null && _visibleLogs.Count > 0;
+        }
+
+        private void OnVisibleLogsChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            ExportVisibleIsEnabled = _visibleLogs != null && _visibleLogs.Count > 0;
         }
 
         private bool CheckFileExistsInImportLogs(string filePath)

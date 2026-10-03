@@ -10,7 +10,7 @@
 
 Windows desktop viewer for **NLog**, **log4net**, and **log4j** logs. It receives Chainsaw / NLogViewer XML over **UDP or TCP**, imports text files and archives, and keeps a large in-memory buffer usable while you filter, search, and jump around.
 
-The interface is in **Russian** and **English**. Current release line: **1.2.8**.
+The interface is in **Russian** and **English**.
 
 <p align="center">
   <img alt="LogViewer main window" src="docs/1-main.png" width="860">

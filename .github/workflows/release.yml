@@ -2,6 +2,7 @@ name: release
 
 # Push a tag to publish a release:  git tag v1.2.8.10 && git push origin v1.2.8.10
 # A tag with a suffix (v1.2.8.10-beta) becomes a pre-release, so releases/latest does not move.
+# Stable releases also get update.xml: the app reads releases/latest/download/update.xml to offer updates.
 on:
   push:
     tags: ['v*']
@@ -60,7 +61,29 @@ jobs:
         run: |
           $built = ./build/stage.ps1 -Output publish/LogViewer
           if ($built -ne $env:VERSION) { throw "Built LogViewer.exe is $built, the tag says $env:VERSION." }
-          Compress-Archive -Path publish/LogViewer/* -DestinationPath "LogViewer-$env:VERSION.zip"
+          $zip = "LogViewer-$env:VERSION.zip"
+          Compress-Archive -Path publish/LogViewer/* -DestinationPath $zip
+
+          # AutoUpdater.NET manifest. Pre-releases get none, so releases/latest/download/update.xml
+          # can only ever point at a stable build.
+          if ($env:PRERELEASE -ne 'True') {
+              $tag = '${{ github.ref_name }}'
+              $repo = "https://github.com/${{ github.repository }}"
+              $sha256 = (Get-FileHash $zip -Algorithm SHA256).Hash
+              # YAML strips the block indentation, so the here-string body and its closing "@ start at column 0.
+              $manifest = @"
+          <?xml version="1.0" encoding="UTF-8"?>
+          <item>
+            <version>$env:VERSION</version>
+            <url>$repo/releases/download/$tag/$zip</url>
+            <changelog>$repo/releases/tag/$tag</changelog>
+            <mandatory>false</mandatory>
+            <checksum algorithm="SHA256">$sha256</checksum>
+          </item>
+          "@
+              [IO.File]::WriteAllText((Join-Path $PWD 'update.xml'), $manifest.Trim() + "`n", (New-Object Text.UTF8Encoding $false))
+              Get-Content update.xml
+          }
 
       - name: Publish the release
         shell: pwsh
@@ -68,17 +91,18 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           $tag = '${{ github.ref_name }}'
-          $zip = "LogViewer-$env:VERSION.zip"
+          $assets = @("LogViewer-$env:VERSION.zip")
+          if (Test-Path update.xml) { $assets += 'update.xml' }
           gh release view $tag *> $null
           if ($LASTEXITCODE -eq 0) {
               # Re-run of the workflow: refresh the zip and the notes instead of failing.
-              gh release upload $tag $zip --clobber
+              gh release upload $tag @assets --clobber
               if ($LASTEXITCODE -ne 0) { throw "gh release upload failed with exit code $LASTEXITCODE" }
               gh release edit $tag --notes-file release-notes.md
           }
           else {
               $flags = @('--verify-tag', '--title', "LogViewer $env:VERSION", '--notes-file', 'release-notes.md')
               if ($env:PRERELEASE -eq 'True') { $flags += '--prerelease' } else { $flags += '--latest' }
-              gh release create $tag $zip @flags
+              gh release create $tag @assets @flags
           }
           if ($LASTEXITCODE -ne 0) { throw "gh failed with exit code $LASTEXITCODE" }

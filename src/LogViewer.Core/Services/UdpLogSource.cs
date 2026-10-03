@@ -27,7 +27,7 @@ namespace LogViewer.Core.Services
         private Encoding _encoding;
         private readonly IReceiverConfig _config;
         private readonly ILogParser _parser;
-        private readonly IEnumerable<string> _ignoredIps;
+        private readonly IgnoredAddressSet _ignoredIps;
         private readonly bool _separateAddressByPort;
         private volatile bool _running;
         private Thread _receiveThread;
@@ -40,7 +40,7 @@ namespace LogViewer.Core.Services
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            _ignoredIps = ignoredIps ?? Array.Empty<string>();
+            _ignoredIps = new IgnoredAddressSet(ignoredIps);
             _separateAddressByPort = separateAddressByPort;
         }
 
@@ -128,9 +128,9 @@ namespace LogViewer.Core.Services
                     byte[] receiveBytes = client.Receive(ref remoteEndPoint);
                     if (!IsCurrent(client))
                         break;
-                    string remoteAddress = remoteEndPoint.Address.ToString();
-                    if (_ignoredIps.Any(ip => !string.IsNullOrEmpty(ip) && remoteAddress.IndexOf(ip, StringComparison.OrdinalIgnoreCase) >= 0))
+                    if (_ignoredIps.Contains(remoteEndPoint.Address))
                         continue;
+                    string remoteAddress = remoteEndPoint.Address.ToString();
 
                     string incomingLog = encoding.GetString(receiveBytes);
                     string address = _separateAddressByPort ? $"{remoteAddress}:{_config.Port}" : remoteAddress;

@@ -10,7 +10,7 @@
         xmlns:dropDownCustomColorPicker="clr-namespace:DropDownCustomColorPicker;assembly=CustomColorPicker"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d"
-        Title="{localization:LocBinding Settings}" Height="740" Width="760" MinWidth="720" MinHeight="610">
+        Title="{localization:LocBinding Settings}" Height="770" Width="760" MinWidth="720" MinHeight="610">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -61,6 +61,7 @@
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="35"/>
                             <RowDefinition Height="35"/>
+                            <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                         </Grid.RowDefinitions>
@@ -133,6 +134,9 @@
 
                         <TextBlock Text="{localization:LocBinding SeparateIpLoggersByPort}" ToolTip="{localization:LocBinding SeparateIpLoggersByPortTooltip}" VerticalAlignment="Center"  Grid.Row="16"/>
                         <ToggleButton Grid.Row="16" Grid.Column="1" IsChecked="{Binding Path=IsSeparateIpLoggersByPort}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
+
+                        <TextBlock Text="{localization:LocBinding CheckForUpdatesOnStartup}" ToolTip="{localization:LocBinding CheckForUpdatesOnStartupToolTip}" VerticalAlignment="Center"  Grid.Row="17"/>
+                        <ToggleButton Grid.Row="17" Grid.Column="1" IsChecked="{Binding Path=CheckForUpdatesOnStartup}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5,0,0"/>
                     </Grid>
                 </GroupBox>
             </TabItem>

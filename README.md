@@ -25,7 +25,11 @@ The interface is in **Russian** and **English**.
 
 Requires **Windows** and **.NET Framework 4.8**. Windows 10 version 1903 and later, and Windows 11, already include that runtime. The executable is not code-signed, so Windows SmartScreen may warn on the first start: choose **More info → Run anyway**.
 
-Older builds are also available on [SourceForge](https://sourceforge.net/projects/styort-logviewer/files/latest/download).
+### Updates
+
+A few seconds after start, LogViewer checks GitHub Releases for a newer version; turn this off in **Settings → General**, or check any time with **Check for updates**. When an update is available, a dialog shows the new version and a link to its release notes. You can update now, be reminded later, or skip that version. Updating downloads the zip, verifies its SHA-256 checksum, closes the app, replaces the files in place and starts the new version. `settings.xml` and the `logs` folder are not touched. The log buffer lives only in memory, so the dialog offers to save the session first.
+
+Builds older than the first auto-updating release (ClickOnce or [SourceForge](https://sourceforge.net/projects/styort-logviewer/files/latest/download)) cannot update themselves: download the new version once by hand.
 
 ## Features
 
@@ -180,7 +184,7 @@ vstest.console.exe src/LogViewer.Core.Tests/bin/Release/net48/LogViewer.Core.Tes
 
 `dotnet test` works for `LogViewer.Core.Tests` only; `LogViewer.App.Tests` references the WPF project and has to be built by MSBuild. CI ([`.github/workflows/build.yml`](.github/workflows/build.yml)) runs the same build and both test assemblies on every push and pull request.
 
-Tests cover parsers (including concurrent parsing), filtering, UDP/TCP receivers on loopback, receiver restart, and view-model behavior. They do not cover XAML or ClickOnce updates.
+Tests cover parsers (including concurrent parsing), filtering, UDP/TCP receivers on loopback, receiver restart, and view-model behavior. They do not cover XAML or the network part of updates.
 
 ### Releases
 

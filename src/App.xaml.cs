@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Deployment.Application;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -20,6 +19,8 @@ using LogViewer.Localization;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.Views;
 using LogViewer.MVVM.ViewModels.Log;
+using LogViewer.Services.Updates;
+using LogViewer.Services.Wpf;
 using Microsoft.Win32;
 using NLog;
 
@@ -28,9 +29,15 @@ namespace LogViewer
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application, IDisposable
+    public partial class App : Application
     {
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>Gives the main window time to load before the startup update check.</summary>
+        private static readonly TimeSpan UpdateCheckDelay = TimeSpan.FromSeconds(10);
+
+        /// <summary>null if the updater could not be configured; update checks are then unavailable.</summary>
+        public static IUpdateService Updates { get; private set; }
 
         public static bool IsManualStartup { get; private set; } = false;
         public ResourceDictionary ThemeDictionary => Resources.MergedDictionaries[1];
@@ -74,7 +81,7 @@ namespace LogViewer
                             return; 
                         }
 
-                        UnsafeNative.SendMessage(runningProcess.MainWindowHandle, string.Join(" ", e.Args));
+                        UnsafeNative.SendMessage(runningProcess.MainWindowHandle, UnsafeNative.JoinArguments(e.Args));
                         
                         Environment.Exit(0);
                     }
@@ -86,6 +93,15 @@ namespace LogViewer
             }
 
             Settings.Instance.Load();
+
+            try
+            {
+                Updates = new UpdateService(Settings.Instance.SettingsDirectory, new WpfDialogService());
+            }
+            catch (Exception exception)
+            {
+                logger.Warn(exception, "OnStartup configure updates exception");
+            }
 
             if (Settings.Instance.OnlyOneAppInstance)
             {
@@ -131,12 +147,12 @@ namespace LogViewer
             PresentationTraceSources.DataBindingSource.Listeners.Add(new BindingErrorTraceListener());
 #endif
 
-            Task.Run(() =>
+            if (Updates != null && Settings.Instance.CheckForUpdatesOnStartup)
             {
-                // give the window time to load
-                Thread.Sleep(5000);
-                UpdateManager.StartCheckUpdate();
-            });
+                // AutoUpdater.NET must be started on the UI thread: it reports back through a BackgroundWorker.
+                Task.Delay(UpdateCheckDelay).ContinueWith(_ =>
+                    Dispatcher.BeginInvoke(new Action(() => Updates.CheckInBackground())));
+            }
         }
 
         #region Unhandled exceptions
@@ -277,11 +293,5 @@ namespace LogViewer
         }
 
         #endregion
-
-
-        public void Dispose()
-        {
-            UpdateManager.Dispose();
-        }
     }
 }

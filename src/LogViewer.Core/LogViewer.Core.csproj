@@ -61,6 +61,8 @@
     <Compile Include="Services\TemplateFileLogReader.cs" />
     <Compile Include="Services\LogFilter.cs" />
             <Compile Include="Services\HighlightEngine.cs" />
+    <Compile Include="Services\AtomicFile.cs" />
+    <Compile Include="Services\IgnoredAddressSet.cs" />
             <Compile Include="Services\FilterPresetMapper.cs" />
             <Compile Include="Services\FilterPresetXmlStore.cs" />
             <Compile Include="Services\SavedSessionMapper.cs" />

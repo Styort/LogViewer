@@ -164,6 +164,21 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+        private bool checkForUpdatesOnStartup;
+
+        /// <summary>
+        /// Check GitHub Releases for a new version after start.
+        /// </summary>
+        public bool CheckForUpdatesOnStartup
+        {
+            get => checkForUpdatesOnStartup;
+            set
+            {
+                checkForUpdatesOnStartup = value;
+                OnPropertyChanged();
+            }
+        }
+
         /// <summary>
         /// Displayed date format.
         /// </summary>
@@ -552,6 +567,7 @@ namespace LogViewer.MVVM.ViewModels
                 IsAutoStartReadAtStartup = Settings.Instance.AutoStartInStartup;
                 MinimizeToTray = Settings.Instance.MinimizeToTray;
                 OnlyOneAppInstance = Settings.Instance.OnlyOneAppInstance;
+                CheckForUpdatesOnStartup = Settings.Instance.CheckForUpdatesOnStartup;
                 SelectedDataFormat = Settings.Instance.DataFormat;
                 DisplayedDataFormat = Settings.Instance.DataFormat;
                 IsEnableMaxMessageBufferSize = Settings.Instance.IsEnabledMaxMessageBufferSize;
@@ -701,6 +717,7 @@ namespace LogViewer.MVVM.ViewModels
             Settings.Instance.MaxMessageBufferSize = MaxMessageBufferSize;
             Settings.Instance.DeletedMessagesCount = DeletedMessagesCount;
             Settings.Instance.OnlyOneAppInstance = OnlyOneAppInstance;
+            Settings.Instance.CheckForUpdatesOnStartup = CheckForUpdatesOnStartup;
             Settings.Instance.Language = SelectedLanguage.Name;
             Settings.Instance.IsSeparateIpLoggersByPort = IsSeparateIpLoggersByPort;
             Settings.Instance.HighlightRules = HighlightRules.ToList();
@@ -805,10 +822,7 @@ namespace LogViewer.MVVM.ViewModels
 
         private void CheckUpdates()
         {
-            if (UpdateManager.CheckForUpdates())
-                UpdateManager.InstallNewUpdate();
-            else
-                MessageBox.Show(Locals.NoUpdatesFound);
+            App.Updates?.CheckManually();
         }
 
         private string currentThemeName = string.Empty;

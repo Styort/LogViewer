@@ -99,8 +99,7 @@ namespace LogViewer.Core.Services
                 Directory.CreateDirectory(dir);
 
             bool gzip = path.EndsWith(".gz", StringComparison.OrdinalIgnoreCase);
-            using (var fs = File.Create(path))
-                Save(fs, document, gzip);
+            AtomicFile.Write(path, stream => Save(stream, document, gzip));
         }
 
         private static void Normalize(SavedSessionDocument document)

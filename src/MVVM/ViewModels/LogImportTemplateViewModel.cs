@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using System.Xml.Serialization;
 using LogViewer.Core.Domain;
+using LogViewer.Core.Services;
 using LogViewer.Enums;
 using LogViewer.Helpers;
 using LogViewer.Localization;
@@ -429,11 +430,7 @@ namespace LogViewer.MVVM.ViewModels
             try
             {
                 XmlSerializer ser = new XmlSerializer(this.GetType());
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
-                using (FileStream fs = new FileStream(settingsPath, FileMode.Create))
-                {
-                    ser.Serialize(fs, this);
-                }
+                AtomicFile.Write(settingsPath, stream => ser.Serialize(stream, this));
 
                 MessageBox.Show(Locals.TemplateSettingsSuccessfullySaved);
             }

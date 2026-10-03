@@ -46,7 +46,11 @@ namespace LogViewer.App.Tests
         {
             LastInformation = message;
         }
-        public void ShowError(string message, string caption = null) { }
+        public string LastError;
+        public void ShowError(string message, string caption = null)
+        {
+            LastError = message;
+        }
         public void ShowWarning(string message, string caption = null) { }
         public bool TryPromptComment(string initial, out string comment)
         {

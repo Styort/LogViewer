@@ -553,7 +553,7 @@
     <value>Настройки шаблонов успешно сохранены</value>
   </data>
   <data name="NewVersionOfLogViewerAvailable" xml:space="preserve">
-    <value>Доступна новая версия LogViewer:</value>
+    <value>Доступна новая версия LogViewer</value>
   </data>
   <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
     <value>Отображать прогресс в таскбаре:</value>
@@ -561,24 +561,11 @@
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
     <value>Показывать прогресс-бар в иконке приложения на панели задач при чтении логов</value>
   </data>
-  <data name="SuccessfullyInstalled" xml:space="preserve">
-    <value>Успешно установлено</value>
-  </data>
   <data name="Update" xml:space="preserve">
     <value>Обновить</value>
   </data>
-  <data name="UpdateAtNextLaunch" xml:space="preserve">
-    <value>Обновить при следующем запуске</value>
-  </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>Доступно обновление</value>
-  </data>
-  <data name="UpdateInstalledSuccessfully" xml:space="preserve">
-    <value>Обновление успешно установлено.
-Для вступления изменений в силу необходимо перезагрузить приложение.</value>
-  </data>
-  <data name="UpdateSize" xml:space="preserve">
-    <value>Размер обновления:</value>
   </data>
   <data name="DisableAutoScroll" xml:space="preserve">
     <value>Выключить автоматический переход к последнему сообщению</value>
@@ -594,12 +581,6 @@
   </data>
   <data name="ShowReleaseNotes" xml:space="preserve">
     <value>Показать Release Notes</value>
-  </data>
-  <data name="UpdateInstalledErrorMessage" xml:space="preserve">
-    <value>Произошла ошибка при установке обновления.</value>
-  </data>
-  <data name="UpdateWasCancelled" xml:space="preserve">
-    <value>Обновление было отменено</value>
   </data>
   <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
     <value>Добавлять новые логи при изменении файла</value>
@@ -642,7 +623,7 @@
     <value>Процесс импорта логов</value>
   </data>
   <data name="NoUpdatesFound" xml:space="preserve">
-    <value>Обновлений не найдено</value>
+    <value>У вас последняя версия</value>
   </data>
   <data name="MessageHighlightByReceiverColor" xml:space="preserve">
     <value>Выделять сообщения цветом приемника:</value>
@@ -1020,5 +1001,43 @@
   </data>
   <data name="ImportFailed" xml:space="preserve">
     <value>Не удалось импортировать файлы: {0}</value>
+  </data>
+  <data name="CurrentVersion" xml:space="preserve">
+    <value>Текущая версия:</value>
+  </data>
+  <data name="NewVersion" xml:space="preserve">
+    <value>Новая версия:</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>Что нового</value>
+  </data>
+  <data name="UpdateCloseWarning" xml:space="preserve">
+    <value>Для установки обновления LogViewer закроется и запустится заново. Буфер логов хранится только в памяти и будет потерян, поэтому при необходимости сначала сохраните сессию.</value>
+  </data>
+  <data name="SaveSessionEllipsis" xml:space="preserve">
+    <value>Сохранить сессию…</value>
+  </data>
+  <data name="RemindLater" xml:space="preserve">
+    <value>Напомнить позже</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Пропустить эту версию</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Не удалось проверить обновления: {0}</value>
+  </data>
+  <data name="CheckForUpdatesOnStartup" xml:space="preserve">
+    <value>Проверять обновления при запуске</value>
+  </data>
+  <data name="CheckForUpdatesOnStartupToolTip" xml:space="preserve">
+    <value>Через несколько секунд после запуска проверять, есть ли новая версия в GitHub Releases</value>
+  </data>
+  <data name="SettingsUnreadableMessage" xml:space="preserve">
+    <value>Не удалось прочитать файл настроек {0}. Используются настройки по умолчанию.</value>
+  </data>
+  <data name="SettingsUnreadableCopiedMessage" xml:space="preserve">
+    <value>Не удалось прочитать файл настроек {0}. Используются настройки по умолчанию.
+
+Копия файла сохранена как {1}: из неё можно вручную восстановить приёмники и правила подсветки.</value>
   </data>
 </root>

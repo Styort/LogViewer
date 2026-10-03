@@ -12,6 +12,22 @@ namespace LogViewer.Helpers
     {
         public const int WM_COPYDATA = 0x004A;
 
+        /// <summary>
+        /// Separates command-line arguments forwarded to the running instance. A space split paths such as
+        /// <c>C:\Users\John Smith\app.log</c>; a newline cannot occur in a Windows path.
+        /// </summary>
+        private const char ArgumentSeparator = '\n';
+
+        public static string JoinArguments(IEnumerable<string> args)
+        {
+            return string.Join(ArgumentSeparator.ToString(), args ?? Enumerable.Empty<string>());
+        }
+
+        public static string[] SplitArguments(string message)
+        {
+            return (message ?? string.Empty).Split(new[] { ArgumentSeparator }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public static string GetMessage(int message, IntPtr lParam)
         {
             if (message == UnsafeNative.WM_COPYDATA)
@@ -33,12 +49,13 @@ namespace LogViewer.Helpers
 
         public static void SendMessage(IntPtr hwnd, string message)
         {
-            var messageBytes = Encoding.Unicode.GetBytes(message); /* ANSII encoding */
             var data = new UnsafeNative.CopyDataStruct
             {
                 dwData = IntPtr.Zero,
                 lpData = message,
-                cbData = messageBytes.Length + 1 /* +1 because of \0 string termination */
+                // lpData is marshalled as UTF-16: the size must include the two-byte terminator, otherwise the
+                // receiver reads past the copied buffer.
+                cbData = Encoding.Unicode.GetByteCount(message) + sizeof(char)
             };
 
             if (UnsafeNative.SendMessage(hwnd, WM_COPYDATA, IntPtr.Zero, ref data) != 0)

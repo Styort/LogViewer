@@ -28,7 +28,7 @@ namespace LogViewer.Core.Services
     {
         private readonly IReceiverConfig _config;
         private readonly ILogParser _parser;
-        private readonly IEnumerable<string> _ignoredIps;
+        private readonly IgnoredAddressSet _ignoredIps;
         private readonly bool _separateAddressByPort;
         private readonly object _clientsLock = new object();
         private readonly List<TcpClient> _clients = new List<TcpClient>();
@@ -45,7 +45,7 @@ namespace LogViewer.Core.Services
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _parser = parser ?? throw new ArgumentNullException(nameof(parser));
-            _ignoredIps = ignoredIps ?? Array.Empty<string>();
+            _ignoredIps = new IgnoredAddressSet(ignoredIps);
             _separateAddressByPort = separateAddressByPort;
         }
 
@@ -125,7 +125,7 @@ namespace LogViewer.Core.Services
                 {
                     TcpClient client = listener.AcceptTcpClient();
                     string remoteAddress = GetRemoteAddress(client);
-                    if (IsIgnored(remoteAddress))
+                    if (_ignoredIps.Contains(GetRemoteIp(client)))
                     {
                         CloseClient(client);
                         continue;
@@ -249,23 +249,20 @@ namespace LogViewer.Core.Services
             LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry });
         }
 
-        private bool IsIgnored(string remoteAddress)
+        private static string GetRemoteAddress(TcpClient client)
         {
-            return _ignoredIps.Any(ip =>
-                !string.IsNullOrEmpty(ip) &&
-                remoteAddress.IndexOf(ip, StringComparison.OrdinalIgnoreCase) >= 0);
+            return GetRemoteIp(client)?.ToString() ?? string.Empty;
         }
 
-        private static string GetRemoteAddress(TcpClient client)
+        private static IPAddress GetRemoteIp(TcpClient client)
         {
             try
             {
-                var ep = client.Client?.RemoteEndPoint as IPEndPoint;
-                return ep != null ? ep.Address.ToString() : string.Empty;
+                return (client.Client?.RemoteEndPoint as IPEndPoint)?.Address;
             }
             catch
             {
-                return string.Empty;
+                return null;
             }
         }
 

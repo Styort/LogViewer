@@ -1,6 +1,67 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
+		<Version>1.2.9.0 (03.10.2026)</Version>
+		<NewFeatures>
+			<Item>
+				<ru>Обновления через GitHub Releases: вскоре после запуска приложение проверяет, есть ли новая версия, и предлагает обновиться, напомнить позже или пропустить эту версию</ru>
+				<en>Updates from GitHub Releases: shortly after start the application checks for a new version and offers to update, remind you later or skip that version</en>
+			</Item>
+			<Item>
+				<ru>Обновление скачивается с проверкой контрольной суммы и устанавливается поверх текущей папки с перезапуском приложения; settings.xml и логи рядом с exe не затрагиваются</ru>
+				<en>The update is downloaded with a checksum check and installed over the current folder, then the application restarts; settings.xml and logs next to the exe are left untouched</en>
+			</Item>
+			<Item>
+				<ru>Перед обновлением можно сохранить сессию: буфер логов хранится только в памяти</ru>
+				<en>You can save the session before updating: the log buffer is kept only in memory</en>
+			</Item>
+			<Item>
+				<ru>Настройка «Проверять обновления при запуске»; кнопка «Проверка обновлений» проверяет вручную, в том числе пропущенную версию</ru>
+				<en>"Check for updates at startup" setting; the "Check for updates" button checks on demand, including a skipped version</en>
+			</Item>
+		</NewFeatures>
+		<ChangedFeatures>
+			<Item>
+				<ru>Окно Release Notes показывается при первом запуске новой версии, а не только после обновления через ClickOnce</ru>
+				<en>The Release Notes window is shown on the first start of a new version, not only after a ClickOnce update</en>
+			</Item>
+			<Item>
+				<ru>ClickOnce больше не используется. Версии до 1.2.9.0 не умеют обновляться сами: новую версию нужно один раз скачать вручную</ru>
+				<en>ClickOnce is no longer used. Versions before 1.2.9.0 cannot update themselves: download the new version once by hand</en>
+			</Item>
+		</ChangedFeatures>
+		<FixedBugs>
+			<Item>
+				<ru>Настройки, сессии, пресеты фильтров и шаблоны импорта сохраняются так, что сбой во время записи больше не оставляет обрезанный файл и не сбрасывает настроенные приёмники</ru>
+				<en>Settings, sessions, filter presets and import templates are saved so that a failure during the write no longer leaves a truncated file or resets the configured receivers</en>
+			</Item>
+			<Item>
+				<ru>Если файл настроек не удаётся прочитать, приложение предупреждает об этом и сохраняет его копию, а не молча заменяет настройками по умолчанию</ru>
+				<en>If the settings file cannot be read, the application warns about it and keeps a copy instead of silently replacing it with defaults</en>
+			</Item>
+			<Item>
+				<ru>Игнорируемый IP-адрес скрывает только этот адрес: правило 10.0.0.1 больше не скрывает 10.0.0.10–10.0.0.19 и 110.0.0.1</ru>
+				<en>An ignored IP address hides only that address: the rule 10.0.0.1 no longer hides 10.0.0.10–10.0.0.19 and 110.0.0.1</en>
+			</Item>
+			<Item>
+				<ru>Файлы из папок с пробелами в пути открываются через «Открыть с помощью», когда LogViewer уже запущен</ru>
+				<en>Files from folders with spaces in the path open via "Open with" when LogViewer is already running</en>
+			</Item>
+			<Item>
+				<ru>TCP: событие в виде самозакрывающегося тега больше не поглощает следующее событие, а &lt;/log4j:event&gt; внутри CDATA не разрезает сообщение</ru>
+				<en>TCP: an event written as a self-closing tag no longer swallows the next event, and &lt;/log4j:event&gt; inside CDATA no longer cuts the message</en>
+			</Item>
+			<Item>
+				<ru>TCP: большие события (например, с длинным стек-трейсом) принимаются без лишней нагрузки на процессор</ru>
+				<en>TCP: large events (for example, with a long stack trace) are received without excessive CPU load</en>
+			</Item>
+			<Item>
+				<ru>Строка ошибки разбора содержит только начало исходного XML: поток битых сообщений больше не раздувает память</ru>
+				<en>A parse error row keeps only the start of the original XML: a stream of malformed messages no longer bloats memory</en>
+			</Item>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
 		<Version>1.2.8.9 (03.10.2026)</Version>
 		<ChangedFeatures>
 			<Item>

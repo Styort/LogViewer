@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Deployment.Application;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +22,7 @@ using LogViewer.MVVM.Models;
 using LogViewer.MVVM.TreeView;
 using LogViewer.MVVM.ViewModels;
 using LogViewer.MVVM.ViewModels.Log;
+using LogViewer.Services.Updates;
 using NLog;
 using Application = System.Windows.Application;
 using Binding = System.Windows.Data.Binding;
@@ -484,10 +485,17 @@ namespace LogViewer.MVVM.Views
 
         private void DisplayChangeLog()
         {
-            if (!ApplicationDeployment.IsNetworkDeployed)
-                return;
+            var currentVersion = Assembly.GetEntryAssembly()?.GetName().Version;
+            var lastRunVersion = Settings.Instance.LastRunVersion;
+            bool show = ReleaseNotesGate.ShouldShow(currentVersion, lastRunVersion);
 
-            if (!ApplicationDeployment.CurrentDeployment.IsFirstRun)
+            if (ReleaseNotesGate.NeedsStore(currentVersion, lastRunVersion))
+            {
+                Settings.Instance.LastRunVersion = currentVersion.ToString();
+                Settings.Instance.Save();
+            }
+
+            if (!show)
                 return;
 
             ReleaseNotesDialog releaseNotesDialog = new ReleaseNotesDialog();
@@ -532,7 +540,7 @@ namespace LogViewer.MVVM.Views
                 UnsafeNative.SetForegroundWindow(new WindowInteropHelper
                     (Application.Current.MainWindow).Handle);
 
-                var args = data.Split(' ');
+                var args = UnsafeNative.SplitArguments(data);
                 HandleParameter(args);
                 handled = true;
             }

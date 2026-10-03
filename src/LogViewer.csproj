@@ -55,6 +55,10 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoUpdater.NET, Version=1.9.3.0, Culture=neutral, PublicKeyToken=501435c91b35f4bc, processorArchitecture=MSIL">
+      <HintPath>packages\Autoupdater.NET.Official.1.9.3\lib\net462\AutoUpdater.NET.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="CustomColorPicker">
       <HintPath>lib\CustomColorPicker\CustomColorPicker.dll</HintPath>
     </Reference>
@@ -70,6 +74,17 @@
     </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <!-- AutoUpdater.NET references these from its built-in changelog form. LogViewer shows its own dialog and
+         never loads them; they ship only so the library has no dangling references. The native WebView2Loader
+         build targets are deliberately not imported. -->
+    <Reference Include="Microsoft.Web.WebView2.Core, Version=1.0.4078.44, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.WebView2.1.0.4078.44\lib\net462\Microsoft.Web.WebView2.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.WebView2.WinForms, Version=1.0.4078.44, Culture=neutral, PublicKeyToken=2a8ab48044d2601e, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Web.WebView2.1.0.4078.44\lib\net462\Microsoft.Web.WebView2.WinForms.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -110,7 +125,6 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Serialization" />
@@ -220,7 +234,6 @@
     <Compile Include="MVVM\Views\SelectTimestampDialog.xaml.cs">
       <DependentUpon>SelectTimestampDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UpdateManager.cs" />
     <Compile Include="Validations\IPValidation.cs" />
     <Compile Include="Validations\PortNumberValidation.cs" />
     <Compile Include="MVVM\Models\Receiver.cs" />
@@ -315,6 +328,15 @@
     <Compile Include="Services\Wpf\WpfDialogService.cs" />
     <Compile Include="Services\Wpf\WpfFileDialogService.cs" />
     <Compile Include="Services\Wpf\DispatcherUiTimer.cs" />
+    <Compile Include="Services\Updates\AppDirectoryAccess.cs" />
+    <Compile Include="Services\Updates\IUpdateService.cs" />
+    <Compile Include="Services\Updates\JsonUpdateStateStore.cs" />
+    <Compile Include="Services\Updates\NoOpPersistenceProvider.cs" />
+    <Compile Include="Services\Updates\ReleaseNotesGate.cs" />
+    <Compile Include="Services\Updates\UpdateCheckHandler.cs" />
+    <Compile Include="Services\Updates\UpdateService.cs" />
+    <Compile Include="Services\Updates\WpfUpdateInstaller.cs" />
+    <Compile Include="Services\Updates\WpfUpdatePrompt.cs" />
     <Compile Include="MVVM\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

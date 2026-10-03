@@ -36,7 +36,8 @@ Get-ChildItem $Output -Recurse -Filter *.xml |
     Where-Object { Test-Path ([IO.Path]::ChangeExtension($_.FullName, '.dll')) } |
     Remove-Item -Force
 
-foreach ($required in 'LogViewer.exe', 'LogViewer.exe.config', 'ReleaseNotes.xml', 'en/LogViewer.resources.dll') {
+# AutoUpdater.NET carries ZipExtractor.exe as an embedded resource, so there is no separate file to check.
+foreach ($required in 'LogViewer.exe', 'LogViewer.exe.config', 'ReleaseNotes.xml', 'en/LogViewer.resources.dll', 'AutoUpdater.NET.dll') {
     if (-not (Test-Path (Join-Path $Output $required))) {
         throw "Missing in the package: $required"
     }

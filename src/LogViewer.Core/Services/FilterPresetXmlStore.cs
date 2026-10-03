@@ -76,8 +76,7 @@ namespace LogViewer.Core.Services
             if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
-            using (var fs = File.Create(path))
-                Save(fs, document);
+            AtomicFile.Write(path, stream => Save(stream, document));
         }
 
         /// <summary>

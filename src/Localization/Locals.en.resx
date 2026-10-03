@@ -553,7 +553,7 @@ Try selecting a template manually.</value>
     <value>Template settings saved successfully.</value>
   </data>
   <data name="NewVersionOfLogViewerAvailable" xml:space="preserve">
-    <value>A new version of Log Viewer is available:</value>
+    <value>A new version of LogViewer is available</value>
   </data>
   <data name="ShowProgressOnTaskbarIcon" xml:space="preserve">
     <value>Show progress on the taskbar icon:</value>
@@ -561,25 +561,11 @@ Try selecting a template manually.</value>
   <data name="ShowProgressOnTaskbarIconToolTip" xml:space="preserve">
     <value>Show a progress bar on the taskbar icon while reading logs.</value>
   </data>
-  <data name="SuccessfullyInstalled" xml:space="preserve">
-    <value>Successfully Installed</value>
-  </data>
   <data name="Update" xml:space="preserve">
     <value>Update</value>
   </data>
-  <data name="UpdateAtNextLaunch" xml:space="preserve">
-    <value>Update at Next Launch</value>
-  </data>
   <data name="UpdateAvailable" xml:space="preserve">
     <value>New Update Available</value>
-  </data>
-  <data name="UpdateInstalledSuccessfully" xml:space="preserve">
-    <value>The update was installed successfully.
-Changes will take effect after restart.
-Restart now?</value>
-  </data>
-  <data name="UpdateSize" xml:space="preserve">
-    <value>Update size:</value>
   </data>
   <data name="DisableAutoScroll" xml:space="preserve">
     <value>Disable Auto Scroll to Last Log Message</value>
@@ -595,12 +581,6 @@ Restart now?</value>
   </data>
   <data name="ShowReleaseNotes" xml:space="preserve">
     <value>Show Release Notes</value>
-  </data>
-  <data name="UpdateInstalledErrorMessage" xml:space="preserve">
-    <value>An error occurred while installing the update.</value>
-  </data>
-  <data name="UpdateWasCancelled" xml:space="preserve">
-    <value>The update was cancelled.</value>
   </data>
   <data name="AddNewLogsWhenChangingFile" xml:space="preserve">
     <value>Watch the file and append new log entries.</value>
@@ -643,7 +623,7 @@ Restart now?</value>
     <value>Importing Logs</value>
   </data>
   <data name="NoUpdatesFound" xml:space="preserve">
-    <value>No updates found.</value>
+    <value>You have the latest version.</value>
   </data>
   <data name="MessageHighlightByReceiverColor" xml:space="preserve">
     <value>Highlight messages by receiver color:</value>
@@ -1021,5 +1001,43 @@ Details were written to the application log:
   </data>
   <data name="ImportFailed" xml:space="preserve">
     <value>Could not import the files: {0}</value>
+  </data>
+  <data name="CurrentVersion" xml:space="preserve">
+    <value>Current version:</value>
+  </data>
+  <data name="NewVersion" xml:space="preserve">
+    <value>New version:</value>
+  </data>
+  <data name="WhatsNew" xml:space="preserve">
+    <value>What's new</value>
+  </data>
+  <data name="UpdateCloseWarning" xml:space="preserve">
+    <value>LogViewer will close and restart to install the update. The log buffer is kept only in memory and will be lost, so save the session first if you need it.</value>
+  </data>
+  <data name="SaveSessionEllipsis" xml:space="preserve">
+    <value>Save session…</value>
+  </data>
+  <data name="RemindLater" xml:space="preserve">
+    <value>Remind me later</value>
+  </data>
+  <data name="SkipThisVersion" xml:space="preserve">
+    <value>Skip this version</value>
+  </data>
+  <data name="UpdateCheckFailed" xml:space="preserve">
+    <value>Could not check for updates: {0}</value>
+  </data>
+  <data name="CheckForUpdatesOnStartup" xml:space="preserve">
+    <value>Check for updates at startup</value>
+  </data>
+  <data name="CheckForUpdatesOnStartupToolTip" xml:space="preserve">
+    <value>A few seconds after start, check GitHub Releases for a new version</value>
+  </data>
+  <data name="SettingsUnreadableMessage" xml:space="preserve">
+    <value>The settings file {0} could not be read. Default settings are used.</value>
+  </data>
+  <data name="SettingsUnreadableCopiedMessage" xml:space="preserve">
+    <value>The settings file {0} could not be read. Default settings are used.
+
+A copy was saved as {1}: receivers and highlight rules can be recovered from it by hand.</value>
   </data>
 </root>

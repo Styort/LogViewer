@@ -9,6 +9,7 @@ using System.Web;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
+using LogViewer.Core.Services;
 using LogViewer.Localization;
 
 namespace LogViewer.MVVM.Models
@@ -80,6 +81,23 @@ namespace LogViewer.MVVM.Models
         /// </summary>
         public bool IsSeparateIpLoggersByPort { get; set; } = false;
 
+        /// <summary>
+        /// Check GitHub Releases for a new version a few seconds after start.
+        /// </summary>
+        public bool CheckForUpdatesOnStartup { get; set; } = true;
+
+        /// <summary>
+        /// Version of the last run, used to show Release Notes once after an update.
+        /// Missing in settings.xml of a fresh install, so nothing is shown then.
+        /// </summary>
+        public string LastRunVersion { get; set; }
+
+        /// <summary>
+        /// Folder of the settings.xml in use (Documents\LogViewer, or the exe folder for a portable copy).
+        /// Read-only, so it is not serialized.
+        /// </summary>
+        public string SettingsDirectory => Path.GetDirectoryName(settingsPath);
+
 
         private Settings()
         {
@@ -133,11 +151,7 @@ namespace LogViewer.MVVM.Models
             try
             {
                 XmlSerializer ser = new XmlSerializer(Instance.GetType());
-                Directory.CreateDirectory(Path.GetDirectoryName(settingsPath));
-                using (FileStream fs = new FileStream(settingsPath, FileMode.Create))
-                {
-                    ser.Serialize(fs, Instance);
-                }
+                AtomicFile.Write(settingsPath, stream => ser.Serialize(stream, Instance));
                 return true;
             }
             catch (Exception e)
@@ -162,33 +176,44 @@ namespace LogViewer.MVVM.Models
             
             if (settingsFileExists)
             {
+                Settings settings;
                 try
                 {
-                    using (var fs = new FileStream(settingsPath, FileMode.Open))
-                    {
-                        Settings settings = (Settings)ser.Deserialize(fs);
-                        Instance.AutoStartInStartup = settings.AutoStartInStartup;
-                        Instance.MinimizeToTray = settings.MinimizeToTray;
-                        Instance.CurrentTheme = settings.CurrentTheme;
-                        Instance.DataFormat = settings.DataFormat;
-                        Instance.IgnoredIPs = settings.IgnoredIPs;
-                        Instance.Receivers = settings.Receivers;
-                        Instance.FontColor = settings.FontColor;
-                        Instance.MessageFontFamily = settings.MessageFontFamily;
-                        Instance.MessageFontSize = settings.MessageFontSize;
-                        Instance.OnlyOneAppInstance = settings.OnlyOneAppInstance;
-                        Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
-                        Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
-                        Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
-                        Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
-                        Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
-                        Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
-                        Instance.IsShowErrorTimeline = settings.IsShowErrorTimeline;
-                        Instance.ShowMessageHighlightByReceiverColor = settings.ShowMessageHighlightByReceiverColor;
-                        Instance.HighlightRules = settings.HighlightRules ?? new List<HighlightRuleItem>();
-                        Instance.IsSeparateIpLoggersByPort = settings.IsSeparateIpLoggersByPort;
-                        Instance.Language = settings.Language;
-                    }
+                    using (var fs = new FileStream(settingsPath, FileMode.Open, FileAccess.Read))
+                        settings = (Settings)ser.Deserialize(fs);
+                }
+                catch (Exception ex)
+                {
+                    logger.Warn(ex, "settings.xml could not be read, defaults are used.");
+                    PreserveUnreadableFile();
+                    return;
+                }
+
+                try
+                {
+                    Instance.AutoStartInStartup = settings.AutoStartInStartup;
+                    Instance.MinimizeToTray = settings.MinimizeToTray;
+                    Instance.CurrentTheme = settings.CurrentTheme;
+                    Instance.DataFormat = settings.DataFormat;
+                    Instance.IgnoredIPs = settings.IgnoredIPs;
+                    Instance.Receivers = settings.Receivers;
+                    Instance.FontColor = settings.FontColor;
+                    Instance.MessageFontFamily = settings.MessageFontFamily;
+                    Instance.MessageFontSize = settings.MessageFontSize;
+                    Instance.OnlyOneAppInstance = settings.OnlyOneAppInstance;
+                    Instance.IsEnabledMaxMessageBufferSize = settings.IsEnabledMaxMessageBufferSize;
+                    Instance.MaxMessageBufferSize = settings.MaxMessageBufferSize;
+                    Instance.DeletedMessagesCount = settings.DeletedMessagesCount;
+                    Instance.IsShowSourceColumn = settings.IsShowSourceColumn;
+                    Instance.IsShowThreadColumn = settings.IsShowThreadColumn;
+                    Instance.IsShowTaskbarProgress = settings.IsShowTaskbarProgress;
+                    Instance.IsShowErrorTimeline = settings.IsShowErrorTimeline;
+                    Instance.ShowMessageHighlightByReceiverColor = settings.ShowMessageHighlightByReceiverColor;
+                    Instance.HighlightRules = settings.HighlightRules ?? new List<HighlightRuleItem>();
+                    Instance.IsSeparateIpLoggersByPort = settings.IsSeparateIpLoggersByPort;
+                    Instance.CheckForUpdatesOnStartup = settings.CheckForUpdatesOnStartup;
+                    Instance.LastRunVersion = settings.LastRunVersion;
+                    Instance.Language = settings.Language;
 
                     Instance.ApplyTheme();
                     Instance.ApplyLanguage(Instance.Language);
@@ -197,6 +222,37 @@ namespace LogViewer.MVVM.Models
                 {
                     logger.Warn(ex, "An error occurred while read and apply settings.");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Defaults are written back on the next save (at the latest when a new version records LastRunVersion),
+        /// so the unreadable file is copied aside first: receivers and highlight rules can still be recovered by hand.
+        /// </summary>
+        private void PreserveUnreadableFile()
+        {
+            string copy = $"{settingsPath}.unreadable-{DateTime.Now:yyyyMMdd-HHmmss}";
+            try
+            {
+                File.Copy(settingsPath, copy, overwrite: true);
+            }
+            catch (Exception e)
+            {
+                logger.Warn(e, $"Could not copy the unreadable settings to {copy}");
+                copy = null;
+            }
+
+            try
+            {
+                MessageBox.Show(
+                    copy == null
+                        ? string.Format(Locals.SettingsUnreadableMessage, settingsPath)
+                        : string.Format(Locals.SettingsUnreadableCopiedMessage, settingsPath, copy),
+                    Locals.Warning, MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception e)
+            {
+                logger.Warn(e, "Could not show the unreadable settings warning");
             }
         }
     }

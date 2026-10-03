@@ -102,5 +102,19 @@ namespace LogViewer.Core.Tests
             Assert.That(ReceiverTransportHelper.ParseOrUdp("tcp"), Is.EqualTo(ReceiverTransport.Tcp));
             Assert.That(ReceiverTransportHelper.ParseOrUdp("TCP"), Is.EqualTo(ReceiverTransport.Tcp));
         }
+
+        [Test]
+        public void HugeBrokenFrame_IsTruncatedInTheErrorRow()
+        {
+            string xml = "<broken>" + new string('x', 1024 * 1024);
+
+            LogEntry entry = LiveXmlLogEntryFactory.Create(
+                new XmlLogParser(), xml, "10.0.0.1", 7071, ReceiverTransport.Tcp, "TCP Logger");
+
+            Assert.That(entry.Level, Is.EqualTo(LogLevel.Error));
+            Assert.That(entry.Message, Does.StartWith("An error occurred while parsing log: <broken>"));
+            Assert.That(entry.Message.Length, Is.LessThan(LiveXmlLogEntryFactory.MaxRawXmlInError + 1024));
+            Assert.That(entry.Message, Does.Contain("more characters"));
+        }
     }
 }

@@ -18,6 +18,12 @@ namespace LogViewer.Core.Services
     {
         public const string DefaultFallbackLogger = "Network Logger";
 
+        /// <summary>
+        /// A TCP frame may be up to 1 MiB. Copying all of it (plus a stack trace) into every error row let a
+        /// stream of malformed events fill the buffer quickly; the start of the frame is enough to recognize it.
+        /// </summary>
+        public const int MaxRawXmlInError = 4096;
+
         public static LogEntry Create(
             ILogParser parser,
             string xml,
@@ -41,7 +47,7 @@ namespace LogViewer.Core.Services
                     Logger = fallbackLogger,
                     Address = address,
                     Thread = -1,
-                    Message = $"An error occurred while parsing log: {xml}. {Environment.NewLine} Exception: {ex}",
+                    Message = $"An error occurred while parsing log: {Truncate(xml)}{Environment.NewLine}{ex.GetType().Name}: {ex.Message}",
                     Time = DateTime.Now,
                     Level = LogLevel.Error,
                     ExecutableName = "LogViewer"
@@ -59,6 +65,13 @@ namespace LogViewer.Core.Services
             entry.ReceiverPort = receiverPort;
             entry.ReceiverTransport = transport;
             return entry;
+        }
+
+        private static string Truncate(string xml)
+        {
+            if (xml == null || xml.Length <= MaxRawXmlInError)
+                return xml;
+            return $"{xml.Substring(0, MaxRawXmlInError)}... ({xml.Length - MaxRawXmlInError} more characters)";
         }
     }
 }

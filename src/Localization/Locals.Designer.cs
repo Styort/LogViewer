@@ -278,6 +278,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Проверять обновления при запуске.
+        /// </summary>
+        internal static string CheckForUpdatesOnStartup {
+            get {
+                return ResourceManager.GetString("CheckForUpdatesOnStartup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Через несколько секунд после запуска проверять, есть ли новая версия в GitHub Releases.
+        /// </summary>
+        internal static string CheckForUpdatesOnStartupToolTip {
+            get {
+                return ResourceManager.GetString("CheckForUpdatesOnStartupToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Очистить.
         /// </summary>
         internal static string Clear {
@@ -391,6 +409,15 @@ namespace LogViewer.Localization {
         internal static string CountOfDeletedMessagesToolTip {
             get {
                 return ResourceManager.GetString("CountOfDeletedMessagesToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Текущая версия:.
+        /// </summary>
+        internal static string CurrentVersion {
+            get {
+                return ResourceManager.GetString("CurrentVersion", resourceCulture);
             }
         }
         
@@ -1239,7 +1266,16 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Доступна новая версия LogViewer:.
+        ///   Looks up a localized string similar to Новая версия:.
+        /// </summary>
+        internal static string NewVersion {
+            get {
+                return ResourceManager.GetString("NewVersion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Доступна новая версия LogViewer.
         /// </summary>
         internal static string NewVersionOfLogViewerAvailable {
             get {
@@ -1276,7 +1312,7 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Обновлений не найдено.
+        ///   Looks up a localized string similar to У вас последняя версия.
         /// </summary>
         internal static string NoUpdatesFound {
             get {
@@ -1465,6 +1501,15 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Напомнить позже.
+        /// </summary>
+        internal static string RemindLater {
+            get {
+                return ResourceManager.GetString("RemindLater", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Удалить.
         /// </summary>
         internal static string Remove {
@@ -1497,6 +1542,15 @@ namespace LogViewer.Localization {
         internal static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Сохранить сессию….
+        /// </summary>
+        internal static string SaveSessionEllipsis {
+            get {
+                return ResourceManager.GetString("SaveSessionEllipsis", resourceCulture);
             }
         }
         
@@ -1618,6 +1672,24 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не удалось прочитать файл настроек {0}. Используются настройки по умолчанию..
+        /// </summary>
+        internal static string SettingsUnreadableCopiedMessage {
+            get {
+                return ResourceManager.GetString("SettingsUnreadableCopiedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Не удалось прочитать файл настроек {0}. Используются настройки по умолчанию..
+        /// </summary>
+        internal static string SettingsUnreadableMessage {
+            get {
+                return ResourceManager.GetString("SettingsUnreadableMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Показывать таймлайн:.
         /// </summary>
         internal static string ShowErrorTimeline {
@@ -1713,6 +1785,15 @@ namespace LogViewer.Localization {
         internal static string SinevViktor {
             get {
                 return ResourceManager.GetString("SinevViktor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Пропустить эту версию.
+        /// </summary>
+        internal static string SkipThisVersion {
+            get {
+                return ResourceManager.GetString("SkipThisVersion", resourceCulture);
             }
         }
         
@@ -1888,15 +1969,6 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Успешно установлено.
-        /// </summary>
-        internal static string SuccessfullyInstalled {
-            get {
-                return ResourceManager.GetString("SuccessfullyInstalled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Произошла ошибка при сохранении настроек шаблонов.
         /// </summary>
         internal static string TemplateSettingsSaveError {
@@ -1996,15 +2068,6 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Обновить при следующем запуске.
-        /// </summary>
-        internal static string UpdateAtNextLaunch {
-            get {
-                return ResourceManager.GetString("UpdateAtNextLaunch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Доступно обновление.
         /// </summary>
         internal static string UpdateAvailable {
@@ -2014,39 +2077,20 @@ namespace LogViewer.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Произошла ошибка при установке обновления..
+        ///   Looks up a localized string similar to Не удалось проверить обновления: {0}.
         /// </summary>
-        internal static string UpdateInstalledErrorMessage {
+        internal static string UpdateCheckFailed {
             get {
-                return ResourceManager.GetString("UpdateInstalledErrorMessage", resourceCulture);
+                return ResourceManager.GetString("UpdateCheckFailed", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Обновление успешно установлено.
-        ///Для вступления изменений в силу необходимо перезагрузить приложение..
+        ///   Looks up a localized string similar to Для установки обновления LogViewer закроется и запустится заново. Буфер логов хранится только в памяти и будет потерян, поэтому при необходимости сначала сохраните сессию..
         /// </summary>
-        internal static string UpdateInstalledSuccessfully {
+        internal static string UpdateCloseWarning {
             get {
-                return ResourceManager.GetString("UpdateInstalledSuccessfully", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Размер обновления:.
-        /// </summary>
-        internal static string UpdateSize {
-            get {
-                return ResourceManager.GetString("UpdateSize", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Обновление было отменено.
-        /// </summary>
-        internal static string UpdateWasCancelled {
-            get {
-                return ResourceManager.GetString("UpdateWasCancelled", resourceCulture);
+                return ResourceManager.GetString("UpdateCloseWarning", resourceCulture);
             }
         }
         
@@ -2313,5 +2357,14 @@ namespace LogViewer.Localization {
                 return ResourceManager.GetString("Warning", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Что нового.
+        /// </summary>
+        internal static string WhatsNew {
+            get {
+                return ResourceManager.GetString("WhatsNew", resourceCulture);
+            }
+        }
+        
     }
 }

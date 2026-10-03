@@ -425,10 +425,10 @@ namespace LogViewer.MVVM.ViewModels.Log
             {
                 IsSearchProcess = false;
                 _filter.ClearTimeInterval();
+                // SetSearch refilters through FilterCoordinator like every other filter. A synchronous
+                // rebuild here used to replace Logs twice and project new row objects, which lost the
+                // selection and bookmark identity.
                 _filter.SetSearch(SearchText, IsMatchCase, IsMatchWholeWord, UseRegularExpressions, IsMatchLogLevel, false);
-                var filtered = _session.GetFilteredEntries(_processing.Filter);
-                _state.Logs = new AsyncObservableCollection<LogMessage>(filtered.Select(e => _projector.Project(e)).Where(m => m != null));
-                _state.SelectedLog = _state.GetLastSelectedOrNearby();
             }
 
             SearchText = string.Empty;

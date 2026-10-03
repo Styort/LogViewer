@@ -5,13 +5,6 @@ namespace LogViewer.Core.Services
 {
     internal static class StringUtils
     {
-        public static string FirstCharToUpper(string input)
-        {
-            if (input == null) throw new ArgumentNullException(nameof(input));
-            if (input.Length == 0) throw new ArgumentException("Input cannot be empty", nameof(input));
-            return input.First().ToString().ToUpperInvariant() + input.Substring(1);
-        }
-
         public static bool ContainsAnyOf(string line, string[] search)
         {
             if (line == null || search == null) return false;

@@ -23,6 +23,11 @@ namespace LogViewer.MVVM.ViewModels.Log
         private readonly MessageGroupsViewModel _groups;
         private readonly Action<bool> _setCleanEnabled;
 
+        // Highest LogEntry.Sequence already placed in AllLogs by a full rebuild (bulk import snapshot).
+        // The snapshot is taken on a background thread while batches keep flowing, so a batch delivered
+        // after the rebuild may repeat entries the snapshot already contained.
+        private long _rebuiltThroughSequence;
+
         public LogSessionPresenter(
             LogViewState state,
             LogEntryProjector projector,
@@ -50,6 +55,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             {
                 var item = e.Entries[i];
                 if (item?.Entry == null) continue;
+                if (item.Entry.Sequence != 0 && item.Entry.Sequence <= _rebuiltThroughSequence) continue;
                 var msg = _projector.Project(item.Entry);
                 if (msg == null) continue;
                 _state.AllLogs.Add(msg);
@@ -58,6 +64,8 @@ namespace LogViewer.MVVM.ViewModels.Log
                 _tree.BuildTreeByMessage(msg);
             }
 
+            // One refilter per batch for loggers that appeared under a hidden parent, not one per row.
+            _tree.ApplyPendingFilter();
             _setCleanEnabled(_state.AllLogs.Any());
             _timeline.ScheduleRebuild();
             _groups.ScheduleRebuild();
@@ -129,6 +137,7 @@ namespace LogViewer.MVVM.ViewModels.Log
                     }
                 }
                 _state.AllLogs = new AsyncObservableCollection<LogMessage>(all);
+                _rebuiltThroughSequence = Math.Max(_rebuiltThroughSequence, e.SnapshotSequence);
                 _tree.RebuildFromCore();
                 _tree.TryApplyQueuedDisplayRestore();
                 _tree.RememberPathsFromTree();
@@ -142,59 +151,85 @@ namespace LogViewer.MVVM.ViewModels.Log
                 filtered = MapFilteredToAllLogs(e.Entries);
             }
 
-            _state.Logs = new AsyncObservableCollection<LogMessage>(filtered);
+            // Start, a repeated Apply, or a tree click that hides nothing produce the same rows. Replacing
+            // the collection anyway resets the ListView scroll position and selection.
+            if (!HasSameRows(_state.Logs, filtered))
+                _state.Logs = new AsyncObservableCollection<LogMessage>(filtered);
             _tree.SyncCheckboxesFromExclusions();
             _setCleanEnabled(_state.AllLogs.Any());
-            if (_tree.TreeCheckJustDone)
-            {
-                // Tree checkbox: keep a nearby row. Otherwise ListView jumps to the first visible item.
-                _tree.TreeCheckJustDone = false;
-                _state.SelectedLog = _state.GetLastSelectedOrNearby();
-            }
+            // Selection and scroll position after a filter change are restored by the view
+            // (ListViewViewKeeper): it runs after the ListView has taken the new collection, which
+            // setting SelectedLog here cannot, because the ItemsSource binding is asynchronous.
+            _tree.TreeCheckJustDone = false;
         }
 
         /// <summary>
-        /// Filtered Core entries are a subsequence of the session buffer. Walk AllLogs once and keep
-        /// the same LogMessage objects the bookmarks already hold.
+        /// Maps a filtered Core snapshot to the LogMessage objects already in AllLogs (bookmarks and
+        /// selection compare by reference), matching by <see cref="LogEntry.Sequence"/>.
         /// </summary>
-        private List<LogMessage> MapFilteredToAllLogs(IReadOnlyList<LogEntry> entries)
+        /// <remarks>
+        /// An entry without a row in AllLogs is skipped, not projected: either the buffer trim already
+        /// removed it, or its batch is still queued and will add it with its own IncludedInFilter.
+        /// </remarks>
+        internal List<LogMessage> MapFilteredToAllLogs(IReadOnlyList<LogEntry> entries)
         {
             var filtered = new List<LogMessage>(entries.Count);
             var all = _state.AllLogs;
+
+            if (!IsSequenceAscending(all))
+            {
+                // Two receive threads can enqueue in the opposite order they stored entries, so AllLogs
+                // is occasionally not sorted. Rare; a lookup table keeps it correct.
+                var bySequence = new Dictionary<long, LogMessage>(all.Count);
+                for (int i = 0; i < all.Count; i++)
+                    bySequence[all[i].Sequence] = all[i];
+                for (int i = 0; i < entries.Count; i++)
+                {
+                    var entry = entries[i];
+                    if (entry != null && bySequence.TryGetValue(entry.Sequence, out var msg))
+                        filtered.Add(msg);
+                }
+                return filtered;
+            }
+
             int iAll = 0;
             for (int i = 0; i < entries.Count; i++)
             {
                 var entry = entries[i];
                 if (entry == null)
                     continue;
-                while (iAll < all.Count && !Matches(all[iAll], entry))
+                while (iAll < all.Count && all[iAll].Sequence < entry.Sequence)
                     iAll++;
-                if (iAll < all.Count)
+                if (iAll < all.Count && all[iAll].Sequence == entry.Sequence)
                 {
                     filtered.Add(all[iAll]);
                     iAll++;
-                    continue;
                 }
-
-                var msg = _projector.Project(entry);
-                if (msg != null)
-                    filtered.Add(msg);
             }
 
             return filtered;
         }
 
-        private static bool Matches(LogMessage message, LogEntry entry)
+        internal static bool HasSameRows(IList<LogMessage> current, List<LogMessage> next)
         {
-            if (message == null || entry == null)
+            if (current == null || current.Count != next.Count)
                 return false;
-            return message.Time == entry.Time
-                   && (int)message.Level == (int)entry.Level
-                   && message.Thread == entry.Thread
-                   && message.ProcessID == entry.ProcessID
-                   && message.Logger == entry.Logger
-                   && message.Address == entry.Address
-                   && message.Message == entry.Message;
+            for (int i = 0; i < next.Count; i++)
+            {
+                if (!ReferenceEquals(current[i], next[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        private static bool IsSequenceAscending(IList<LogMessage> messages)
+        {
+            for (int i = 1; i < messages.Count; i++)
+            {
+                if (messages[i].Sequence <= messages[i - 1].Sequence)
+                    return false;
+            }
+            return true;
         }
     }
 }

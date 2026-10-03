@@ -15,6 +15,12 @@ namespace LogViewer.MVVM.Models
         public DateTime Time { get; set; }
 
         /// <summary>
+        /// <see cref="LogViewer.Core.Domain.LogEntry.Sequence"/> of the Core entry this row was projected from.
+        /// Maps a filtered Core snapshot back to the same row instances.
+        /// </summary>
+        public long Sequence { get; set; }
+
+        /// <summary>
         /// Log level.
         /// </summary>
         public eLogLevel Level { get; set; }
@@ -69,10 +75,18 @@ namespace LogViewer.MVVM.Models
         /// </summary>
         public string MessageWithThrowable => LogExportText.JoinMessageAndThrowable(Message, Throwable);
 
+        /// <summary>
+        /// Display snapshot of the receiver (color, name). Shared by every row of the same receiver,
+        /// see <see cref="LogViewer.Adapters.LogEntryProjector"/>; do not mutate it per row.
+        /// </summary>
         public Receiver Receiver { get; set; } = new Receiver();
 
-        private SolidColorBrush toggleMark = new SolidColorBrush(Colors.Transparent);
-        private SolidColorBrush rowBackground = new SolidColorBrush(Colors.Transparent);
+        // One frozen brush for every row: a log buffer holds up to millions of rows, and two
+        // brushes per row used to cost more memory than the log text itself.
+        private static readonly SolidColorBrush TransparentBrush = CreateTransparentBrush();
+
+        private SolidColorBrush toggleMark = TransparentBrush;
+        private SolidColorBrush rowBackground = TransparentBrush;
         private bool hasBookmark;
 
         public SolidColorBrush ToggleMark
@@ -113,10 +127,11 @@ namespace LogViewer.MVVM.Models
             }
         }
 
-        public LogMessage()
+        private static SolidColorBrush CreateTransparentBrush()
         {
-            toggleMark.Freeze();
-            rowBackground.Freeze();
+            var brush = new SolidColorBrush(Colors.Transparent);
+            brush.Freeze();
+            return brush;
         }
 
         public object Clone()
@@ -134,7 +149,7 @@ namespace LogViewer.MVVM.Models
                 Properties = this.Properties != null
                     ? new Dictionary<string, string>(this.Properties)
                     : new Dictionary<string, string>(),
-                Receiver = (Receiver)this.Receiver.Clone()
+                Receiver = this.Receiver
             };
         }
     }

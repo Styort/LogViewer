@@ -35,6 +35,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         private readonly Action _requestClean;
         private readonly HashSet<string> _availableLoggers = new HashSet<string>();
         private bool _isSearchLoggersProcess;
+        private bool _applyPending;
         private bool _isEnableClearSearchLoggers;
         private string _searchLoggerText = string.Empty;
         private string _loggerHighlightText = string.Empty;
@@ -267,7 +268,21 @@ namespace LogViewer.MVVM.ViewModels.Log
         }
 
         /// <summary>
+        /// Pushes exclusions collected by <see cref="BuildTreeByMessage"/> to Core in one
+        /// <see cref="FilterCoordinator.Apply"/>. Call after each batch.
+        /// </summary>
+        public void ApplyPendingFilter()
+        {
+            if (!_applyPending)
+                return;
+            _applyPending = false;
+            _filter.Apply();
+        }
+
+        /// <summary>
         /// Hot receive path: append a node if FullPath is new. Already seen paths only get a mark.
+        /// A logger that appears under a hidden parent is excluded here, but the filter is applied by
+        /// <see cref="ApplyPendingFilter"/>.
         /// </summary>
         public void BuildTreeByMessage(LogMessage log)
         {
@@ -305,12 +320,13 @@ namespace LogViewer.MVVM.ViewModels.Log
                 _filter.Loggers.Exclude(log.FullPath);
                 if (!_session.FilterCriteria.ShouldStoreInBuffer(log.FullPath))
                     _filter.Loggers.ExcludeFromBuffer(log.FullPath);
-                _filter.Apply();
+                // Each Apply refilters the whole buffer; a burst of new hidden loggers is applied once per batch.
+                _applyPending = true;
             }
 
             _availableLoggers.Add(log.FullPath);
 
-            var nodes = log.Logger.Split('.').ToList();
+            var nodes = (log.Logger ?? string.Empty).Split('.').ToList();
 
             if (!string.IsNullOrEmpty(log.ExecutableName))
             {
@@ -466,7 +482,11 @@ namespace LogViewer.MVVM.ViewModels.Log
                 if (checkedCount == node.Children.Count && mixedCount == 0)
                     state = true;
                 else if (checkedCount == 0 && mixedCount == 0)
-                    state = true;
+                    // Nothing visible. If the user unchecked Root itself ("Root" is in Don't Show), show it
+                    // unchecked: a checked Root here made the next click uncheck it again instead of showing
+                    // everything. A preset that hides everything present keeps Root checked, so loggers it
+                    // names that have not arrived yet are not hidden as children of an unchecked Root.
+                    state = excluded != null && excluded.Contains(RootLoggerPath) ? false : true;
                 else
                     state = null;
             }
@@ -493,9 +513,11 @@ namespace LogViewer.MVVM.ViewModels.Log
             return state;
         }
 
+        private const string RootLoggerPath = "Root";
+
         private static bool IsExcluded(IReadOnlyCollection<string> excluded, string path)
         {
-            if (string.IsNullOrEmpty(path) || path == "Root" || excluded == null)
+            if (string.IsNullOrEmpty(path) || path == RootLoggerPath || excluded == null)
                 return false;
             if (excluded.Contains(path))
                 return true;
@@ -529,7 +551,10 @@ namespace LogViewer.MVVM.ViewModels.Log
                     if (node.Parent == null)
                         _filter.Loggers.ClearAll();
                     else
+                    {
                         _filter.Loggers.IncludeSubtree(node.Logger, CollectChildPaths(node));
+                        _filter.Loggers.UnhideAncestors(CollectAncestorPaths(node));
+                    }
                 }
                 else
                     _filter.Loggers.ExcludeSubtree(node.Logger, CollectChildPaths(node));
@@ -860,7 +885,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             List<string> nodesStr = new List<string>();
             if (!string.IsNullOrEmpty(executableName))
                 nodesStr.Add(executableName);
-            nodesStr.AddRange(logger.Split('.'));
+            nodesStr.AddRange((logger ?? string.Empty).Split('.'));
 
             var parent = root;
             foreach (var node in nodesStr)
@@ -884,7 +909,7 @@ namespace LogViewer.MVVM.ViewModels.Log
             List<string> nodesStr = new List<string>();
             if (!string.IsNullOrEmpty(message.ExecutableName))
                 nodesStr.Add(message.ExecutableName);
-            nodesStr.AddRange(message.Logger.Split('.'));
+            nodesStr.AddRange((message.Logger ?? string.Empty).Split('.'));
 
             foreach (var nodeName in nodesStr)
             {
@@ -979,6 +1004,14 @@ namespace LogViewer.MVVM.ViewModels.Log
                 if (node.Children.Any())
                     CollapseChild(node.Children.ToList());
             }
+        }
+
+        private static List<string> CollectAncestorPaths(Node node)
+        {
+            var paths = new List<string>();
+            for (var parent = node.Parent; parent != null; parent = parent.Parent)
+                paths.Add(parent.Logger);
+            return paths;
         }
 
         private static List<string> CollectChildPaths(Node node)

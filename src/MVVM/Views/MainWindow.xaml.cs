@@ -49,6 +49,7 @@ namespace LogViewer.MVVM.Views
         {
             InitializeComponent();
             UpdateAutoScrollChrome();
+            logsViewKeeper = new ListViewViewKeeper(LogsListView, () => AutoScrollEnabled);
             TranslationSource.Instance.LanguageChanged += (_, __) => UpdateAutoScrollChrome();
 
             this.Loaded += (s, e) =>
@@ -286,14 +287,19 @@ namespace LogViewer.MVVM.Views
 
         private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // if autoscroll is on and the user clicked a log row, turn autoscroll off
-            if (AutoScrollEnabled)
-                AutoScrollEnabled = false;
-
             if (DataContext is LogViewModel viewModel)
             {
                 viewModel.SelectedLogs = LogsListView.SelectedItems.Cast<LogMessage>().ToList();
             }
+
+            // The keeper is putting the selection back after a filter replaced the list, or the selection was
+            // only cleared: neither is the user picking a row, so Follow stays on and nothing is scrolled.
+            if (logsViewKeeper.IsRestoring || e.AddedItems.Count == 0)
+                return;
+
+            // if autoscroll is on and the user clicked a log row, turn autoscroll off
+            if (AutoScrollEnabled)
+                AutoScrollEnabled = false;
 
             Task.Run(() =>
             {
@@ -308,6 +314,10 @@ namespace LogViewer.MVVM.Views
 
         private void LogsListView_OnScrollChanged(object sender, ScrollChangedEventArgs e)
         {
+            // Offset changes caused by replacing ItemsSource are not the user scrolling.
+            if (logsViewKeeper.IsRestoring)
+                return;
+
             // List growth (a batch of Add) changes the offset; that is not the user scrolling up.
             if (AutoScrollEnabled && LogsListView.Items.Count > 0 && e.VerticalChange < 0 && e.ExtentHeightChange == 0)
                 AutoScrollEnabled = false;
@@ -316,6 +326,9 @@ namespace LogViewer.MVVM.Views
             if (AutoScrollEnabled && LogsListView.Items.Count > 0)
                 LogsListView.ScrollIntoView(LogsListView.Items[LogsListView.Items.Count - 1]);
         }
+
+        // Keeps scroll position and selection when a filter replaces the Logs collection.
+        private readonly ListViewViewKeeper logsViewKeeper;
 
         #endregion
 

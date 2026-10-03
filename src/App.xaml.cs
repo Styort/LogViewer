@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Deployment.Application;
 using System.Diagnostics;
@@ -48,6 +49,7 @@ namespace LogViewer
 
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
 
             if (e.Args.Any(x => File.Exists(x) && (ArchiveLogExtractor.IsImportableFile(x) || SessionViewModel.IsSessionFile(x))))
             {
@@ -137,17 +139,93 @@ namespace LogViewer
             });
         }
 
+        #region Unhandled exceptions
+
+        // More UI exceptions than this inside the window means the app is stuck in a failing loop
+        // (a throwing binding, a render callback); showing a dialog for each would never end.
+        private const int MaxUiErrorsInWindow = 5;
+        private static readonly TimeSpan UiErrorWindow = TimeSpan.FromSeconds(10);
+        private readonly Queue<DateTime> _recentUiErrors = new Queue<DateTime>();
+        private bool _isShowingErrorDialog;
+
+        /// <summary>Matches the NLog file target in App.config (<c>${basedir}/logs</c>).</summary>
+        private static string AppLogDirectory => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "logs");
+
+        /// <summary>
+        /// A non-UI thread crashed. The CLR terminates the process after this handler, so the only things
+        /// left to do are to flush the log and tell the user why the window disappears.
+        /// </summary>
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            logger.Fatal($"Unhandled exception {e.ExceptionObject as Exception}");
+            var exception = e.ExceptionObject as Exception;
+            logger.Fatal(exception, "Unhandled exception on a background thread");
+            LogManager.Flush();
+            TryShowError(string.Format(Locals.FatalErrorMessage, exception?.Message, AppLogDirectory), MessageBoxImage.Stop);
             Environment.Exit(1);
         }
 
+        /// <summary>
+        /// A UI command or binding threw. The buffer may hold hours of logs that exist nowhere else, so the
+        /// error is shown and handled instead of closing the window; only a burst of repeated failures exits.
+        /// </summary>
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            logger.Fatal($"Unhandled Exception: {e.Exception}");
-            Environment.Exit(2);
+            logger.Error(e.Exception, "Unhandled exception on the UI thread");
+            e.Handled = true;
+
+            var now = DateTime.UtcNow;
+            _recentUiErrors.Enqueue(now);
+            while (_recentUiErrors.Count > 0 && now - _recentUiErrors.Peek() > UiErrorWindow)
+                _recentUiErrors.Dequeue();
+
+            if (_recentUiErrors.Count > MaxUiErrorsInWindow)
+            {
+                logger.Fatal("Too many unhandled UI exceptions in a row, shutting down");
+                LogManager.Flush();
+                TryShowError(string.Format(Locals.FatalErrorMessage, e.Exception.Message, AppLogDirectory), MessageBoxImage.Stop);
+                Environment.Exit(2);
+                return;
+            }
+
+            // The modal dialog pumps messages; a second failure while it is open is only logged.
+            if (_isShowingErrorDialog)
+                return;
+
+            _isShowingErrorDialog = true;
+            try
+            {
+                TryShowError(string.Format(Locals.UnhandledErrorMessage, e.Exception.Message, AppLogDirectory), MessageBoxImage.Error);
+            }
+            finally
+            {
+                _isShowingErrorDialog = false;
+            }
         }
+
+        /// <summary>
+        /// Fire-and-forget tasks (for example <c>var _ = RefreshAsync()</c>) lose their exceptions otherwise.
+        /// On .NET 4.5+ an unobserved exception does not terminate the process, so logging is enough.
+        /// </summary>
+        private static void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            logger.Error(e.Exception, "Unobserved task exception");
+            e.SetObserved();
+        }
+
+        private static void TryShowError(string message, MessageBoxImage icon)
+        {
+            try
+            {
+                MessageBox.Show(message, Locals.Error, MessageBoxButton.OK, icon);
+            }
+            catch (Exception dialogException)
+            {
+                // The error is already logged; a broken dispatcher must not hide the original failure.
+                logger.Warn(dialogException, "Could not show the error dialog");
+            }
+        }
+
+        #endregion
 
         #region File Assotiation
 

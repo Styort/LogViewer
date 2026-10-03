@@ -2284,6 +2284,30 @@ namespace LogViewer.Localization {
             }
         }
 
+        internal static string UnhandledErrorMessage {
+            get {
+                return ResourceManager.GetString("UnhandledErrorMessage", resourceCulture);
+            }
+        }
+
+        internal static string FatalErrorMessage {
+            get {
+                return ResourceManager.GetString("FatalErrorMessage", resourceCulture);
+            }
+        }
+
+        internal static string ExportFailed {
+            get {
+                return ResourceManager.GetString("ExportFailed", resourceCulture);
+            }
+        }
+
+        internal static string ImportFailed {
+            get {
+                return ResourceManager.GetString("ImportFailed", resourceCulture);
+            }
+        }
+
         internal static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);

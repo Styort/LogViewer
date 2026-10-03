@@ -10,10 +10,21 @@ using LogViewer.Core.Abstractions;
 
 namespace LogViewer.Core.Services
 {
+    /// <remarks>
+    /// Stop closes the socket, which wakes the blocked <c>Receive</c> with an exception. Start may run before
+    /// that thread has noticed, so each receive thread owns its socket and remote endpoint as locals and exits
+    /// as soon as <c>_udpClient</c> no longer refers to its socket. With shared fields a quick
+    /// Stop → Start left two threads reading one socket and writing one endpoint, so a datagram could be
+    /// attributed to another sender.
+    /// </remarks>
     public class UdpLogSource : INetworkLogSource
     {
-        private UdpClient _udpClient;
-        private IPEndPoint _remoteIpEndPoint;
+        // The default Windows buffer (64 KB) overflows within milliseconds of a burst if this thread is
+        // briefly delayed (GC, buffer trim); overflowing datagrams are dropped silently by the OS.
+        internal const int ReceiveBufferBytes = 4 * 1024 * 1024;
+
+        private volatile UdpClient _udpClient;
+        private Encoding _encoding;
         private readonly IReceiverConfig _config;
         private readonly ILogParser _parser;
         private readonly IEnumerable<string> _ignoredIps;
@@ -41,8 +52,19 @@ namespace LogViewer.Core.Services
             errorMessage = null;
             try
             {
-                _udpClient = new UdpClient(_config.Port);
-                _remoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                // Validated here, not in the receive thread: an unknown name from a hand-edited settings.xml
+                // threw on a background thread and terminated the process.
+                _encoding = Encoding.GetEncoding(string.IsNullOrEmpty(_config.Encoding) ? "UTF-8" : _config.Encoding);
+                var client = new UdpClient(_config.Port);
+                try
+                {
+                    client.Client.ReceiveBufferSize = ReceiveBufferBytes;
+                }
+                catch (SocketException)
+                {
+                    // Not fatal: the OS may cap the size; receive still works with the default buffer.
+                }
+                _udpClient = client;
                 return true;
             }
             catch (SocketException ex)
@@ -69,31 +91,44 @@ namespace LogViewer.Core.Services
             if (_running)
                 return;
 
+            var client = _udpClient;
+            var encoding = _encoding;
+            if (client == null || encoding == null)
+                return;
+
             _running = true;
-            _receiveThread = new Thread(ReceiveLoop) { IsBackground = true };
+            _receiveThread = new Thread(() => ReceiveLoop(client, encoding)) { IsBackground = true };
             _receiveThread.Start();
         }
 
         public void Stop()
         {
             _running = false;
+            var client = _udpClient;
+            _udpClient = null;
             try
             {
-                _udpClient?.Close();
-                _udpClient = null;
+                client?.Close();
             }
             catch { }
         }
 
-        private void ReceiveLoop()
+        private bool IsCurrent(UdpClient client)
         {
-            var encoding = Encoding.GetEncoding(_config.Encoding ?? "UTF-8");
-            while (_running && _udpClient != null)
+            return _running && ReferenceEquals(client, _udpClient);
+        }
+
+        private void ReceiveLoop(UdpClient client, Encoding encoding)
+        {
+            var remoteEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            while (IsCurrent(client))
             {
                 try
                 {
-                    byte[] receiveBytes = _udpClient.Receive(ref _remoteIpEndPoint);
-                    string remoteAddress = _remoteIpEndPoint.Address.ToString();
+                    byte[] receiveBytes = client.Receive(ref remoteEndPoint);
+                    if (!IsCurrent(client))
+                        break;
+                    string remoteAddress = remoteEndPoint.Address.ToString();
                     if (_ignoredIps.Any(ip => !string.IsNullOrEmpty(ip) && remoteAddress.IndexOf(ip, StringComparison.OrdinalIgnoreCase) >= 0))
                         continue;
 
@@ -110,7 +145,8 @@ namespace LogViewer.Core.Services
                 }
                 catch (SocketException)
                 {
-                    // ignore receive errors when stopping
+                    // Closing the socket in Stop lands here; IsCurrent ends the loop. Otherwise it is a
+                    // per-datagram error (for example WSAECONNRESET after an ICMP port unreachable).
                 }
                 catch (Exception)
                 {

@@ -1,5 +1,6 @@
 # LogViewer
 
+[![build](https://github.com/Styort/LogViewer/actions/workflows/build.yml/badge.svg)](https://github.com/Styort/LogViewer/actions/workflows/build.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://sourceforge.net/projects/styort-logviewer/)
@@ -141,7 +142,14 @@ Settings — general, receivers, ignored addresses:
 
 ## Build
 
-Open `src/LogViewer.sln` in Visual Studio 2022 with the **.NET desktop development** workload, restore NuGet packages, and build. The app targets **.NET Framework 4.8**.
+Open `src/LogViewer.sln` in Visual Studio 2022 or later with the **.NET desktop development** workload, restore NuGet packages, and build. The app targets **.NET Framework 4.8**.
+
+The WPF host is a classic (non-SDK) project with `packages.config`, so the build needs Visual Studio's MSBuild; `dotnet build` cannot compile it. From a Developer Command Prompt:
+
+```
+msbuild src/LogViewer.sln -t:Restore -p:RestorePackagesConfig=true
+msbuild src/LogViewer.sln -p:Configuration=Release
+```
 
 ```
 src/LogViewer.sln
@@ -153,12 +161,19 @@ src/LogViewer.App.Tests/        view-model tests
 
 Domain logic belongs in `LogViewer.Core`. The WPF project stays on UI, settings, and commands.
 
+`src/lib/` holds the one third-party binary that has no NuGet package (see its README).
+
+### Tests
+
+Run them from Test Explorer in Visual Studio, or after the MSBuild build above:
+
 ```
-dotnet test src/LogViewer.Core.Tests/LogViewer.Core.Tests.csproj
-dotnet test src/LogViewer.App.Tests/LogViewer.App.Tests.csproj
+vstest.console.exe src/LogViewer.Core.Tests/bin/Release/net48/LogViewer.Core.Tests.dll src/LogViewer.App.Tests/bin/Release/net48/LogViewer.App.Tests.dll
 ```
 
-Tests cover parsers, filtering, receivers, and view-model behavior. They do not cover XAML, ClickOnce, or a live UDP socket.
+`dotnet test` works for `LogViewer.Core.Tests` only; `LogViewer.App.Tests` references the WPF project and has to be built by MSBuild. CI ([`.github/workflows/build.yml`](.github/workflows/build.yml)) runs the same build and both test assemblies on every push and pull request.
+
+Tests cover parsers (including concurrent parsing), filtering, UDP/TCP receivers on loopback, receiver restart, and view-model behavior. They do not cover XAML or ClickOnce updates.
 
 ## License
 

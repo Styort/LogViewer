@@ -6,16 +6,21 @@ using LogViewer.MVVM.Models;
 namespace LogViewer.Adapters
 {
     /// <summary>
-    /// Converts Core LogEntry to UI LogMessage and back (minimal) for filtering. Resolves Receiver (color, name) from list by port and transport.
+    /// Converts Core LogEntry to UI LogMessage and back (minimal) for filtering.
     /// </summary>
+    /// <remarks>
+    /// <see cref="LogEntry.Properties"/> is shared by reference in both directions, not copied: entries are
+    /// never mutated after they are received, and a per-row dictionary copy doubled the memory of MDC data.
+    /// </remarks>
     public static class LogEntryConverter
     {
-        public static LogMessage ToLogMessage(LogEntry entry, IList<Receiver> receivers)
+        /// <param name="receiver">Display snapshot shared by every row of this receiver (see <see cref="LogEntryProjector"/>).</param>
+        public static LogMessage ToLogMessage(LogEntry entry, Receiver receiver)
         {
             if (entry == null) return null;
-            var receiver = Receiver.Find(receivers, entry.ReceiverPort, entry.ReceiverTransport) ?? new Receiver();
             var msg = new LogMessage
             {
+                Sequence = entry.Sequence,
                 Time = entry.Time,
                 Level = (eLogLevel)(int)entry.Level,
                 Logger = entry.Logger,
@@ -25,10 +30,8 @@ namespace LogViewer.Adapters
                 Address = entry.Address,
                 ProcessID = entry.ProcessID,
                 Throwable = entry.Throwable,
-                Properties = entry.Properties != null
-                    ? new Dictionary<string, string>(entry.Properties)
-                    : new Dictionary<string, string>(),
-                Receiver = (Receiver)receiver.Clone()
+                Properties = entry.Properties ?? new Dictionary<string, string>(),
+                Receiver = receiver ?? new Receiver()
             };
             return msg;
         }
@@ -51,9 +54,7 @@ namespace LogViewer.Adapters
                 ReceiverPort = message.Receiver?.Port ?? 0,
                 ReceiverTransport = message.Receiver?.Transport ?? ReceiverTransport.Udp,
                 Throwable = message.Throwable,
-                Properties = message.Properties != null
-                    ? new Dictionary<string, string>(message.Properties)
-                    : new Dictionary<string, string>()
+                Properties = message.Properties ?? new Dictionary<string, string>()
             };
         }
     }

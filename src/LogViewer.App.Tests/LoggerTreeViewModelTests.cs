@@ -164,6 +164,102 @@ namespace LogViewer.App.Tests
             Assert.That(env.Coordinator.Loggers.IncludeOnlyPaths, Does.Contain("ip.Keep"));
         }
 
+        [Test]
+        public void RootCleared_CheckingNestedLogger_ChecksItAndDescendants_AncestorsMixed()
+        {
+            var env = TreeEnv.Create();
+            var t = BuildAddressTree(env);
+
+            Click(env, env.Tree.Loggers[0], false);
+            Assert.That(t.Child.IsChecked, Is.False);
+
+            Click(env, t.App, true);
+            env.Tree.SyncCheckboxesFromExclusions();
+
+            Assert.That(t.App.IsChecked, Is.True, "the clicked logger");
+            Assert.That(t.Child.IsChecked, Is.True, "its descendants");
+            Assert.That(t.Other.IsChecked, Is.False);
+            Assert.That(t.Address.IsChecked, Is.Null, "ancestors are indeterminate");
+            Assert.That(env.Tree.Loggers[0].IsChecked, Is.Not.False);
+            Assert.That(env.Coordinator.Loggers.ExcludedPaths, Does.Not.Contain("10.0.0.1.App"));
+            Assert.That(env.Coordinator.Loggers.ExcludedPaths, Does.Contain("10.0.0.1.Other"));
+        }
+
+        [Test]
+        public void RootCleared_CheckingRootAgain_SelectsWholeTree()
+        {
+            var env = TreeEnv.Create();
+            var t = BuildAddressTree(env);
+
+            Click(env, env.Tree.Loggers[0], false);
+            Click(env, env.Tree.Loggers[0], true);
+            env.Tree.SyncCheckboxesFromExclusions();
+
+            Assert.That(new[] { env.Tree.Loggers[0], t.Address, t.App, t.Child, t.Other }.Select(n => n.IsChecked),
+                Is.All.True);
+            Assert.That(env.Coordinator.Loggers.ExcludedPaths, Is.Empty);
+        }
+
+        [Test]
+        public void RootUncheckedThenClickedAgain_LikeTheUi_SelectsWholeTree()
+        {
+            var env = TreeEnv.Create();
+            var t = BuildAddressTree(env);
+            var root = env.Tree.Loggers[0];
+
+            UiClick(env, root);
+            env.Tree.SyncCheckboxesFromExclusions();   // what the presenter does after the refilter
+            Assert.That(root.IsChecked, Is.False, "Root shows that everything is hidden");
+
+            UiClick(env, root);
+            env.Tree.SyncCheckboxesFromExclusions();
+
+            Assert.That(new[] { root, t.Address, t.App, t.Child, t.Other }.Select(n => n.IsChecked), Is.All.True);
+            Assert.That(env.Coordinator.Loggers.ExcludedPaths, Is.Empty);
+        }
+
+        /// <summary>
+        /// What a two-state WPF CheckBox does on click: checked → unchecked, unchecked → checked,
+        /// indeterminate → unchecked.
+        /// </summary>
+        private static void UiClick(TreeEnv env, Node node)
+        {
+            bool next = node.IsChecked != true && node.IsChecked.HasValue;
+            Click(env, node, next);
+        }
+
+        /// <summary>A checkbox click as MainWindow does it: mark the clicked box, set it, run the command.</summary>
+        private static void Click(TreeEnv env, Node node, bool isChecked)
+        {
+            CheckBoxId.CurrentСheckBoxId = node.Id;
+            node.IsChecked = isChecked;
+            env.Tree.TreeViewElementCheckCommand.Execute(node);
+        }
+
+        private static AddressTree BuildAddressTree(TreeEnv env)
+        {
+            env.Tree.SeedAvailableLoggers(new[] { "10.0.0.1.App", "10.0.0.1.App.Child", "10.0.0.1.Other" });
+            var root = env.Tree.Loggers[0];
+            var address = Child(root, "10.0.0.1", "10.0.0.1");
+            address.IsRoot = true;
+            var app = Child(address, "App", "10.0.0.1.App");
+            var child = Child(app, "Child", "10.0.0.1.App.Child");
+            var other = Child(address, "Other", "10.0.0.1.Other");
+            root.Children.Add(address);
+            address.Children.Add(app);
+            app.Children.Add(child);
+            address.Children.Add(other);
+            return new AddressTree { Address = address, App = app, Child = child, Other = other };
+        }
+
+        private sealed class AddressTree
+        {
+            public Node Address;
+            public Node App;
+            public Node Child;
+            public Node Other;
+        }
+
         private static Node Child(Node parent, string text, string logger)
         {
             return new Node(parent, text) { Logger = logger, IsChecked = true };

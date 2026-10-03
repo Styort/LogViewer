@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using LogViewer.Core.Domain;
 using LogViewer.Core.Abstractions;
 
@@ -14,6 +15,7 @@ namespace LogViewer.Core.State
         private readonly object _lock = new object();
         private readonly List<LogEntry> _allEntries = new List<LogEntry>();
         private readonly HashSet<LoggerKey> _uniqueLoggers = new HashSet<LoggerKey>();
+        private long _lastSequence;
 
         public FilterCriteria FilterCriteria { get; } = new FilterCriteria();
 
@@ -60,6 +62,7 @@ namespace LogViewer.Core.State
                     removedCount = toRemove;
                     RebuildUniqueLoggers();
                 }
+                entry.Sequence = ++_lastSequence;
                 _allEntries.Add(entry);
                 _uniqueLoggers.Add(LoggerKey.From(entry));
             }
@@ -87,9 +90,12 @@ namespace LogViewer.Core.State
                 }
                 if (removedCount > 0)
                     RebuildUniqueLoggers();
-                _allEntries.AddRange(list);
                 for (int i = 0; i < list.Count; i++)
+                {
+                    list[i].Sequence = ++_lastSequence;
                     _uniqueLoggers.Add(LoggerKey.From(list[i]));
+                }
+                _allEntries.AddRange(list);
             }
 
             SessionChanged?.Invoke(this, new LogSessionChangedEventArgs { AddedEntries = list, RemovedCount = removedCount });
@@ -107,26 +113,54 @@ namespace LogViewer.Core.State
 
         public IReadOnlyList<LogEntry> GetAllEntries()
         {
+            return GetSnapshot(out _);
+        }
+
+        /// <summary>
+        /// Copy of the buffer plus the last <see cref="LogEntry.Sequence"/> assigned so far, read atomically.
+        /// Every entry stored later has a greater sequence.
+        /// </summary>
+        public IReadOnlyList<LogEntry> GetSnapshot(out long lastSequence)
+        {
             lock (_lock)
             {
+                lastSequence = _lastSequence;
                 return _allEntries.ToList();
             }
         }
 
+        /// <summary>
+        /// Filters a snapshot. Only the copy holds the lock: the filter pass is O(N) with regex search and
+        /// must not block receive threads, which need the same lock for every <see cref="AddEntry"/>.
+        /// </summary>
         public IReadOnlyList<LogEntry> GetFilteredEntries(ILogFilter filter)
         {
             if (filter == null) return new List<LogEntry>();
-            lock (_lock)
-            {
-                var result = new List<LogEntry>();
-                for (int i = 0; i < _allEntries.Count; i++)
-                {
-                    var e = _allEntries[i];
-                    if (filter.ShouldInclude(e, FilterCriteria))
-                        result.Add(e);
-                }
+            return Filter(GetAllEntries(), filter, FilterCriteria, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Applies <paramref name="filter"/> to <paramref name="entries"/> without touching the session lock.
+        /// Checks <paramref name="cancellation"/> periodically so a superseded refilter stops early.
+        /// </summary>
+        public static List<LogEntry> Filter(
+            IReadOnlyList<LogEntry> entries,
+            ILogFilter filter,
+            FilterCriteria criteria,
+            CancellationToken cancellation)
+        {
+            var result = new List<LogEntry>();
+            if (entries == null || filter == null)
                 return result;
+            for (int i = 0; i < entries.Count; i++)
+            {
+                if ((i & 0x3FF) == 0)
+                    cancellation.ThrowIfCancellationRequested();
+                var e = entries[i];
+                if (filter.ShouldInclude(e, criteria))
+                    result.Add(e);
             }
+            return result;
         }
 
         public void RemoveEntriesBySource(string sourceAddress)

@@ -141,14 +141,14 @@ namespace LogViewer.App.Tests
             coordinator.ApplyPreset(new FilterPreset
             {
                 Name = "keep",
-                IncludedLoggerFullPaths = new List<string> { "ip.Payments" }
-            }, DateTime.Now, new[] { "ip.Other", "ip.Payments" });
+                IncludedLoggerFullPaths = new List<string> { "192.168.0.1.Payments" }
+            }, DateTime.Now, new[] { "192.168.0.1.Other", "192.168.0.1.Payments" });
 
-            var captured = coordinator.CapturePreset("keep", new[] { "ip.Other", "ip.Payments" });
+            var captured = coordinator.CapturePreset("keep", new[] { "192.168.0.1.Other", "192.168.0.1.Payments" });
             Assert.That(captured.IncludedLoggerFullPaths, Is.EqualTo(new[] { "Payments" }));
             Assert.That(captured.ExcludedLoggerFullPaths, Is.Empty);
             Assert.That(session.FilterCriteria.IncludedLoggerFullPaths, Does.Contain("Payments"));
-            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("ip.Other"));
+            Assert.That(session.FilterCriteria.ExcludedLoggerFullPaths, Does.Contain("192.168.0.1.Other"));
         }
 
         [Test]

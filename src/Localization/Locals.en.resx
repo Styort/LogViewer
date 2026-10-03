@@ -1000,4 +1000,26 @@ Not saved: received messages, bookmarks, Don't Receive, or receiver settings. Pr
   <data name="HeaderFollowOff" xml:space="preserve">
     <value>Follow: off</value>
   </data>
+  <data name="UnhandledErrorMessage" xml:space="preserve">
+    <value>An unexpected error occurred:
+{0}
+
+Details were written to the application log:
+{1}
+
+The application keeps running. Save the session if the list looks wrong.</value>
+  </data>
+  <data name="FatalErrorMessage" xml:space="preserve">
+    <value>A fatal error occurred and Log Viewer must close:
+{0}
+
+Details were written to the application log:
+{1}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Could not export logs to the file: {0}</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Could not import the files: {0}</value>
+  </data>
 </root>

@@ -38,7 +38,7 @@ namespace LogViewer.App.Tests
     {
         public string CommentToReturn = "note";
         public bool PromptCommentResult = true;
-        public DateTime? TimestampToReturn;
+        public DateTime? TimestampToReturn { get; set; }
         public TimeIntervalDialogResult IntervalToReturn = new TimeIntervalDialogResult { Confirmed = false };
 
         public string LastInformation;
@@ -108,9 +108,9 @@ namespace LogViewer.App.Tests
         public string SaveFile(string defaultExt, string filter, string fileName) => SaveFilePath;
         public void OpenFolder(string directoryPath) { }
 
-        public string[] OpenFilesResult;
+        public string[] OpenFilesResult { get; set; }
         public string OpenFilePath;
-        public string SaveFilePath;
+        public string SaveFilePath { get; set; }
     }
 
     internal sealed class FakeClipboard : IClipboardService

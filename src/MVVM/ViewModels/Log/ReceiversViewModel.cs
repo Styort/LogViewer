@@ -82,7 +82,10 @@ namespace LogViewer.MVVM.ViewModels.Log
         public RelayCommand StartCommand => _startCommand ?? (_startCommand = new RelayCommand(Start));
         public RelayCommand PauseCommand => _pauseCommand ?? (_pauseCommand = new RelayCommand(Pause));
 
-        /// <summary>Start all live sources. Apply the filter first so Don't Receive is in effect from the first packet.</summary>
+        /// <summary>
+        /// Start the live UDP/TCP sources. Apply the filter first so Don't Receive is in effect from the first packet.
+        /// File follow sources are not touched: they have their own Start/Stop file reading commands.
+        /// </summary>
         public void Start()
         {
             if (!_networkSources.Any())
@@ -91,29 +94,36 @@ namespace LogViewer.MVVM.ViewModels.Log
                 return;
             }
             _filter.Apply();
-            _processing.StartAllSources();
+            StartNetworkSources();
             StartIsEnabled = false;
         }
 
         /// <summary>Stop sockets and flush the batcher, otherwise more rows appear after Pause.</summary>
         public void Pause()
         {
-            _processing.StopAllSources();
+            foreach (var source in _networkSources)
+                source.Stop();
             _adapter.FlushPending();
             StartIsEnabled = true;
         }
 
-        /// <summary>After settings: new ports/transport/ignore-IP. Empty list is a no-op; file sources are not touched.</summary>
+        /// <summary>
+        /// After settings or "Ignore this IP": new ports/transport/ignored IPs need new sockets.
+        /// Only network sources are replaced; file follow sources stay registered and keep running.
+        /// If receive was running, it is running again afterwards — otherwise the UI shows "running"
+        /// while nothing is received.
+        /// </summary>
         public void RecreateUdpSources()
         {
-            var results = _sourceFactory.CreateFromSettings(_receivers);
-            if (results == null || !results.Any())
-                return;
+            bool wasRunning = !StartIsEnabled;
 
-            // Historically: a non-empty live list removes all sources, including file follow.
-            _processing.RemoveAllSources();
+            // Old sources go away even when the new list is empty: a receiver disabled in Settings
+            // must not keep its socket and start again on the next Start.
+            foreach (var source in _networkSources)
+                _processing.RemoveSource(source);
             _networkSources.Clear();
 
+            var results = _sourceFactory.CreateFromSettings(_receivers) ?? new List<LogSourceCreationResult>();
             foreach (var result in results)
             {
                 string errorMessage;
@@ -125,6 +135,22 @@ namespace LogViewer.MVVM.ViewModels.Log
                 _processing.AddSource(result.Source);
                 _networkSources.Add(result.Source);
             }
+
+            if (!wasRunning)
+                return;
+            if (_networkSources.Count > 0)
+                StartNetworkSources();
+            else
+                StartIsEnabled = true;
+        }
+
+        /// <summary>Live UDP/TCP sources registered with the processing service (tests and diagnostics).</summary>
+        internal IReadOnlyList<INetworkLogSource> NetworkSources => _networkSources;
+
+        private void StartNetworkSources()
+        {
+            foreach (var source in _networkSources)
+                source.Start();
         }
 
         /// <summary>Column width at start: compares Color, not ColorString.</summary>

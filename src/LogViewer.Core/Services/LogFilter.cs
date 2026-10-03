@@ -6,8 +6,7 @@ namespace LogViewer.Core.Services
 {
     public class LogFilter : ILogFilter
     {
-        private string _matcherKey;
-        private SearchMatcher _cachedMatcher;
+        private volatile MatcherCache _matcherCache;
 
         /// <summary>
         /// Whether <paramref name="entry"/> should appear in the filtered list.
@@ -73,16 +72,31 @@ namespace LogViewer.Core.Services
                 + "\u001f" + criteria.MatchCase
                 + "\u001f" + criteria.UseRegex
                 + "\u001f" + criteria.MatchWholeWord;
-            if (_cachedMatcher == null || _matcherKey != key)
+            // Receive threads and the background refilter call this concurrently. Key and matcher are
+            // published as one immutable object so a reader never pairs one key with another matcher.
+            var cache = _matcherCache;
+            if (cache == null || cache.Key != key)
             {
-                _cachedMatcher = SearchMatcher.Create(
+                cache = new MatcherCache(key, SearchMatcher.Create(
                     criteria.SearchText,
                     criteria.MatchCase,
                     criteria.UseRegex,
-                    criteria.MatchWholeWord);
-                _matcherKey = key;
+                    criteria.MatchWholeWord));
+                _matcherCache = cache;
             }
-            return _cachedMatcher;
+            return cache.Matcher;
+        }
+
+        private sealed class MatcherCache
+        {
+            public MatcherCache(string key, SearchMatcher matcher)
+            {
+                Key = key;
+                Matcher = matcher;
+            }
+
+            public string Key { get; }
+            public SearchMatcher Matcher { get; }
         }
 
         private static bool LoggerIsShown(string fullPath, FilterCriteria criteria)

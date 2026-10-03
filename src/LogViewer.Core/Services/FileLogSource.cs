@@ -7,6 +7,11 @@ using LogViewer.Core.Abstractions;
 
 namespace LogViewer.Core.Services
 {
+    /// <remarks>
+    /// Each Start creates a new run token. The poll thread sleeps up to a second, so after a quick
+    /// Stop → Start the old thread wakes up while <c>_running</c> is true again; it compares its token with
+    /// the current one and exits instead of tailing the file in parallel (which duplicated lines).
+    /// </remarks>
     public class FileLogSource : ILogSource
     {
         private readonly string _filePath;
@@ -14,6 +19,7 @@ namespace LogViewer.Core.Services
         private readonly TemplateLogParser _parser;
         private readonly Encoding _encoding;
         private volatile bool _running;
+        private volatile object _run;
         private Thread _watchThread;
         private long _position;
 
@@ -28,6 +34,9 @@ namespace LogViewer.Core.Services
 
         public void Start()
         {
+            if (_running)
+                return;
+
             _position = 0;
             try
             {
@@ -36,20 +45,28 @@ namespace LogViewer.Core.Services
             }
             catch { }
 
+            var run = new object();
+            _run = run;
             _running = true;
-            _watchThread = new Thread(WatchLoop) { IsBackground = true };
+            _watchThread = new Thread(() => WatchLoop(run)) { IsBackground = true };
             _watchThread.Start();
         }
 
         public void Stop()
         {
             _running = false;
+            _run = null;
             _watchThread = null;
         }
 
-        private void WatchLoop()
+        private bool IsCurrent(object run)
         {
-            while (_running)
+            return _running && ReferenceEquals(run, _run);
+        }
+
+        private void WatchLoop(object run)
+        {
+            while (IsCurrent(run))
             {
                 try
                 {
@@ -59,8 +76,10 @@ namespace LogViewer.Core.Services
 
                     if (currentLength > _position)
                     {
-                        ReadNewContent(_position);
-                        _position = currentLength;
+                        // The writer may append between measuring the length and reading; the read goes
+                        // to the real end, so continue from where it stopped, not from the stale length.
+                        long readTo = ReadNewContent(_position);
+                        _position = readTo > _position ? readTo : currentLength;
                     }
                 }
                 catch (Exception)
@@ -72,7 +91,8 @@ namespace LogViewer.Core.Services
             }
         }
 
-        private void ReadNewContent(long fromPosition)
+        /// <returns>Stream position after the read, or -1 if the file could not be read.</returns>
+        private long ReadNewContent(long fromPosition)
         {
             try
             {
@@ -88,11 +108,13 @@ namespace LogViewer.Core.Services
                         entry => LogReceived?.Invoke(this, new LogEntryReceivedEventArgs { Entry = entry }),
                         CancellationToken.None,
                         null);
+                    return stream.Position;
                 }
             }
             catch (Exception)
             {
                 // raise error entry or ignore
+                return -1;
             }
         }
 

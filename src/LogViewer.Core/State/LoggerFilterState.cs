@@ -71,6 +71,23 @@ namespace LogViewer.Core.State
         }
 
         /// <summary>
+        /// Showing a nested logger again after its ancestors were hidden (for example, after clearing Root):
+        /// the ancestors become partly visible — indeterminate in the tree — so they leave Don't Show.
+        /// Otherwise the tree still treats the logger as hidden through its ancestor while the filter,
+        /// which matches exact paths, already shows its rows. Don't Receive on an ancestor is kept.
+        /// </summary>
+        public void UnhideAncestors(IEnumerable<string> ancestorPaths)
+        {
+            if (ancestorPaths == null)
+                return;
+            foreach (var path in ancestorPaths)
+            {
+                if (!string.IsNullOrEmpty(path) && !_excludedWithBuffer.Contains(path))
+                    _excluded.Remove(path);
+            }
+        }
+
+        /// <summary>
         /// Exclude every available path that is not this node or a descendant. Clears Don't Receive.
         /// Root path shows everything.
         /// </summary>

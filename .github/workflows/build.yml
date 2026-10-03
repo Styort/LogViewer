@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    # WPF on .NET Framework 4.8: needs Visual Studio MSBuild, `dotnet build` cannot compile the legacy WPF csproj.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+      - uses: nuget/setup-nuget@v2
+      - uses: darenm/Setup-VSTest@v1.3
+
+      - name: Restore
+        # nuget.exe restores both packages.config (WPF host) and PackageReference (Core, tests).
+        run: nuget restore src/LogViewer.sln
+
+      - name: Build
+        run: msbuild src/LogViewer.sln -p:Configuration=Release -p:TreatWarningsAsErrors=true -m -nologo -v:m
+
+      - name: Test
+        run: >
+          vstest.console.exe
+          src/LogViewer.Core.Tests/bin/Release/net48/LogViewer.Core.Tests.dll
+          src/LogViewer.App.Tests/bin/Release/net48/LogViewer.App.Tests.dll
+          /logger:trx /ResultsDirectory:TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/
+
+      - name: Upload app
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogViewer
+          path: |
+            src/bin/Release/*.exe
+            src/bin/Release/*.dll
+            src/bin/Release/*.config
+            src/bin/Release/ReleaseNotes.xml

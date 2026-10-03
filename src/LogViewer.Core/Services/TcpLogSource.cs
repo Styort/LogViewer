@@ -33,6 +33,7 @@ namespace LogViewer.Core.Services
         private readonly object _clientsLock = new object();
         private readonly List<TcpClient> _clients = new List<TcpClient>();
         private TcpListener _listener;
+        private volatile Encoding _encoding;
         private volatile bool _running;
         private Thread _acceptThread;
 
@@ -53,6 +54,9 @@ namespace LogViewer.Core.Services
             errorMessage = null;
             try
             {
+                // Validated before any thread starts: an unknown name from a hand-edited settings.xml used to
+                // throw in the client thread and terminate the process.
+                _encoding = Encoding.GetEncoding(string.IsNullOrEmpty(_config.Encoding) ? "UTF-8" : _config.Encoding);
                 _listener = new TcpListener(IPAddress.Any, _config.Port);
                 _listener.Start();
                 return true;
@@ -160,7 +164,7 @@ namespace LogViewer.Core.Services
 
         private void ReadClient(TcpClient client, string remoteAddress)
         {
-            var encoding = Encoding.GetEncoding(_config.Encoding ?? "UTF-8");
+            var encoding = _encoding ?? Encoding.UTF8;
             var decoder = encoding.GetDecoder();
             var splitter = new Log4jXmlFrameSplitter();
             var bytes = new byte[4096];

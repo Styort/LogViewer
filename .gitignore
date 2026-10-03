@@ -1,0 +1,33 @@
+# Visual Studio / Rider
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.psess
+*.vsp
+*.vspx
+*.vsps
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+publish/
+TestResults/
+*.pdb
+
+# NuGet (packages.config restore folder)
+packages/
+*.nupkg
+
+# ClickOnce signing keys must never be committed
+*.pfx
+*.snk
+
+# Local tooling
+.cursor/

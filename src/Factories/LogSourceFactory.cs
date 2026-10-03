@@ -9,7 +9,7 @@ using LogViewer.Services;
 namespace LogViewer.Factories
 {
     /// <summary>
-    /// Creates UDP or TCP log sources from UI settings. ViewModel calls this then TryInit/AddSource/StartAllSources.
+    /// Creates UDP or TCP log sources from UI settings. ViewModel calls this then TryInit/AddSource/Start.
     /// Ignored IPs are resolved once for all receivers.
     /// </summary>
     public class LogSourceFactory

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Xml;
 using System.Text;
 using LogViewer.Core.Domain;
@@ -14,30 +15,38 @@ namespace LogViewer.Core.Services
     /// <see cref="LogEntry.Message"/>. Keeping them apart lets search, grouping, and the stacktrace UI
     /// treat the exception independently. Clipboard and .txt export join them again via
     /// <see cref="LogExportText"/>.
+    /// <para>
+    /// The parser is stateless and thread-safe: one instance is shared by every UDP/TCP receive thread.
+    /// <see cref="NameTable"/> and <see cref="XmlNamespaceManager"/> are not thread-safe (the reader
+    /// pushes and pops a namespace scope for every <c>xmlns:log4j</c> declaration), so the parser
+    /// context is created per call instead of being cached in a field.
+    /// </para>
     /// </remarks>
     public class XmlLogParser : ILogParser
     {
-        private readonly XmlParserContext _xmlContext;
+        /// <summary>Used when the event has no <c>level</c> attribute or an unknown one.</summary>
+        public const LogLevel DefaultLevel = LogLevel.Info;
 
-        public XmlLogParser()
+        // XmlReaderSettings is immutable once handed to XmlReader.Create, so one instance can be shared.
+        private static readonly XmlReaderSettings ReaderSettings = new XmlReaderSettings
         {
-            _xmlContext = CreateContext();
-        }
+            ConformanceLevel = ConformanceLevel.Fragment,
+            DtdProcessing = DtdProcessing.Prohibit,
+            XmlResolver = null,
+            CloseInput = true
+        };
 
         public LogEntry Parse(string xmlFragment)
         {
-            var log = new LogEntry();
+            var log = new LogEntry { Level = DefaultLevel };
 
-            using (var reader = new XmlTextReader(xmlFragment, XmlNodeType.Element, _xmlContext))
+            using (var reader = XmlReader.Create(new StringReader(xmlFragment ?? string.Empty), ReaderSettings, CreateContext()))
             {
-                reader.Read();
                 if (reader.MoveToContent() != XmlNodeType.Element || reader.Name != "log4j:event")
                     throw new Exception("The Log Event is not a valid log4j Xml block.");
 
                 log.Logger = reader.GetAttribute("logger");
-                var levelAttr = reader.GetAttribute("level");
-                if (!string.IsNullOrEmpty(levelAttr))
-                    log.Level = (LogLevel)Enum.Parse(typeof(LogLevel), StringUtils.FirstCharToUpper(levelAttr.ToLowerInvariant()));
+                log.Level = ParseLevel(reader.GetAttribute("level"));
 
                 var threadAttr = reader.GetAttribute("thread");
                 if (!string.IsNullOrEmpty(threadAttr) && int.TryParse(threadAttr, out int threadVal))
@@ -101,13 +110,51 @@ namespace LogViewer.Core.Services
             }
         }
 
+        /// <summary>
+        /// Maps a log4j/NLog level name to <see cref="LogLevel"/>. Unknown or missing values fall back to
+        /// <see cref="DefaultLevel"/>: a sender with a custom level must not turn every event into a parse error.
+        /// </summary>
+        public static LogLevel ParseLevel(string levelAttr)
+        {
+            if (string.IsNullOrWhiteSpace(levelAttr))
+                return DefaultLevel;
+
+            switch (levelAttr.Trim().ToUpperInvariant())
+            {
+                case "TRACE":
+                case "ALL":
+                case "FINEST":
+                case "FINER":
+                    return LogLevel.Trace;
+                case "DEBUG":
+                case "FINE":
+                    return LogLevel.Debug;
+                case "INFO":
+                case "INFORMATION":
+                case "NOTICE":
+                    return LogLevel.Info;
+                case "WARN":
+                case "WARNING":
+                    return LogLevel.Warn;
+                case "ERROR":
+                case "SEVERE":
+                    return LogLevel.Error;
+                case "FATAL":
+                case "CRITICAL":
+                case "EMERGENCY":
+                    return LogLevel.Fatal;
+                default:
+                    return DefaultLevel;
+            }
+        }
+
         private static XmlParserContext CreateContext()
         {
             var nt = new NameTable();
             var nsmanager = new XmlNamespaceManager(nt);
             nsmanager.AddNamespace("log4j", "http://jakarta.apache.org/log4j/");
             nsmanager.AddNamespace("nlog", "http://nlog-project.org");
-            return new XmlParserContext(nt, nsmanager, "elem", XmlSpace.None, Encoding.UTF8);
+            return new XmlParserContext(nt, nsmanager, null, XmlSpace.None, Encoding.UTF8);
         }
 
         private static DateTime UnixTimeStampToDateTime(long unixTimeStamp)

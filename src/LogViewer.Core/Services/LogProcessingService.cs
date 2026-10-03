@@ -55,18 +55,6 @@ namespace LogViewer.Core.Services
             _sources.Clear();
         }
 
-        public void StartAllSources()
-        {
-            foreach (var source in _sources)
-                source.Start();
-        }
-
-        public void StopAllSources()
-        {
-            foreach (var source in _sources)
-                source.Stop();
-        }
-
         public void ClearSession()
         {
             _session.Clear();

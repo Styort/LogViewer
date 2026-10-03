@@ -1,6 +1,70 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
+		<Version>1.2.8.9 (03.10.2026)</Version>
+		<ChangedFeatures>
+			<Item>
+				<ru>Приложение работает как 64-битный процесс и тратит меньше памяти на каждую строку лога</ru>
+				<en>The application runs as a 64-bit process and uses less memory per log line</en>
+			</Item>
+			<Item>
+				<ru>Смена фильтров выполняется в фоне: окно не зависает, а приём логов не останавливается на больших буферах</ru>
+				<en>Filtering runs in the background: the window stays responsive and receiving continues with large buffers</en>
+			</Item>
+			<Item>
+				<ru>При смене фильтров (уровень, поиск, дерево логгеров, интервал) сохраняются позиция прокрутки и выбранная строка</ru>
+				<en>Changing filters (level, search, logger tree, time interval) keeps the scroll position and the selected row</en>
+			</Item>
+			<Item>
+				<ru>Непредвиденная ошибка показывается в диалоге с путём к журналу приложения, а не закрывает приложение</ru>
+				<en>An unexpected error is shown in a dialog with the path to the application log instead of closing the application</en>
+			</Item>
+			<Item>
+				<ru>Пауза и запуск приёмников больше не останавливают чтение файлов</ru>
+				<en>Pausing and starting receivers no longer stops file reading</en>
+			</Item>
+		</ChangedFeatures>
+		<FixedBugs>
+			<Item>
+				<ru>Событие без атрибута logger или с неизвестным уровнем больше не закрывает приложение и не превращается в ошибку разбора</ru>
+				<en>An event without the logger attribute or with an unknown level no longer closes the application or turns into a parse error</en>
+			</Item>
+			<Item>
+				<ru>Исправлены ошибки разбора при одновременной отправке логов несколькими TCP-клиентами</ru>
+				<en>Fixed parse errors when several TCP clients send logs at the same time</en>
+			</Item>
+			<Item>
+				<ru>«Игнорировать этот IP» больше не останавливает приём логов</ru>
+				<en>"Ignore this IP" no longer stops receiving logs</en>
+			</Item>
+			<Item>
+				<ru>После сохранения настроек чтение файлов продолжает работать, а отключённый приёмник не запускается снова</ru>
+				<en>After saving settings, file reading keeps working and a disabled receiver does not start again</en>
+			</Item>
+			<Item>
+				<ru>Быстрая пауза и запуск больше не дублируют строки и не путают адрес отправителя</ru>
+				<en>A quick pause and start no longer duplicates lines or mixes up the sender address</en>
+			</Item>
+			<Item>
+				<ru>Экспорт в занятый файл и импорт архива из папки только для чтения показывают ошибку, а не закрывают приложение</ru>
+				<en>Exporting to a locked file and importing an archive from a read-only folder show an error instead of closing the application</en>
+			</Item>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
+		<Version>1.2.8.8 (24.09.2026)</Version>
+		<FixedBugs>
+			<Item>
+				<ru>После снятия всех логгеров через Root отметка вложенного логгера применяла фильтр, но оставляла флажки неотмеченными. Теперь отмечаются выбранный узел и его потомки, а предки остаются в промежуточном состоянии</ru>
+				<en>After clearing every logger via Root, checking a nested logger applied the filter but left the boxes unchecked. The selected node and its descendants are now checked, and ancestors stay indeterminate</en>
+			</Item>
+			<Item>
+				<ru>Повторный клик по Root после скрытия всех логгеров выделяет всё дерево</ru>
+				<en>Clicking Root again after hiding every logger selects the whole tree</en>
+			</Item>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
 		<Version>1.2.8.7 (30.07.2026)</Version>
 		<NewFeatures>
 			<Item>

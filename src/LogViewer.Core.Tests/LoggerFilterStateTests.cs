@@ -8,6 +8,22 @@ namespace LogViewer.Core.Tests
     public class LoggerFilterStateTests
     {
         [Test]
+        public void UnhideAncestors_RemovesDontShowButKeepsDontReceive()
+        {
+            var state = new LoggerFilterState();
+            state.ExcludeSubtree("Root", new[] { "ip", "ip.App", "ip.App.Child", "ip.Other" });
+            state.ExcludeFromBuffer("ip.Noise");
+
+            state.IncludeSubtree("ip.App", new[] { "ip.App.Child" });
+            state.UnhideAncestors(new[] { "ip", "Root", "ip.Noise" });
+
+            Assert.That(state.ExcludedPaths, Does.Not.Contain("ip"));
+            Assert.That(state.ExcludedPaths, Does.Not.Contain("ip.App"));
+            Assert.That(state.ExcludedPaths, Does.Contain("ip.Other"), "siblings stay hidden");
+            Assert.That(state.ExcludedWithBufferPaths, Does.Contain("ip.Noise"), "Don't Receive is not lifted");
+        }
+
+        [Test]
         public void ExcludeChild_DoesNotExcludeParent()
         {
             var state = new LoggerFilterState();

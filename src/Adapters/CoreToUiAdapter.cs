@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Threading;
+using System.Threading.Tasks;
 using LogViewer.Core.Domain;
 using LogViewer.Core.Services;
 using LogViewer.Core.State;
@@ -16,6 +18,13 @@ namespace LogViewer.Adapters
     /// once per packet. SessionCleared / EntriesRemoved / FilteredViewUpdated stay one-shot on the UI
     /// thread, but pending batches are flushed or discarded first so add-then-trim order is preserved
     /// and Clear never paints entries Core already dropped.
+    /// <para>
+    /// Refiltering (criteria change, bulk import) runs on the thread pool: the session lock is held only
+    /// to copy the buffer, and the O(N) filter pass neither freezes the window nor blocks receive threads.
+    /// Each request gets a generation number; a newer request cancels the older pass and a stale result
+    /// is dropped on the UI thread. <see cref="FilteredViewUpdatedEventArgs.SnapshotSequence"/> tells the
+    /// presenter which entries the snapshot already covered, because batches keep arriving meanwhile.
+    /// </para>
     /// </remarks>
     public class CoreToUiAdapter : IDisposable
     {
@@ -23,6 +32,11 @@ namespace LogViewer.Adapters
         private readonly LogProcessingService _service;
         private readonly LogEntryBatcher _batcher;
         private bool _subscribed;
+
+        // UI thread only.
+        private int _refilterGeneration;
+        private CancellationTokenSource _refilterCancellation;
+        private bool _refilterNeedsAllEntries;
 
         public CoreToUiAdapter(SynchronizationContext uiContext, LogProcessingService service)
         {
@@ -82,6 +96,7 @@ namespace LogViewer.Adapters
         public void Dispose()
         {
             Unsubscribe();
+            _refilterCancellation?.Cancel();
             _batcher.Dispose();
         }
 
@@ -120,39 +135,68 @@ namespace LogViewer.Adapters
             if (e.AddedEntries != null && e.AddedEntries.Count > 0)
             {
                 _batcher.Flush();
-                _uiContext.Post(_ => RaiseFilteredViewUpdated(includeAllEntries: true), null);
+                _uiContext.Post(_ => StartRefilter(includeAllEntries: true), null);
             }
         }
 
         private void OnFilterCriteriaChanged(object sender, EventArgs e)
         {
             _batcher.Flush();
-            _uiContext.Post(_ => RaiseFilteredViewUpdated(includeAllEntries: false), null);
+            _uiContext.Post(_ => StartRefilter(includeAllEntries: false), null);
         }
 
-        private void RaiseFilteredViewUpdated(bool includeAllEntries = false)
+        /// <summary>UI thread. Supersedes any refilter still running.</summary>
+        private void StartRefilter(bool includeAllEntries)
         {
-            IReadOnlyList<LogEntry> allEntries = null;
-            IReadOnlyList<LogEntry> entries;
-            if (includeAllEntries)
+            // A criteria change must not swallow a pending bulk-import rebuild of AllLogs.
+            _refilterNeedsAllEntries |= includeAllEntries;
+            bool withAllEntries = _refilterNeedsAllEntries;
+
+            _refilterCancellation?.Cancel();
+            var cancellation = new CancellationTokenSource();
+            _refilterCancellation = cancellation;
+            int generation = ++_refilterGeneration;
+
+            var session = _service.Session;
+            var filter = _service.Filter;
+            var token = cancellation.Token;
+            Task.Run(() =>
             {
-                allEntries = _service.Session.GetAllEntries();
-                var filter = _service.Filter;
-                var criteria = _service.Session.FilterCriteria;
-                var filtered = new List<LogEntry>(allEntries.Count);
-                for (int i = 0; i < allEntries.Count; i++)
+                var all = session.GetSnapshot(out long lastSequence);
+                var filtered = LogSession.Filter(all, filter, session.FilterCriteria, token);
+                return new FilteredViewUpdatedEventArgs
                 {
-                    var item = allEntries[i];
-                    if (filter.ShouldInclude(item, criteria))
-                        filtered.Add(item);
-                }
-                entries = filtered;
-            }
-            else
+                    Entries = filtered,
+                    AllEntries = withAllEntries ? all : null,
+                    SnapshotSequence = lastSequence
+                };
+            }, token).ContinueWith(task =>
             {
-                entries = _service.GetFilteredEntries();
+                if (task.IsCanceled)
+                    return;
+                _uiContext.Post(_ => CompleteRefilter(task, generation, cancellation), null);
+            }, TaskScheduler.Default);
+        }
+
+        /// <summary>UI thread.</summary>
+        private void CompleteRefilter(Task<FilteredViewUpdatedEventArgs> task, int generation, CancellationTokenSource cancellation)
+        {
+            cancellation.Dispose();
+            if (generation != _refilterGeneration)
+                return;
+            _refilterCancellation = null;
+
+            if (task.IsFaulted)
+            {
+                // Rethrow on the UI thread so the global handler logs and reports it; a silent failure
+                // would leave the list showing the previous filter.
+                ExceptionDispatchInfo.Capture(task.Exception.GetBaseException()).Throw();
             }
-            FilteredViewUpdated?.Invoke(this, new FilteredViewUpdatedEventArgs { Entries = entries, AllEntries = allEntries });
+
+            var args = task.Result;
+            if (args.AllEntries != null)
+                _refilterNeedsAllEntries = false;
+            FilteredViewUpdated?.Invoke(this, args);
         }
     }
 
@@ -168,5 +212,11 @@ namespace LogViewer.Adapters
         /// When set (e.g. bulk import), UI should also update its full list from this.
         /// </summary>
         public IReadOnlyList<LogEntry> AllEntries { get; set; }
+
+        /// <summary>
+        /// Last <see cref="LogEntry.Sequence"/> stored when the snapshot was taken. Entries up to this value
+        /// were already considered by the snapshot; batches that arrive later may still contain some of them.
+        /// </summary>
+        public long SnapshotSequence { get; set; }
     }
 }

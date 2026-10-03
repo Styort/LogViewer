@@ -218,10 +218,11 @@ namespace LogViewer.MVVM.ViewModels.Log
                     if (ArchiveLogExtractor.IsArchive(path))
                     {
                         hadArchive = true;
-                        var extractDir = ArchiveLogExtractor.CreateExtractDirectory(path);
-                        extractDirectories.Add(extractDir);
                         try
                         {
+                            // Inside try: a read-only folder (network share, Program Files) throws here.
+                            var extractDir = ArchiveLogExtractor.CreateExtractDirectory(path);
+                            extractDirectories.Add(extractDir);
                             var extracted = ArchiveLogExtractor.ExtractLogFiles(path, extractDir);
                             foreach (var logFile in extracted.LogFiles)
                             {
@@ -351,6 +352,12 @@ namespace LogViewer.MVVM.ViewModels.Log
                         RemoveImportPath(path);
                 }
             }
+            catch (Exception ex)
+            {
+                // async void: anything that escapes here goes to the dispatcher as an unhandled exception.
+                Logger.Error(ex, "Import failed");
+                _dialogs.ShowError(string.Format(Locals.ImportFailed, ex.Message), Locals.Error);
+            }
             finally
             {
                 ArchiveLogExtractor.Cleanup(extractDirectories, Logger);
@@ -379,6 +386,12 @@ namespace LogViewer.MVVM.ViewModels.Log
                 var txtLogs = logsToExport.Select(_formatLine).ToList();
                 File.WriteAllLines(fileName, txtLogs, Encoding.UTF8);
                 _files.OpenFolder(Path.GetDirectoryName(fileName));
+            }
+            catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is System.Security.SecurityException)
+            {
+                // Typical case: the target file is open in an editor that locks it.
+                Logger.Warn(ex, "Export to {0} failed", fileName);
+                _dialogs.ShowError(string.Format(Locals.ExportFailed, ex.Message), Locals.Error);
             }
             finally
             {

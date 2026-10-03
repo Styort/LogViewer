@@ -999,4 +999,26 @@
   <data name="HeaderFollowOff" xml:space="preserve">
     <value>Следить: выкл</value>
   </data>
+  <data name="UnhandledErrorMessage" xml:space="preserve">
+    <value>Произошла непредвиденная ошибка:
+{0}
+
+Подробности записаны в журнал приложения:
+{1}
+
+Приложение продолжает работу. Сохраните сессию, если список выглядит неправильно.</value>
+  </data>
+  <data name="FatalErrorMessage" xml:space="preserve">
+    <value>Произошла критическая ошибка, Log Viewer будет закрыт:
+{0}
+
+Подробности записаны в журнал приложения:
+{1}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Не удалось экспортировать логи в файл: {0}</value>
+  </data>
+  <data name="ImportFailed" xml:space="preserve">
+    <value>Не удалось импортировать файлы: {0}</value>
+  </data>
 </root>

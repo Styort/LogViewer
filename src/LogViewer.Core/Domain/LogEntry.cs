@@ -16,6 +16,13 @@ namespace LogViewer.Core.Domain
         public DateTime Time { get; set; }
         public LogLevel Level { get; set; }
 
+        /// <summary>
+        /// Position in the session, assigned by <c>LogSession</c> when the entry is stored; 0 until then.
+        /// Strictly increasing in buffer order and never reused, even after Clear. Lets the UI tell whether a
+        /// filtered snapshot already covered an entry that is still on its way through the batcher.
+        /// </summary>
+        public long Sequence { get; internal set; }
+
         public string Logger
         {
             get { return _logger; }

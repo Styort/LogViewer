@@ -40,6 +40,42 @@ namespace LogViewer.Core.Tests
             LogEntry entry = LiveXmlLogEntryFactory.Create(_parser, "   ", "127.0.0.1", 1, ReceiverTransport.Tcp, "TCP Logger");
             Assert.That(entry.Level, Is.EqualTo(LogLevel.Error));
         }
+
+        [Test]
+        public void Create_EventWithoutLogger_UsesFallbackLogger()
+        {
+            // A single packet like this used to crash the UI thread in the logger tree.
+            const string xml = "<log4j:event level=\"INFO\" timestamp=\"1\"><log4j:message>x</log4j:message></log4j:event>";
+
+            LogEntry entry = LiveXmlLogEntryFactory.Create(_parser, xml, "10.0.0.1", 7071, ReceiverTransport.Udp, "UDP Logger");
+
+            Assert.That(entry.Logger, Is.EqualTo("UDP Logger"));
+            Assert.That(entry.Level, Is.EqualTo(LogLevel.Info));
+            Assert.That(entry.Message, Is.EqualTo("x"));
+            Assert.That(entry.FullPath, Is.EqualTo("10.0.0.1.UDP Logger"));
+        }
+
+        [Test]
+        public void Create_EventWithoutAnyAttributesOrMessage_IsNormalized()
+        {
+            const string xml = "<log4j:event></log4j:event>";
+
+            LogEntry entry = LiveXmlLogEntryFactory.Create(_parser, xml, "10.0.0.1", 7071, ReceiverTransport.Tcp, null);
+
+            Assert.That(entry.Logger, Is.EqualTo(LiveXmlLogEntryFactory.DefaultFallbackLogger));
+            Assert.That(entry.Message, Is.Not.Null);
+            Assert.That(entry.Time, Is.Not.EqualTo(default(System.DateTime)));
+        }
+
+        [Test]
+        public void Create_EventWithWhitespaceLogger_UsesFallbackLogger()
+        {
+            const string xml = "<log4j:event logger=\" \" level=\"INFO\" timestamp=\"1\"><log4j:message>x</log4j:message></log4j:event>";
+
+            LogEntry entry = LiveXmlLogEntryFactory.Create(_parser, xml, "10.0.0.1", 7071, ReceiverTransport.Tcp, "TCP Logger");
+
+            Assert.That(entry.Logger, Is.EqualTo("TCP Logger"));
+        }
     }
 
     [TestFixture]

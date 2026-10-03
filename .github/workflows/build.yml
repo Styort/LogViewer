@@ -37,12 +37,28 @@ jobs:
           name: test-results
           path: TestResults/
 
+      - name: Stage app
+        # The whole output folder, subfolders included: English UI strings are a satellite assembly
+        # (en/LogViewer.resources.dll). Without it the app silently falls back to Russian.
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $stage = 'publish/LogViewer'
+          New-Item -ItemType Directory -Force $stage | Out-Null
+          Copy-Item 'src/bin/Release/*' $stage -Recurse
+          # Not needed at run time: symbols, stray zips, the app's own log folder.
+          Get-ChildItem $stage -Recurse -Include *.pdb, *.zip | Remove-Item -Force
+          Remove-Item (Join-Path $stage 'logs') -Recurse -Force -ErrorAction SilentlyContinue
+          # XML docs of referenced libraries (X.xml next to X.dll); ReleaseNotes.xml has no dll and stays.
+          Get-ChildItem $stage -Recurse -Filter *.xml |
+              Where-Object { Test-Path ([IO.Path]::ChangeExtension($_.FullName, '.dll')) } |
+              Remove-Item -Force
+          foreach ($required in 'LogViewer.exe', 'LogViewer.exe.config', 'ReleaseNotes.xml', 'en/LogViewer.resources.dll') {
+              if (-not (Test-Path (Join-Path $stage $required))) { throw "Missing in the package: $required" }
+          }
+
       - name: Upload app
         uses: actions/upload-artifact@v4
         with:
           name: LogViewer
-          path: |
-            src/bin/Release/*.exe
-            src/bin/Release/*.dll
-            src/bin/Release/*.config
-            src/bin/Release/ReleaseNotes.xml
+          path: publish/LogViewer/

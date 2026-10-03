@@ -2,11 +2,11 @@
 
 [![build](https://github.com/Styort/LogViewer/actions/workflows/build.yml/badge.svg)](https://github.com/Styort/LogViewer/actions/workflows/build.yml)
 [![Latest release](https://img.shields.io/github/v/release/Styort/LogViewer?label=release)](https://github.com/Styort/LogViewer/releases/latest)
-[![GitHub downloads](https://img.shields.io/github/downloads/Styort/LogViewer/total?label=downloads)](https://github.com/Styort/LogViewer/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/Styort/LogViewer/total?label=GitHub%20downloads&logo=github)](https://github.com/Styort/LogViewer/releases)
+[![SourceForge downloads](https://img.shields.io/sourceforge/dt/styort-logviewer.svg?label=SourceForge%20downloads&logo=sourceforge)](https://sourceforge.net/projects/styort-logviewer/files/latest/download)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://sourceforge.net/projects/styort-logviewer/)
-[![SourceForge downloads](https://img.shields.io/sourceforge/dt/styort-logviewer.svg)](https://sourceforge.net/projects/styort-logviewer/files/latest/download)
 
 Windows desktop viewer for **NLog**, **log4net**, and **log4j** logs. It receives Chainsaw / NLogViewer XML over **UDP or TCP**, imports text files and archives, and keeps a large in-memory buffer usable while you filter, search, and jump around.
 

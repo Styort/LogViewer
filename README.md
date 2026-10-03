@@ -175,6 +175,21 @@ vstest.console.exe src/LogViewer.Core.Tests/bin/Release/net48/LogViewer.Core.Tes
 
 Tests cover parsers (including concurrent parsing), filtering, UDP/TCP receivers on loopback, receiver restart, and view-model behavior. They do not cover XAML or ClickOnce updates.
 
+### Releases
+
+Releases are published to [GitHub Releases](https://github.com/Styort/LogViewer/releases) by [`.github/workflows/release.yml`](.github/workflows/release.yml) when a version tag is pushed:
+
+1. Set the new version in `src/Properties/AssemblyInfo.cs` (`AssemblyVersion` and `AssemblyFileVersion`, four parts).
+2. Add an entry for that version to `src/ReleaseNotes.xml`. The release description is generated from its English text.
+3. Commit, push, then tag and push the tag:
+
+```
+git tag v1.2.8.10
+git push origin v1.2.8.10
+```
+
+The workflow checks that the tag matches `AssemblyFileVersion` and that `ReleaseNotes.xml` has the entry, builds, runs both test projects, and attaches `LogViewer-<version>.zip`. A tag with a suffix (`v1.2.8.10-beta`) is published as a pre-release. Packaging is shared with CI in `build/stage.ps1`.
+
 ## License
 
 [GNU GPL-3.0](LICENSE). You can use, modify, and share this program under that license; derivative work stays under GPL-3.0.

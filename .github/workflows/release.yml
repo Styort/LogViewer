@@ -1,0 +1,84 @@
+name: release
+
+# Push a tag to publish a release:  git tag v1.2.8.10 && git push origin v1.2.8.10
+# A tag with a suffix (v1.2.8.10-beta) becomes a pre-release, so releases/latest does not move.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # create the release and upload the zip with GITHUB_TOKEN
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # WPF on .NET Framework 4.8: needs Visual Studio MSBuild, `dotnet build` cannot compile the legacy WPF csproj.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version from the tag
+        shell: pwsh
+        run: |
+          $tag = '${{ github.ref_name }}'
+          if ($tag -notmatch '^v(\d+\.\d+\.\d+\.\d+)(-[0-9A-Za-z.-]+)?$') {
+              throw "Tag '$tag' must look like v1.2.8.10 or v1.2.8.10-beta (four-part version, as in AssemblyInfo.cs)."
+          }
+          "VERSION=$($Matches[1])" >> $env:GITHUB_ENV
+          "PRERELEASE=$([bool]$Matches[2])" >> $env:GITHUB_ENV
+
+      - name: Check the version and release notes before building
+        shell: pwsh
+        run: |
+          $info = Get-Content src/Properties/AssemblyInfo.cs -Raw
+          if ($info -notmatch 'AssemblyFileVersion\("([\d.]+)"\)' -or $Matches[1] -ne $env:VERSION) {
+              throw "Tag version $env:VERSION does not match AssemblyFileVersion $($Matches[1]) in src/Properties/AssemblyInfo.cs."
+          }
+          ./build/release-notes.ps1 -Version $env:VERSION -OutFile release-notes.md
+
+      - uses: microsoft/setup-msbuild@v2
+      - uses: nuget/setup-nuget@v2
+      - uses: darenm/Setup-VSTest@v1.3
+
+      - name: Restore
+        run: nuget restore src/LogViewer.sln
+
+      - name: Build
+        run: msbuild src/LogViewer.sln -p:Configuration=Release -p:TreatWarningsAsErrors=true -m -nologo -v:m
+
+      - name: Test
+        run: >
+          vstest.console.exe
+          src/LogViewer.Core.Tests/bin/Release/net48/LogViewer.Core.Tests.dll
+          src/LogViewer.App.Tests/bin/Release/net48/LogViewer.App.Tests.dll
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $built = ./build/stage.ps1 -Output publish/LogViewer
+          if ($built -ne $env:VERSION) { throw "Built LogViewer.exe is $built, the tag says $env:VERSION." }
+          Compress-Archive -Path publish/LogViewer/* -DestinationPath "LogViewer-$env:VERSION.zip"
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = '${{ github.ref_name }}'
+          $zip = "LogViewer-$env:VERSION.zip"
+          gh release view $tag *> $null
+          if ($LASTEXITCODE -eq 0) {
+              # Re-run of the workflow: refresh the zip and the notes instead of failing.
+              gh release upload $tag $zip --clobber
+              if ($LASTEXITCODE -ne 0) { throw "gh release upload failed with exit code $LASTEXITCODE" }
+              gh release edit $tag --notes-file release-notes.md
+          }
+          else {
+              $flags = @('--verify-tag', '--title', "LogViewer $env:VERSION", '--notes-file', 'release-notes.md')
+              if ($env:PRERELEASE -eq 'True') { $flags += '--prerelease' } else { $flags += '--latest' }
+              gh release create $tag $zip @flags
+          }
+          if ($LASTEXITCODE -ne 0) { throw "gh failed with exit code $LASTEXITCODE" }

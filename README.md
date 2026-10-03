@@ -18,9 +18,14 @@ The interface is in **Russian** and **English**.
 
 ## Download
 
-<a href="https://sourceforge.net/projects/styort-logviewer/files/latest/download"><img alt="Download LogViewer" src="https://a.fsdn.com/con/app/sf-download-button" width="276" height="48"></a>
+[![Download from GitHub Releases](https://img.shields.io/badge/Download-GitHub%20Releases-2ea44f?style=for-the-badge&logo=github)](https://github.com/Styort/LogViewer/releases/latest)
 
-Requires **Windows** and **.NET Framework 4.8**. Windows 10 version 1903 and later, and Windows 11, already include that runtime. The build published on SourceForge.
+1. Open the [latest release](https://github.com/Styort/LogViewer/releases/latest) and download `LogViewer-<version>.zip` from **Assets**.
+2. Extract it to any folder you can write to and run `LogViewer.exe`.
+
+Requires **Windows** and **.NET Framework 4.8**. Windows 10 version 1903 and later, and Windows 11, already include that runtime. The executable is not code-signed, so Windows SmartScreen may warn on the first start: choose **More info → Run anyway**.
+
+Older builds are also available on [SourceForge](https://sourceforge.net/projects/styort-logviewer/files/latest/download).
 
 ## Features
 

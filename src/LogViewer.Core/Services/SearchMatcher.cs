@@ -19,15 +19,21 @@ namespace LogViewer.Core.Services
         private readonly bool _isInvalid;
         private readonly bool _isEmpty;
 
+        // The thread id is formatted only when the pattern could match a number. Most searches are words,
+        // and formatting allocated a string for every entry whose earlier fields did not match.
+        private readonly bool _canMatchThread;
+
         private SearchMatcher(string literal, StringComparison comparison)
         {
             _literal = literal;
             _comparison = comparison;
+            _canMatchThread = IsIntegerFragment(literal);
         }
 
         private SearchMatcher(Regex regex)
         {
             _regex = regex;
+            _canMatchThread = true;
         }
 
         private SearchMatcher(bool isInvalid, bool isEmpty)
@@ -108,7 +114,7 @@ namespace LogViewer.Core.Services
                 || FieldMatches(entry.Logger)
                 || FieldMatches(entry.Address)
                 || FieldMatches(entry.ExecutableName)
-                || FieldMatches(entry.Thread.ToString(CultureInfo.InvariantCulture))
+                || (_canMatchThread && FieldMatches(entry.Thread.ToString(CultureInfo.InvariantCulture)))
                 || FieldMatches(entry.Throwable))
             {
                 return true;
@@ -124,6 +130,17 @@ namespace LogViewer.Core.Services
             }
 
             return false;
+        }
+
+        private static bool IsIntegerFragment(string literal)
+        {
+            for (int i = 0; i < literal.Length; i++)
+            {
+                char c = literal[i];
+                if ((c < '0' || c > '9') && c != '-')
+                    return false;
+            }
+            return true;
         }
 
         public bool FieldMatches(string value)

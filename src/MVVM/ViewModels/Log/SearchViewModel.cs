@@ -45,13 +45,6 @@ namespace LogViewer.MVVM.ViewModels.Log
         private string _searchText = string.Empty;
         private string _highlightSearchText = string.Empty;
 
-        // Find Next/Prev and jump-by-level are pressed in a row; the list does not change.
-        // Cache LogEntry so Properties are not cloned on every keypress. Cleared
-        // when the Logs reference or item count changes.
-        private IList<LogMessage> _cachedViewSource;
-        private int _cachedViewCount;
-        private List<LogEntry> _cachedView;
-
         private RelayCommand _searchCommand;
         private RelayCommand _findNextCommand;
         private RelayCommand _findPreviousCommand;
@@ -495,28 +488,12 @@ namespace LogViewer.MVVM.ViewModels.Log
         }
 
         /// <summary>
-        /// Snapshot of current Logs for Core navigation. Same collection instance and Count — reuse the cache.
+        /// Current Logs as Core entries for navigation. A view, not a copy: with a live stream the list
+        /// changes between keypresses, so a cached copy was rebuilt on almost every F3.
         /// </summary>
-        private List<LogEntry> GetViewEntries()
+        private IReadOnlyList<LogEntry> GetViewEntries()
         {
-            var logs = _state.Logs;
-            if (_cachedView != null && ReferenceEquals(_cachedViewSource, logs) && _cachedViewCount == (logs?.Count ?? 0))
-                return _cachedView;
-
-            _cachedView = ToEntries(logs);
-            _cachedViewSource = logs;
-            _cachedViewCount = logs?.Count ?? 0;
-            return _cachedView;
-        }
-
-        private static List<LogEntry> ToEntries(IList<LogMessage> logs)
-        {
-            var list = new List<LogEntry>(logs?.Count ?? 0);
-            if (logs == null)
-                return list;
-            for (int i = 0; i < logs.Count; i++)
-                list.Add(LogEntryConverter.ToLogEntry(logs[i]));
-            return list;
+            return new LogMessageEntryView(_state.Logs);
         }
     }
 }

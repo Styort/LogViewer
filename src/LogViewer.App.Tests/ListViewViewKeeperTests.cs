@@ -48,7 +48,7 @@ namespace LogViewer.App.Tests
         public void SetUp()
         {
             _rows = Enumerable.Range(0, 1000)
-                .Select(i => new LogMessage { Sequence = i + 1, Message = "row " + i })
+                .Select(i => TestRows.Row("row " + i, sequence: i + 1))
                 .ToList();
             _vm = new ListVm { Logs = _rows.ToList() };
             _following = false;

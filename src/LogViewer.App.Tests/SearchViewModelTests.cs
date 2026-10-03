@@ -33,6 +33,23 @@ namespace LogViewer.App.Tests
         }
 
         [Test]
+        public void FindNext_SeesRowsAddedSinceThePreviousSearch()
+        {
+            // A live stream adds rows between keypresses; navigation reads the list, not a stale copy.
+            var env = Create();
+            env.State.Logs = new AsyncObservableCollection<LogMessage> { Msg("needle"), Msg("aaa") };
+            env.State.SelectedLog = env.State.Logs[0];
+            env.Search.SearchText = "needle";
+            env.Search.FindNextCommand.Execute(null);
+
+            var added = Msg("needle");
+            env.State.Logs.Add(added);
+            env.Search.FindNextCommand.Execute(null);
+
+            Assert.That(env.State.SelectedLog, Is.SameAs(added));
+        }
+
+        [Test]
         public void FindPrevious_FromFirstMatch_DoesNotWrap()
         {
             var env = Create();
@@ -53,8 +70,8 @@ namespace LogViewer.App.Tests
         {
             var env = Create();
             var time = new DateTime(2026, 9, 22, 1, 2, 3);
-            var other = new LogMessage { Message = "other", Level = eLogLevel.Info, Time = time, Address = "127.0.0.1", Logger = "App", Thread = 1 };
-            var visible = new LogMessage { Message = "needle", Level = eLogLevel.Info, Time = time.AddSeconds(1), Address = "127.0.0.1", Logger = "App", Thread = 2 };
+            var other = TestRows.Row("other", eLogLevel.Info, time, "127.0.0.1", "App", 1);
+            var visible = TestRows.Row("needle", eLogLevel.Info, time.AddSeconds(1), "127.0.0.1", "App", 2);
             env.State.Logs = new AsyncObservableCollection<LogMessage> { other, visible };
             env.Session.AddEntry(new LogEntry { Message = "other", Level = LogLevel.Info, Time = time, Address = "127.0.0.1", Logger = "App", Thread = 1 });
             env.Session.AddEntry(new LogEntry { Message = "needle", Level = LogLevel.Info, Time = time.AddSeconds(1), Address = "127.0.0.1", Logger = "App", Thread = 2 });
@@ -92,14 +109,7 @@ namespace LogViewer.App.Tests
 
         private static LogMessage Msg(string text)
         {
-            return new LogMessage
-            {
-                Message = text,
-                Level = eLogLevel.Info,
-                Time = DateTime.UtcNow,
-                Address = "127.0.0.1",
-                Logger = "App"
-            };
+            return TestRows.Row(text, eLogLevel.Info, DateTime.UtcNow, "127.0.0.1", "App");
         }
 
         private sealed class SearchEnv

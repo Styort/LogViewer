@@ -162,6 +162,7 @@
     <Compile Include="Adapters\CoreToUiAdapter.cs" />
     <Compile Include="Adapters\LogEntryConverter.cs" />
     <Compile Include="Adapters\LogEntryProjector.cs" />
+    <Compile Include="Adapters\LogMessageEntryView.cs" />
     <Compile Include="Adapters\RowHighlightApplier.cs" />
     <Compile Include="Adapters\LogTemplateAdapter.cs" />
     <Compile Include="Adapters\ReceiverConfigAdapter.cs" />

@@ -286,7 +286,7 @@ namespace LogViewer.MVVM.ViewModels.Log
         /// </summary>
         public void BuildTreeByMessage(LogMessage log)
         {
-            var root = Loggers[0].Children.FirstOrDefault(x => x.Text == log.Address);
+            var root = FindChild(Loggers[0], log.Address);
             if (root == null)
             {
                 var rootNode = new Node(Loggers[0], log.Address)
@@ -302,7 +302,9 @@ namespace LogViewer.MVVM.ViewModels.Log
                 root = rootNode;
             }
 
-            _marker.ApplyExistingMark(log, GetNodeFromMessage(log));
+            // Marks are rare; finding the node splits the logger name, so skip it for every unmarked row.
+            if (_marker.ToggledMarksCount > 0)
+                _marker.ApplyExistingMark(log, GetNodeFromMessage(log));
 
             // Already saw this FullPath — do not create nodes or touch exclusions on the hot UDP path.
             if (_availableLoggers.Contains(log.FullPath))
@@ -901,24 +903,40 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         private Node GetNodeFromMessage(LogMessage message)
         {
-            Node currentNode = Loggers[0].Children.FirstOrDefault(x => x.Text == message.Address);
+            Node currentNode = FindChild(Loggers[0], message.Address);
             Node foundNode = currentNode;
             if (currentNode == null)
                 return null;
 
-            List<string> nodesStr = new List<string>();
             if (!string.IsNullOrEmpty(message.ExecutableName))
-                nodesStr.Add(message.ExecutableName);
-            nodesStr.AddRange((message.Logger ?? string.Empty).Split('.'));
-
-            foreach (var nodeName in nodesStr)
             {
-                currentNode = currentNode.Children.FirstOrDefault(x => x.Text == nodeName);
+                currentNode = FindChild(currentNode, message.ExecutableName);
+                if (currentNode == null)
+                    return foundNode;
+                foundNode = currentNode;
+            }
+
+            foreach (var nodeName in (message.Logger ?? string.Empty).Split('.'))
+            {
+                currentNode = FindChild(currentNode, nodeName);
                 if (currentNode == null)
                     return foundNode;
                 foundNode = currentNode;
             }
             return foundNode;
+        }
+
+        // Indexed loop instead of FirstOrDefault: this runs for every received row, and a lambda that
+        // captures the name allocates a closure on each call.
+        private static Node FindChild(Node parent, string text)
+        {
+            var children = parent.Children;
+            for (int i = 0; i < children.Count; i++)
+            {
+                if (children[i].Text == text)
+                    return children[i];
+            }
+            return null;
         }
 
         private void UpdateLoggersVisibility(Node node, bool fullPath = false)

@@ -602,15 +602,15 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Text="{localization:LocBinding Logger, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center"/>
-                    <TextBox Text="{Binding Path=SelectedLog.Logger}" FontSize="14" Grid.Column="1" Height="35" Margin="23,0,10,0" Background="White"
+                    <TextBox Text="{Binding Path=SelectedLog.Logger, Mode=OneWay}" FontSize="14" Grid.Column="1" Height="35" Margin="23,0,10,0" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Stretch" Padding="5,0" IsReadOnly="True"/>
 
                     <TextBlock Grid.Column="2" Text="{localization:LocBinding Time, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Path=SelectedLog.Time, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" FontSize="14" Grid.Column="3" Height="35" Margin="10,0" Width="180" Background="White"
+                    <TextBox Text="{Binding Path=SelectedLog.Time, Mode=OneWay, StringFormat={}{0:dd/MM/yyyy HH:mm:ss.fff}}" FontSize="14" Grid.Column="3" Height="35" Margin="10,0" Width="180" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
                     <TextBlock Grid.Column="4" Text="{localization:LocBinding Thread, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                    <TextBox Text="{Binding Path=SelectedLog.Thread}" FontSize="14" Grid.Column="5" Height="35" Margin="10,0" Width="80" Background="White"
+                    <TextBox Text="{Binding Path=SelectedLog.Thread, Mode=OneWay}" FontSize="14" Grid.Column="5" Height="35" Margin="10,0" Width="80" Background="White"
                              BorderThickness="1" VerticalContentAlignment="Center" HorizontalAlignment="Left" Padding="5,0" IsReadOnly="True"/>
 
                     <TextBlock Grid.Column="6" Text="{localization:LocBinding Port, StringFormat={}{0}:}" FontSize="14"  VerticalAlignment="Center" HorizontalAlignment="Right"/>

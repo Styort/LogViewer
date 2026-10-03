@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using LogViewer.Core.Domain;
+using LogViewer.Enums;
 using LogViewer.MVVM.Models;
 using LogViewer.MVVM.ViewModels;
 using LogViewer.MVVM.ViewModels.Log;
@@ -121,5 +122,33 @@ namespace LogViewer.App.Tests
     {
         public string LastText;
         public void SetText(string text) => LastText = text;
+    }
+
+    /// <summary>
+    /// UI rows for tests. A row is a view over a Core entry, so the data goes into the entry.
+    /// </summary>
+    internal static class TestRows
+    {
+        public static LogMessage Row(
+            string message = null,
+            eLogLevel level = eLogLevel.Info,
+            DateTime time = default(DateTime),
+            string address = null,
+            string logger = null,
+            int thread = 0,
+            long sequence = 0)
+        {
+            var entry = new LogEntry
+            {
+                Message = message,
+                Level = (LogLevel)(int)level,
+                Time = time,
+                Address = address,
+                Logger = logger,
+                Thread = thread,
+                Sequence = sequence
+            };
+            return new LogMessage(entry);
+        }
     }
 }

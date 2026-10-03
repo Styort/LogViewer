@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    LogViewer ships only Russian (neutral) and English UI. Referenced libraries such as AutoUpdater.NET carry
+    satellite resources for twenty more cultures, and packages.config references copy all of them into the
+    output and the release zip. SatelliteResourceLanguages does not apply here: it only filters PackageReference
+    assets, while these satellites are found next to a referenced dll by ResolveAssemblyReference.
+  -->
+  <PropertyGroup>
+    <SupportedUiCultures>en;ru</SupportedUiCultures>
+  </PropertyGroup>
+
+  <Target Name="RemoveUnsupportedReferenceSatellites" AfterTargets="ResolveAssemblyReferences">
+    <ItemGroup>
+      <!-- DestinationSubDirectory is "<culture>\" for a satellite; only *.resources.dll is touched. -->
+      <_UnsupportedReferenceSatellite Include="@(ReferenceCopyLocalPaths)"
+          Condition="'%(ReferenceCopyLocalPaths.DestinationSubDirectory)' != ''
+                     And $([System.String]::Copy('%(ReferenceCopyLocalPaths.Filename)').EndsWith('.resources'))
+                     And !$([System.String]::Copy(';$(SupportedUiCultures);').Contains(';$([System.String]::Copy('%(ReferenceCopyLocalPaths.DestinationSubDirectory)').TrimEnd('\'));'))" />
+      <ReferenceCopyLocalPaths Remove="@(_UnsupportedReferenceSatellite)" />
+      <ReferenceSatellitePaths Remove="@(_UnsupportedReferenceSatellite)" />
+    </ItemGroup>
+  </Target>
+</Project>

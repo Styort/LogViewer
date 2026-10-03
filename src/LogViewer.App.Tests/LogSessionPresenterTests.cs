@@ -68,14 +68,14 @@ namespace LogViewer.App.Tests
         public void HasSameRows_SameInstancesInOrder_IsTrue_OtherwiseFalse()
         {
             // Start and repeated Apply must not replace Logs: a new collection resets the ListView scroll.
-            var a = new LogMessage();
-            var b = new LogMessage();
+            var a = TestRows.Row();
+            var b = TestRows.Row();
             var current = new AsyncObservableCollection<LogMessage>(new[] { a, b });
 
             Assert.That(LogSessionPresenter.HasSameRows(current, new List<LogMessage> { a, b }), Is.True);
             Assert.That(LogSessionPresenter.HasSameRows(current, new List<LogMessage> { b, a }), Is.False);
             Assert.That(LogSessionPresenter.HasSameRows(current, new List<LogMessage> { a }), Is.False);
-            Assert.That(LogSessionPresenter.HasSameRows(current, new List<LogMessage> { a, new LogMessage() }), Is.False);
+            Assert.That(LogSessionPresenter.HasSameRows(current, new List<LogMessage> { a, TestRows.Row() }), Is.False);
         }
 
         [Test]

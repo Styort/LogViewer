@@ -222,6 +222,29 @@ namespace LogViewer.App.Tests
         /// What a two-state WPF CheckBox does on click: checked → unchecked, unchecked → checked,
         /// indeterminate → unchecked.
         /// </summary>
+        [Test]
+        public void BuildTreeByMessage_NewRowInheritsMarkOnlyWhenItsLoggerIsMarked()
+        {
+            var env = TreeEnv.Create();
+            var first = TestRows.Row("a", address: "10.0.0.1", logger: "App.Child");
+            env.Tree.BuildTreeByMessage(first);
+            var other = TestRows.Row("b", address: "10.0.0.1", logger: "Other");
+            env.Tree.BuildTreeByMessage(other);
+            var unmarked = other.ToggleMark;
+
+            var address = env.Tree.Loggers[0].Children.Single(n => n.Text == "10.0.0.1");
+            var child = address.Children.Single(n => n.Text == "App").Children.Single(n => n.Text == "Child");
+            env.Tree.ToggleMarkCommand.Execute(child);
+
+            var marked = TestRows.Row("c", address: "10.0.0.1", logger: "App.Child");
+            env.Tree.BuildTreeByMessage(marked);
+            var notMarked = TestRows.Row("d", address: "10.0.0.1", logger: "Other");
+            env.Tree.BuildTreeByMessage(notMarked);
+
+            Assert.That(marked.ToggleMark, Is.SameAs(child.ToggleMark));
+            Assert.That(notMarked.ToggleMark.Color, Is.EqualTo(unmarked.Color));
+        }
+
         private static void UiClick(TreeEnv env, Node node)
         {
             bool next = node.IsChecked != true && node.IsChecked.HasValue;

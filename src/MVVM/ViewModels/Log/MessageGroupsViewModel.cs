@@ -271,14 +271,7 @@ namespace LogViewer.MVVM.ViewModels.Log
 
         private static List<MessageGroupItem> BuildItems(IReadOnlyList<LogMessage> snapshot)
         {
-            var entries = new List<LogEntry>(snapshot.Count);
-            for (int i = 0; i < snapshot.Count; i++)
-            {
-                var msg = snapshot[i];
-                entries.Add(msg == null ? null : LogEntryConverter.ToLogEntry(msg));
-            }
-
-            var groups = MessageGroupAggregator.Build(entries);
+            var groups = MessageGroupAggregator.Build(new LogMessageEntryView(snapshot));
             var items = new List<MessageGroupItem>(groups.Count);
             for (int i = 0; i < groups.Count; i++)
             {

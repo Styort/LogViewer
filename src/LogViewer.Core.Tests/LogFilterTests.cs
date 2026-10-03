@@ -47,6 +47,41 @@ namespace LogViewer.Core.Tests
         }
 
         [Test]
+        public void Search_ThreadMatchesNegativeIdAndRegex()
+        {
+            var negative = SearchMatcher.Create("-7", false, false, false);
+            Assert.That(negative.Matches(new LogEntry { Thread = -7, Logger = "A", Message = "x", Address = "ip" }), Is.True);
+
+            var regex = SearchMatcher.Create("^4\\d$", false, true, false);
+            Assert.That(regex.Matches(new LogEntry { Thread = 42, Logger = "A", Message = "x", Address = "ip" }), Is.True);
+        }
+
+        [Test]
+        public void GetMatcher_ReusedUntilAnySearchOptionChanges()
+        {
+            var filter = new LogFilter();
+            var criteria = new FilterCriteria { IsSearchActive = true, SearchText = "a" };
+            var first = filter.GetMatcher(criteria);
+
+            Assert.That(filter.GetMatcher(new FilterCriteria { IsSearchActive = true, SearchText = "a" }), Is.SameAs(first));
+
+            criteria.SearchText = "b";
+            var byText = filter.GetMatcher(criteria);
+            Assert.That(byText, Is.Not.SameAs(first));
+
+            criteria.MatchCase = true;
+            var byCase = filter.GetMatcher(criteria);
+            Assert.That(byCase, Is.Not.SameAs(byText));
+
+            criteria.MatchWholeWord = true;
+            var byWord = filter.GetMatcher(criteria);
+            Assert.That(byWord, Is.Not.SameAs(byCase));
+
+            criteria.UseRegex = true;
+            Assert.That(filter.GetMatcher(criteria), Is.Not.SameAs(byWord));
+        }
+
+        [Test]
         public void WholeWord_DoesNotMatchSubstring()
         {
             var matcher = SearchMatcher.Create("err", false, false, true);

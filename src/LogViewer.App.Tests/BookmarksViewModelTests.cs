@@ -15,7 +15,7 @@ namespace LogViewer.App.Tests
         public void AddAndRemoveBookmark_UpdatesCollection()
         {
             var state = new LogViewState();
-            var log = new LogMessage { Message = "a", Time = DateTime.UtcNow };
+            var log = TestRows.Row("a", time: DateTime.UtcNow);
             state.AllLogs.Add(log);
             state.Logs.Add(log);
             state.SelectedLog = log;
@@ -35,7 +35,7 @@ namespace LogViewer.App.Tests
         public void SyncWithAllLogs_DropsMissingRows()
         {
             var state = new LogViewState();
-            var log = new LogMessage { Message = "a", Time = DateTime.UtcNow };
+            var log = TestRows.Row("a", time: DateTime.UtcNow);
             state.AllLogs.Add(log);
             state.Logs.Add(log);
             var vm = new BookmarksViewModel(state, new FakeDialogs());
@@ -49,8 +49,8 @@ namespace LogViewer.App.Tests
         public void QueueRestore_AppliesIndexAndSkipsOutOfRange()
         {
             var state = new LogViewState();
-            var first = new LogMessage { Message = "a", Time = DateTime.UtcNow };
-            var second = new LogMessage { Message = "b", Time = DateTime.UtcNow };
+            var first = TestRows.Row("a", time: DateTime.UtcNow);
+            var second = TestRows.Row("b", time: DateTime.UtcNow);
             state.AllLogs.Add(first);
             state.AllLogs.Add(second);
             var vm = new BookmarksViewModel(state, new FakeDialogs());
@@ -72,8 +72,8 @@ namespace LogViewer.App.Tests
         public void NavigateToBookmark_FindsVisibleRowWithSameFields()
         {
             var state = new LogViewState();
-            var original = new LogMessage { Message = "a", Time = DateTime.UtcNow, Logger = "App", Address = "127.0.0.1" };
-            var visible = new LogMessage { Message = "a", Time = original.Time, Logger = "App", Address = "127.0.0.1" };
+            var original = TestRows.Row("a", time: DateTime.UtcNow, logger: "App", address: "127.0.0.1");
+            var visible = TestRows.Row("a", time: original.Time, logger: "App", address: "127.0.0.1");
             state.AllLogs.Add(original);
             state.Logs.Add(visible);
             var dialogs = new FakeDialogs();

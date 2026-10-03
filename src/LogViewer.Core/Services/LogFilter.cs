@@ -66,18 +66,16 @@ namespace LogViewer.Core.Services
             return matcher.Matches(entry);
         }
 
-        private SearchMatcher GetMatcher(FilterCriteria criteria)
+        internal SearchMatcher GetMatcher(FilterCriteria criteria)
         {
-            string key = (criteria.SearchText ?? string.Empty)
-                + "\u001f" + criteria.MatchCase
-                + "\u001f" + criteria.UseRegex
-                + "\u001f" + criteria.MatchWholeWord;
-            // Receive threads and the background refilter call this concurrently. Key and matcher are
-            // published as one immutable object so a reader never pairs one key with another matcher.
+            // Receive threads and the background refilter call this concurrently. Options and matcher are
+            // published as one immutable object so a reader never pairs one set of options with another
+            // matcher. Options are compared field by field: a string key built per call allocated once per
+            // entry, a million strings for one refilter of a large buffer.
             var cache = _matcherCache;
-            if (cache == null || cache.Key != key)
+            if (cache == null || !cache.IsFor(criteria))
             {
-                cache = new MatcherCache(key, SearchMatcher.Create(
+                cache = new MatcherCache(criteria, SearchMatcher.Create(
                     criteria.SearchText,
                     criteria.MatchCase,
                     criteria.UseRegex,
@@ -89,14 +87,29 @@ namespace LogViewer.Core.Services
 
         private sealed class MatcherCache
         {
-            public MatcherCache(string key, SearchMatcher matcher)
+            private readonly string _searchText;
+            private readonly bool _matchCase;
+            private readonly bool _useRegex;
+            private readonly bool _matchWholeWord;
+
+            public MatcherCache(FilterCriteria criteria, SearchMatcher matcher)
             {
-                Key = key;
+                _searchText = criteria.SearchText ?? string.Empty;
+                _matchCase = criteria.MatchCase;
+                _useRegex = criteria.UseRegex;
+                _matchWholeWord = criteria.MatchWholeWord;
                 Matcher = matcher;
             }
 
-            public string Key { get; }
             public SearchMatcher Matcher { get; }
+
+            public bool IsFor(FilterCriteria criteria)
+            {
+                return _matchCase == criteria.MatchCase
+                    && _useRegex == criteria.UseRegex
+                    && _matchWholeWord == criteria.MatchWholeWord
+                    && string.Equals(_searchText, criteria.SearchText ?? string.Empty, StringComparison.Ordinal);
+            }
         }
 
         private static bool LoggerIsShown(string fullPath, FilterCriteria criteria)

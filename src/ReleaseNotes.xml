@@ -29,6 +29,18 @@
 				<ru>ClickOnce больше не используется. Версии до 1.2.9.0 не умеют обновляться сами: новую версию нужно один раз скачать вручную</ru>
 				<en>ClickOnce is no longer used. Versions before 1.2.9.0 cannot update themselves: download the new version once by hand</en>
 			</Item>
+			<Item>
+				<ru>Поиск следующего и предыдущего, переход к следующей ошибке или предупреждению и переход ко времени больше не копируют весь список: на больших буферах они срабатывают сразу, даже во время приёма логов</ru>
+				<en>Find next and previous, jumping to the next error or warning, and going to a timestamp no longer copy the whole list: with large buffers they respond at once, even while logs are being received</en>
+			</Item>
+			<Item>
+				<ru>Строка лога в списке занимает меньше памяти: её данные больше не дублируются между буфером и списком</ru>
+				<en>A log line in the list uses less memory: its data is no longer duplicated between the buffer and the list</en>
+			</Item>
+			<Item>
+				<ru>Приём логов, окно повторов и фильтрация с поиском меньше нагружают процессор и память</ru>
+				<en>Receiving logs, the repeats window, and filtering with a search put less load on the CPU and memory</en>
+			</Item>
 		</ChangedFeatures>
 		<FixedBugs>
 			<Item>

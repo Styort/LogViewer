@@ -1,6 +1,8 @@
 # LogViewer
 
 [![build](https://github.com/Styort/LogViewer/actions/workflows/build.yml/badge.svg)](https://github.com/Styort/LogViewer/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/Styort/LogViewer?label=release)](https://github.com/Styort/LogViewer/releases/latest)
+[![GitHub downloads](https://img.shields.io/github/downloads/Styort/LogViewer/total?label=downloads)](https://github.com/Styort/LogViewer/releases)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![.NET Framework](https://img.shields.io/badge/.NET%20Framework-4.8-512BD4.svg)](https://dotnet.microsoft.com/download/dotnet-framework/net48)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://sourceforge.net/projects/styort-logviewer/)

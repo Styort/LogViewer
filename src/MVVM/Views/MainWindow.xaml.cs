@@ -49,6 +49,7 @@ namespace LogViewer.MVVM.Views
         public MainWindow()
         {
             InitializeComponent();
+            WindowState = Settings.Instance.StartMaximized ? WindowState.Maximized : WindowState.Normal;
             UpdateAutoScrollChrome();
             logsViewKeeper = new ListViewViewKeeper(LogsListView, () => AutoScrollEnabled);
             TranslationSource.Instance.LanguageChanged += (_, __) => UpdateAutoScrollChrome();

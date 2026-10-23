@@ -26,6 +26,7 @@ namespace LogViewer.MVVM.ViewModels
         private bool isConfigurationVisible = false;
         private bool isAutoStartReadAtStartup = true;
         private bool minimizeToTray = false;
+        private bool startMaximized = true;
         private bool isEnableMaxMessageBufferSize = false;
         private bool onlyOneAppInstance = true;
         private Receiver selectedReceiver;
@@ -106,6 +107,19 @@ namespace LogViewer.MVVM.ViewModels
             }
         }
 
+
+        /// <summary>
+        /// Start the main window maximized.
+        /// </summary>
+        public bool StartMaximized
+        {
+            get => startMaximized;
+            set
+            {
+                startMaximized = value;
+                OnPropertyChanged();
+            }
+        }
 
         /// <summary>
         /// Honor the maximum message buffer size.
@@ -566,6 +580,7 @@ namespace LogViewer.MVVM.ViewModels
                 IgnoredIpAdresses = new ObservableCollection<IgnoredIPAddress>(Settings.Instance.IgnoredIPs);
                 IsAutoStartReadAtStartup = Settings.Instance.AutoStartInStartup;
                 MinimizeToTray = Settings.Instance.MinimizeToTray;
+                StartMaximized = Settings.Instance.StartMaximized;
                 OnlyOneAppInstance = Settings.Instance.OnlyOneAppInstance;
                 CheckForUpdatesOnStartup = Settings.Instance.CheckForUpdatesOnStartup;
                 SelectedDataFormat = Settings.Instance.DataFormat;
@@ -701,6 +716,7 @@ namespace LogViewer.MVVM.ViewModels
 
             Settings.Instance.MinimizeToTray = MinimizeToTray;
             Settings.Instance.AutoStartInStartup = IsAutoStartReadAtStartup;
+            Settings.Instance.StartMaximized = StartMaximized;
             Settings.Instance.IsShowSourceColumn = IsShowSourceColumn;
             Settings.Instance.IsShowThreadColumn = IsShowThreadColumn;
             Settings.Instance.IsShowTaskbarProgress = IsShowTaskbarProgress;

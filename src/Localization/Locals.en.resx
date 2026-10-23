@@ -261,6 +261,12 @@
   <data name="MinimizeToTrayIconToolTip" xml:space="preserve">
     <value>Show a tray icon when Log Viewer is minimized.</value>
   </data>
+  <data name="StartMaximized" xml:space="preserve">
+    <value>Start in fullscreen mode:</value>
+  </data>
+  <data name="StartMaximizedToolTip" xml:space="preserve">
+    <value>When off, the application starts in a normal window instead of maximized.</value>
+  </data>
   <data name="OnlyOneInstanceOfApp" xml:space="preserve">
     <value>Only one application instance:</value>
   </data>

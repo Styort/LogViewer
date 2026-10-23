@@ -1,6 +1,31 @@
 <?xml version="1.0"?>
 <ArrayOfReleaseNotes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<ReleaseNotes>
+		<Version>1.2.9.1 (23.10.2026)</Version>
+		<NewFeatures>
+			<Item>
+				<ru>Настройка «Запускать развёрнутым»: отключите её, чтобы приложение запускалось в обычном окне; по умолчанию запуск остаётся развёрнутым</ru>
+				<en>"Start maximized" setting: turn it off to start the application in a normal window; maximized startup remains the default</en>
+			</Item>
+		</NewFeatures>
+		<ChangedFeatures>
+			<Item>
+				<ru>Увеличена высота окна настроек по умолчанию</ru>
+				<en>Increased the default settings window height</en>
+			</Item>
+		</ChangedFeatures>
+		<FixedBugs>
+			<Item>
+				<ru>Обычное главное окно помещается в рабочую область монитора и центрируется до первого отображения, чтобы заголовок оставался доступным на небольших экранах; при восстановлении в обычный режим окно также центрируется</ru>
+				<en>The normal main window fits within the monitor work area and is centered before first display, keeping the title bar accessible on smaller screens; restoring to normal mode also centers the window</en>
+			</Item>
+			<Item>
+				<ru>На вкладке общих настроек появляется вертикальная прокрутка, если все настройки не помещаются по высоте</ru>
+				<en>The General settings tab shows a vertical scrollbar when the settings do not fit in the available height</en>
+			</Item>
+		</FixedBugs>
+	</ReleaseNotes>
+	<ReleaseNotes>
 		<Version>1.2.9.0 (03.10.2026)</Version>
 		<NewFeatures>
 			<Item>

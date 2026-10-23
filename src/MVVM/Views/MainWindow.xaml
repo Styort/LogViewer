@@ -10,7 +10,7 @@
         xmlns:viewModels="clr-namespace:LogViewer.MVVM.ViewModels"
         xmlns:localization="clr-namespace:LogViewer.Localization"
         mc:Ignorable="d" 
-        Title="Log Viewer" Height="1080" Width="1920" WindowState="Maximized" Loaded="MainWindow_OnLoaded"
+        Title="Log Viewer" Height="1080" Width="1920" WindowStartupLocation="CenterScreen" Loaded="MainWindow_OnLoaded"
         AllowDrop="True" DragOver="Window_OnDragOver" Drop="Window_OnDrop">
     <Window.DataContext>
         <viewModels:LogViewModel/>

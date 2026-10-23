@@ -49,6 +49,12 @@ namespace LogViewer.MVVM.Views
         public MainWindow()
         {
             InitializeComponent();
+            if (!Settings.Instance.StartMaximized)
+            {
+                WindowStartupLocation = WindowStartupLocation.Manual;
+                CenterNormalWindow(Screen.FromPoint(System.Windows.Forms.Cursor.Position));
+            }
+            WindowState = Settings.Instance.StartMaximized ? WindowState.Maximized : WindowState.Normal;
             UpdateAutoScrollChrome();
             logsViewKeeper = new ListViewViewKeeper(LogsListView, () => AutoScrollEnabled);
             TranslationSource.Instance.LanguageChanged += (_, __) => UpdateAutoScrollChrome();
@@ -99,6 +105,9 @@ namespace LogViewer.MVVM.Views
         /// </summary>
         protected override void OnStateChanged(EventArgs e)
         {
+            if (WindowState == WindowState.Normal && IsLoaded)
+                CenterNormalWindow();
+
             if (WindowState == WindowState.Minimized && Settings.Instance.MinimizeToTray)
             {
                 if (trayIcon == null)
@@ -126,6 +135,34 @@ namespace LogViewer.MVVM.Views
             }
 
             base.OnStateChanged(e);
+        }
+
+        private void CenterNormalWindow(Screen screen = null)
+        {
+            var workArea = GetWorkArea(screen ?? Screen.FromHandle(new WindowInteropHelper(this).Handle));
+
+            Width = Math.Min(Width, workArea.Width);
+            Height = Math.Min(Height, workArea.Height);
+            Left = workArea.Left + (workArea.Width - Width) / 2;
+            Top = workArea.Top + (workArea.Height - Height) / 2;
+        }
+
+        private Rect GetWorkArea(Screen screen)
+        {
+            var source = PresentationSource.FromVisual(this);
+            // Screen coordinates are physical pixels; WPF window bounds use device-independent units.
+            var transform = source?.CompositionTarget?.TransformFromDevice;
+            if (!transform.HasValue)
+            {
+                // Before HWND creation, use the system DPI used by this WPF application.
+                using (var graphics = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+                    transform = new System.Windows.Media.Matrix(96.0 / graphics.DpiX, 0, 0, 96.0 / graphics.DpiY, 0, 0);
+            }
+
+            var workArea = screen.WorkingArea;
+            var topLeft = transform.Value.Transform(new Point(workArea.Left, workArea.Top));
+            var bottomRight = transform.Value.Transform(new Point(workArea.Right, workArea.Bottom));
+            return new Rect(topLeft, bottomRight);
         }
 
         private void TrayIconContextMenuClick(object sender, ToolStripItemClickedEventArgs e)

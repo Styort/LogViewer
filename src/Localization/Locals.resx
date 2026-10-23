@@ -346,6 +346,12 @@
   <data name="MinimizeToTrayIconToolTip" xml:space="preserve">
     <value>Показывать иконку в трее при сворачивании приложения</value>
   </data>
+  <data name="StartMaximized" xml:space="preserve">
+    <value>Запускать в полноэкранном режиме:</value>
+  </data>
+  <data name="StartMaximizedToolTip" xml:space="preserve">
+    <value>Если выключено, приложение запускается в обычном окне, а не развёрнутым на весь экран</value>
+  </data>
   <data name="NoReceiversMessageBoxInfo" xml:space="preserve">
     <value>Не добавлено ни одного сетевого приёмника.
 Добавьте хотя бы один сетевой приёмник в настройках.</value>

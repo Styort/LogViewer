@@ -28,6 +28,12 @@ namespace LogViewer.MVVM.Models
 
         public bool AutoStartInStartup { get; set; } = false;
         public bool MinimizeToTray { get; set; } = false;
+
+        /// <summary>
+        /// Start the main window maximized. Missing value in old settings.xml keeps the default (true),
+        /// matching the behavior before this setting existed.
+        /// </summary>
+        public bool StartMaximized { get; set; } = true;
         public bool OnlyOneAppInstance { get; set; } = false;
         public bool IsEnabledMaxMessageBufferSize { get; set; } = false;
         public int MaxMessageBufferSize { get; set; } = 1000000;
@@ -193,6 +199,7 @@ namespace LogViewer.MVVM.Models
                 {
                     Instance.AutoStartInStartup = settings.AutoStartInStartup;
                     Instance.MinimizeToTray = settings.MinimizeToTray;
+                    Instance.StartMaximized = settings.StartMaximized;
                     Instance.CurrentTheme = settings.CurrentTheme;
                     Instance.DataFormat = settings.DataFormat;
                     Instance.IgnoredIPs = settings.IgnoredIPs;

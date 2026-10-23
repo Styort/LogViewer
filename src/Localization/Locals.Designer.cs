@@ -1246,7 +1246,25 @@ namespace LogViewer.Localization {
                 return ResourceManager.GetString("MinimizeToTrayIconToolTip", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Запускать в полноэкранном режиме:.
+        /// </summary>
+        internal static string StartMaximized {
+            get {
+                return ResourceManager.GetString("StartMaximized", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Если выключено, приложение запускается в обычном окне, а не развёрнутым на весь экран.
+        /// </summary>
+        internal static string StartMaximizedToolTip {
+            get {
+                return ResourceManager.GetString("StartMaximizedToolTip", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Название.
         /// </summary>
